@@ -18,7 +18,12 @@
         <tbody>
             {% for inv in inventories %}
             <tr>
-                <td class="fw-bold">{{ inv.title }}</td>
+                {# <td class="fw-bold">{{ inv.title }}</td> #}
+                <td>
+                    <a href="{{ path('app_inventory_show', {id: inv.id}) }}" class="text-decoration-none fw-bold">
+                        {{ inv.title }}
+                    </a>
+                </td>
                 <td><span class="badge bg-info text-dark">{{ inv.category }}</span></td>
                 <td>{{ inv.description|slice(0, 50) }}...</td>
             </tr>

@@ -51,4 +51,12 @@ class InventoryController extends AbstractController
             'inventories' => $myInventories,
         ]);
     }
+
+    #[Route('/inventory/{id}', name: 'app_inventory_show')]
+    public function show(Inventory $inventory): Response
+    {
+        return $this->render('inventory/show.html.twig', [
+            'inventory' => $inventory,
+        ]);
+    }
 }
