@@ -1,0 +1,39 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}New Inventory{% endblock %}
+
+{% block body %}
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card shadow-sm mt-5">
+            <div class="card-body p-4">
+                <h2 class="mb-4">Create Inventory</h2>
+
+                <form method="POST">
+                    <div class="mb-3">
+                        <label class="form-label">Title</label>
+                        <input type="text" name="title" class="form-control" placeholder="e.g. Office Supplies" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Category</label>
+                        <select name="category" class="form-select">
+                            <option value="Equipment">Equipment</option>
+                            <option value="Furniture">Furniture</option>
+                            <option value="Books">Books</option>
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Description (Optional)</label>
+                        <textarea name="description" class="form-control" rows="3"></textarea>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary w-100">Save Inventory</button>
+                    <a href="{{ path('app_my_inventories') }}" class="btn btn-link w-100 text-muted mt-2">Cancel</a>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

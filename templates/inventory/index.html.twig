@@ -1,0 +1,33 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+<div class="d-flex justify-content-between align-items-center mb-4 mt-4">
+    <h1>My Inventories</h1>
+    <a href="{{ path('app_inventory_new') }}" class="btn btn-success">+ Create New</a>
+</div>
+
+<div class="card shadow-sm">
+    <table class="table table-hover mb-0">
+        <thead class="table-dark">
+            <tr>
+                <th>Title</th>
+                <th>Category</th>
+                <th>Description</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for inv in inventories %}
+            <tr>
+                <td class="fw-bold">{{ inv.title }}</td>
+                <td><span class="badge bg-info text-dark">{{ inv.category }}</span></td>
+                <td>{{ inv.description|slice(0, 50) }}...</td>
+            </tr>
+            {% else %}
+            <tr>
+                <td colspan="3" class="text-center py-4 text-muted">You haven't created any inventories yet.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}
