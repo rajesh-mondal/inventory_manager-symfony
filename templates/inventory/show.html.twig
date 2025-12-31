@@ -1,45 +1,115 @@
 {% extends 'base.html.twig' %}
 
+{% block title %}{{ inventory.title }}{% endblock %}
+
 {% block body %}
-<div class="mt-4">
-    <nav aria-label="breadcrumb">
+<style>
+    body { background-color: #f9fafb; }
+
+    /* Breadcrumb styling */
+    .breadcrumb-item a { color: #6b7280; text-decoration: none; font-size: 0.875rem; }
+    .breadcrumb-item.active { color: #111827; font-weight: 500; font-size: 0.875rem; }
+
+    /* Card/Table container */
+    .table-container {
+        background: #fff;
+        border-radius: 12px;
+        border: 1px solid #e5e7eb;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        overflow: hidden;
+    }
+
+    .table thead th {
+        background-color: #fdfdfd;
+        text-transform: uppercase;
+        font-size: 0.7rem;
+        font-weight: 700;
+        letter-spacing: 0.05em;
+        color: #9ca3af;
+        border-bottom: 1px solid #e5e7eb;
+        padding: 1.25rem 1.5rem;
+    }
+
+    .table tbody td {
+        padding: 1.1rem 1.5rem;
+        vertical-align: middle;
+        border-bottom: 1px solid #f3f4f6;
+        color: #374151;
+    }
+
+    .custom-id-badge {
+        font-family: 'Monaco', 'Consolas', monospace;
+        background-color: #f3f4f6;
+        color: #111827;
+        padding: 0.3rem 0.6rem;
+        border-radius: 4px;
+        font-size: 0.85rem;
+        border: 1px solid #e5e7eb;
+    }
+
+    .item-name {
+        font-weight: 600;
+        color: #111827;
+    }
+</style>
+
+<div class="container py-4">
+    <nav aria-label="breadcrumb" class="mb-3">
         <ol class="breadcrumb">
-            <li class="breadcrumb-item"><a href="{{ path('app_my_inventories') }}">My Inventories</a></li>
+            <li class="breadcrumb-item"><a href="{{ path('app_my_inventories') }}">Inventories</a></li>
             <li class="breadcrumb-item active">{{ inventory.title }}</li>
         </ol>
     </nav>
 
-    <div class="d-flex justify-content-between align-items-center mb-4">
+    <div class="d-flex justify-content-between align-items-center mb-5">
         <div>
-            <h1 class="fw-bold">{{ inventory.title }}</h1>
-            <p class="text-muted">{{ inventory.category }} | {{ inventory.description }}</p>
+            <h1 class="fw-bold tracking-tight text-dark mb-1">{{ inventory.title }}</h1>
+            <p class="text-muted mb-0">
+                <span class="badge bg-light text-dark border me-2">{{ inventory.category }}</span>
+                {{ inventory.description }}
+            </p>
         </div>
-        <button class="btn btn-primary">+ Add New Item</button>
+        <div class="d-flex gap-2">
+            <a href="#" class="btn btn-outline-dark px-3 py-2 fw-bold" style="border-radius: 8px;">
+                <i class="bi bi-gear"></i> Settings
+            </a>
+            <a href="#" class="btn btn-dark px-4 py-2 fw-bold" style="border-radius: 8px;">
+                + Add Item
+            </a>
+        </div>
     </div>
 
-    <div class="card shadow-sm">
-        <div class="card-header bg-white py-3">
-            <h5 class="mb-0">Items in this Inventory</h5>
-        </div>
-        <table class="table table-hover mb-0">
-            <thead class="table-light">
+    <div class="table-container">
+        <table class="table mb-0">
+            <thead>
                 <tr>
-                    <th>ID</th>
-                    <th>Item Name</th>
-                    <th>Created At</th>
+                    <th style="width: 20%;">Custom ID</th>
+                    <th style="width: 50%;">Item Name</th>
+                    <th style="width: 30%;" class="text-end">Created At</th>
                 </tr>
             </thead>
             <tbody>
                 {% for item in inventory.items %}
-                <tr>
-                    <td>{{ item.customId }}</td>
-                    <td>{{ item.name }}</td>
-                    <td>Added today</td>
+                <tr class="align-middle">
+                    <td>
+                        <code class="custom-id-badge">{{ item.customId }}</code>
+                    </td>
+                    <td>
+                        <span class="item-name">{{ item.name }}</span>
+                    </td>
+                    <td class="text-end text-muted small">
+                        {{ item.createdAt|date('M d, Y') }}
+                    </td>
                 </tr>
                 {% else %}
                 <tr>
-                    <td colspan="3" class="text-center py-5 text-muted">
-                        No items found. Click "+ Add New Item" to start.
+                    <td colspan="3" class="text-center py-5">
+                        <div class="py-4">
+                            <p class="text-muted mb-3">This inventory is currently empty.</p>
+                            <a href="#" class="btn btn-sm btn-outline-primary">
+                                Add your first item
+                            </a>
+                        </div>
                     </td>
                 </tr>
                 {% endfor %}
