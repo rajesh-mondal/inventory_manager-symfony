@@ -45,7 +45,10 @@ class InventoryController extends AbstractController
     {
         $this->denyAccessUnlessGranted('IS_AUTHENTICATED_FULLY');
 
-        $myInventories = $repo->findBy(['creator' => $this->getUser()]);
+        $myInventories = $repo->findBy(
+            ['creator' => $this->getUser()],
+            ['id' => 'DESC']
+        );
 
         return $this->render('inventory/index.html.twig', [
             'inventories' => $myInventories,

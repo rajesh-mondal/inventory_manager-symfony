@@ -1,38 +1,105 @@
 {% extends 'base.html.twig' %}
 
-{% block body %}
-<div class="d-flex justify-content-between align-items-center mb-4 mt-4">
-    <h1>My Inventories</h1>
-    <a href="{{ path('app_inventory_new') }}" class="btn btn-success">+ Create New</a>
-</div>
+{% block title %}My Inventories{% endblock %}
 
-<div class="card shadow-sm">
-    <table class="table table-hover mb-0">
-        <thead class="table-dark">
-            <tr>
-                <th>Title</th>
-                <th>Category</th>
-                <th>Description</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for inv in inventories %}
-            <tr>
-                {# <td class="fw-bold">{{ inv.title }}</td> #}
-                <td>
-                    <a href="{{ path('app_inventory_show', {id: inv.id}) }}" class="text-decoration-none fw-bold">
-                        {{ inv.title }}
-                    </a>
-                </td>
-                <td><span class="badge bg-info text-dark">{{ inv.category }}</span></td>
-                <td>{{ inv.description|slice(0, 50) }}...</td>
-            </tr>
-            {% else %}
-            <tr>
-                <td colspan="3" class="text-center py-4 text-muted">You haven't created any inventories yet.</td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+{% block body %}
+<style>
+    body { background-color: #f9fafb; }
+    .table-container {
+        background: #fff;
+        border-radius: 12px;
+        border: 1px solid #e5e7eb;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        overflow: hidden;
+    }
+    .table thead th {
+        background-color: #fdfdfd;
+        text-transform: uppercase;
+        font-size: 0.7rem;
+        font-weight: 700;
+        letter-spacing: 0.05em;
+        color: #9ca3af;
+        border-bottom: 1px solid #e5e7eb;
+        padding: 1.25rem 1.5rem;
+    }
+    .table tbody td {
+        padding: 1.25rem 1.5rem;
+        vertical-align: middle;
+        border-bottom: 1px solid #f3f4f6;
+    }
+    .inventory-link {
+        font-weight: 600;
+        color: #111827;
+        text-decoration: none;
+        font-size: 1rem;
+    }
+    .inventory-link:hover { color: #2563eb; }
+    .description-text { color: #6b7280; font-size: 0.875rem; }
+    .badge-category {
+        background-color: #f3f4f6;
+        color: #374151;
+        padding: 0.35rem 0.75rem;
+        border-radius: 6px;
+        font-size: 0.8rem;
+        font-weight: 500;
+    }
+    .item-count {
+        background: #eff6ff;
+        color: #1d4ed8;
+        padding: 0.25rem 0.6rem;
+        border-radius: 4px;
+        font-weight: 700;
+        font-size: 0.85rem;
+    }
+</style>
+
+<div class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-5">
+        <div>
+            <h1 class="fw-bold tracking-tight text-dark mb-1">Inventories</h1>
+            <p class="text-muted">Total collections: {{ inventories|length }}</p>
+        </div>
+        <a href="{{ path('app_inventory_new') }}" class="btn btn-dark px-4 py-2 fw-bold" style="border-radius: 8px;">
+            <i class="bi bi-plus"></i> New Inventory
+        </a>
+    </div>
+
+    <div class="table-container">
+        <table class="table mb-0">
+            <thead>
+                <tr>
+                    <th style="width: 50%;">Name</th>
+                    <th style="width: 30%;">Category</th>
+                    <th class="text-end" style="width: 20%;">Stored Items</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for inv in inventories %}
+                <tr class="align-middle">
+                    <td>
+                        <div class="d-flex flex-column">
+                            <a href="{{ path('app_inventory_show', {id: inv.id}) }}" class="inventory-link">
+                                {{ inv.title }}
+                            </a>
+                            <span class="description-text mt-1">{{ inv.description|default('No description provided.') }}</span>
+                        </div>
+                    </td>
+                    <td>
+                        <span class="badge-category">{{ inv.category }}</span>
+                    </td>
+                    <td class="text-end">
+                        <span class="item-count">{{ inv.items|length }}</span>
+                    </td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="3" class="text-center py-5">
+                        <p class="text-muted mb-0">No inventories found. Start by creating one.</p>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
 </div>
 {% endblock %}
