@@ -14,26 +14,51 @@ class InventoryController extends AbstractController
     #[Route('/inventory/new', name: 'app_inventory_new')]
     public function new(Request $request, EntityManagerInterface $entityManager): Response
     {
-        // Only allow logged-in users
         $this->denyAccessUnlessGranted('IS_AUTHENTICATED_FULLY');
 
-        // Check if the form was submitted
         if ($request->isMethod('POST')) {
             $inventory = new Inventory();
-
-            // Get data from the HTML form names
             $inventory->setTitle($request->request->get('title'));
             $inventory->setCategory($request->request->get('category'));
             $inventory->setDescription($request->request->get('description'));
-
-            // Set the creator as the currently logged-in user
             $inventory->setCreator($this->getUser());
 
-            // Save to MySQL
+            // Custom ID & Access
+            $inventory->setIdPattern($request->request->get('id_pattern'));
+            $inventory->setIsPublic($request->request->has('is_public'));
+
+            $rawTags = $request->request->get('tags');
+
+            if ($rawTags) {
+                $tagArray = array_map('trim', explode(',', $rawTags));
+                $tagArray = array_filter($tagArray);
+                $inventory->setTags($tagArray);
+            } else {
+                $inventory->setTags([]);
+            }
+
+            $types = ['String', 'Int', 'Bool', 'Text'];
+
+            foreach ($types as $type) {
+                for ($i = 1; $i <= 3; $i++) {
+                    $lowerType = strtolower($type);
+
+                    // Match Twig name: custom_string1_state
+                    $isChecked = $request->request->has("custom_{$lowerType}{$i}_state");
+                    // Match Twig name: custom_string1_name
+                    $labelName = $request->request->get("custom_{$lowerType}{$i}_name");
+
+                    $setterState = "setCustom" . $type . $i . "State";
+                    $setterName = "setCustom" . $type . $i . "Name";
+
+                    $inventory->$setterState($isChecked);
+                    $inventory->$setterName($labelName);
+                }
+            }
+
             $entityManager->persist($inventory);
             $entityManager->flush();
 
-            // Redirect to the list page
             return $this->redirectToRoute('app_my_inventories');
         }
 
