@@ -16,7 +16,7 @@
         border-radius: 12px;
         border: 1px solid #e5e7eb;
         box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-        overflow: hidden;
+        overflow-x: auto;
     }
 
     .table thead th {
@@ -28,6 +28,7 @@
         color: #9ca3af;
         border-bottom: 1px solid #e5e7eb;
         padding: 1.25rem 1.5rem;
+        white-space: nowrap;
     }
 
     .table tbody td {
@@ -64,10 +65,13 @@
     <div class="d-flex justify-content-between align-items-center mb-5">
         <div>
             <h1 class="fw-bold tracking-tight text-dark mb-1">{{ inventory.title }}</h1>
-            <p class="text-muted mb-0">
-                <span class="badge bg-light text-dark border me-2">{{ inventory.category }}</span>
-                {{ inventory.description }}
-            </p>
+            <div class="d-flex align-items-center gap-2 mb-2">
+                <span class="badge bg-light text-dark border">{{ inventory.category }}</span>
+                {% for tag in inventory.tags %}
+                    <span class="badge rounded-pill bg-white text-muted border small">#{{ tag }}</span>
+                {% endfor %}
+            </div>
+            <p class="text-muted mb-0">{{ inventory.description }}</p>
         </div>
         <div class="d-flex gap-2">
             <a href="#" class="btn btn-outline-dark px-3 py-2 fw-bold" style="border-radius: 8px;">
@@ -83,9 +87,19 @@
         <table class="table mb-0">
             <thead>
                 <tr>
-                    <th style="width: 20%;">Custom ID</th>
-                    <th style="width: 50%;">Item Name</th>
-                    <th style="width: 30%;" class="text-end">Created At</th>
+                    <th style="min-width: 140px;">Custom ID</th>
+                    <th style="min-width: 200px;">Item Name</th>
+
+                    {% for type in ['String', 'Int', 'Bool', 'Text'] %}
+                        {% for i in 1..3 %}
+                            {% set state = attribute(inventory, 'custom' ~ type ~ i ~ 'State') %}
+                            {% if state %}
+                                <th>{{ attribute(inventory, 'custom' ~ type ~ i ~ 'Name') }}</th>
+                            {% endif %}
+                        {% endfor %}
+                    {% endfor %}
+
+                    <th class="text-end">Created</th>
                 </tr>
             </thead>
             <tbody>
@@ -97,16 +111,34 @@
                     <td>
                         <span class="item-name">{{ item.name }}</span>
                     </td>
+
+                    {% for type in ['String', 'Int', 'Bool', 'Text'] %}
+                        {% for i in 1..3 %}
+                            {% if attribute(inventory, 'custom' ~ type ~ i ~ 'State') %}
+                                <td>
+                                    {% set val = attribute(item, type|lower ~ 'Val' ~ i) %}
+                                    {% if type == 'Bool' %}
+                                        <span class="badge {{ val ? 'bg-success' : 'bg-light text-muted' }} rounded-circle p-1">
+                                            <i class="bi {{ val ? 'bi-check' : 'bi-x' }}"></i>
+                                        </span>
+                                    {% else %}
+                                        {{ val|default('-') }}
+                                    {% endif %}
+                                </td>
+                            {% endif %}
+                        {% endfor %}
+                    {% endfor %}
+
                     <td class="text-end text-muted small">
                         {{ item.createdAt|date('M d, Y') }}
                     </td>
                 </tr>
                 {% else %}
                 <tr>
-                    <td colspan="3" class="text-center py-5">
+                    <td colspan="20" class="text-center py-5">
                         <div class="py-4">
                             <p class="text-muted mb-3">This inventory is currently empty.</p>
-                            <a href="#" class="btn btn-sm btn-outline-primary">
+                            <a href="#" class="btn btn-sm btn-outline-dark" style="border-radius: 6px;">
                                 Add your first item
                             </a>
                         </div>
