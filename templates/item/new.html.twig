@@ -1,0 +1,85 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Add Item | {{ inventory.title }}{% endblock %}
+
+{% block body %}
+<style>
+    body { background-color: #f9fafb; }
+    .form-container {
+        background: #fff;
+        border-radius: 16px;
+        border: 1px solid #e5e7eb;
+        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05);
+        padding: 3rem;
+    }
+    .form-label { font-size: 0.85rem; font-weight: 600; color: #374151; margin-bottom: 0.6rem; display: block; }
+    .form-control { border-radius: 10px; border: 1px solid #d1d5db; padding: 0.75rem 1rem; transition: all 0.2s ease; background-color: #fcfcfc; }
+    .form-control:focus { border-color: #111827; box-shadow: 0 0 0 4px rgba(17, 24, 39, 0.05); outline: none; }
+    .section-title { font-size: 1.25rem; font-weight: 700; color: #111827; margin-bottom: 1.5rem; border-bottom: 1px solid #f3f4f6; padding-bottom: 0.75rem; }
+    .btn-save { background-color: #111827; color: #fff; border-radius: 10px; padding: 0.8rem 2.5rem; font-weight: 600; border: none; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); }
+</style>
+
+<div class="container py-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-9">
+            <nav aria-label="breadcrumb" class="mb-3">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="{{ path('app_my_inventories') }}" class="text-decoration-none text-muted small">Inventories</a></li>
+                    <li class="breadcrumb-item"><a href="{{ path('app_inventory_show', {id: inventory.id}) }}" class="text-decoration-none text-muted small">{{ inventory.title }}</a></li>
+                    <li class="breadcrumb-item active small">New Item</li>
+                </ol>
+            </nav>
+
+            <div class="form-container mt-4">
+                <form method="POST">
+                    <div class="row">
+                        <div class="col-12">
+                            <h3 class="section-title">General Info</h3>
+                            <div class="mb-5">
+                                <label class="form-label">Item Name</label>
+                                <input type="text" name="name" class="form-control" placeholder="Unique identifier for this item" required>
+                            </div>
+                        </div>
+
+                        <div class="col-12">
+                            <h3 class="section-title">Custom Specifications</h3>
+                            <div class="row g-4">
+
+                                {% for type in ['String', 'Int', 'Bool', 'Text'] %}
+                                    {% for i in 1..3 %}
+                                        {% set stateMethod = 'custom' ~ type ~ i ~ 'State' %}
+                                        {% set nameMethod = 'custom' ~ type ~ i ~ 'Name' %}
+
+                                        {% if attribute(inventory, stateMethod) %}
+                                            <div class="col-md-6">
+                                                <label class="form-label text-primary">{{ attribute(inventory, nameMethod) }}</label>
+
+                                                {% if type == 'String' %}
+                                                    <input type="text" name="custom_string{{ i }}" class="form-control">
+                                                {% elseif type == 'Int' %}
+                                                    <input type="number" name="custom_int{{ i }}" class="form-control">
+                                                {% elseif type == 'Text' %}
+                                                    <textarea name="custom_text{{ i }}" class="form-control" rows="2"></textarea>
+                                                {% elseif type == 'Bool' %}
+                                                    <div class="form-check form-switch pt-2">
+                                                        <input class="form-check-input" type="checkbox" name="custom_bool{{ i }}" id="bool_{{ i }}">
+                                                        <label class="form-check-label small text-muted" for="bool_{{ i }}">Enabled</label>
+                                                    </div>
+                                                {% endif %}
+                                            </div>
+                                        {% endif %}
+                                    {% endfor %}
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="border-top mt-5 pt-4 d-flex justify-content-end">
+                        <button type="submit" class="btn-save">Create Item</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
