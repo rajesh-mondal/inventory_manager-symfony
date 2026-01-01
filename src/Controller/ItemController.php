@@ -9,11 +9,13 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\HttpFoundation\File\Exception\FileException;
+use Symfony\Component\String\Slugger\SluggerInterface;
 
 class ItemController extends AbstractController
 {
     #[Route('/inventory/{id}/item/new', name: 'app_item_new')]
-    public function new(Inventory $inventory, Request $request, EntityManagerInterface $em): Response
+    public function new(Inventory $inventory, Request $request, EntityManagerInterface $em, SluggerInterface $slugger): Response
     {
         $this->denyAccessUnlessGranted('IS_AUTHENTICATED_FULLY');
 
@@ -57,6 +59,29 @@ class ItemController extends AbstractController
             );
 
             $item->setCustomId($customId);
+
+            // Image upload logic
+            $imageFile = $request->files->get('image');
+
+            if ($imageFile) {
+                $originalFilename = pathinfo($imageFile->getClientOriginalName(), PATHINFO_FILENAME);
+                $safeFilename = $slugger->slug($originalFilename);
+                $newFilename = $safeFilename.'-'.uniqid().'.'.$imageFile->guessExtension();
+
+                try {
+                    $imageFile->move(
+                        $this->getParameter('items_directory'),
+                        $newFilename
+                    );
+                    $item->setImage($newFilename);
+                } catch (FileException $e) {
+                    $this->addFlash('danger', 'Upload failed: ' . $e->getMessage());
+
+                    return $this->render('item/new.html.twig', [
+                        'inventory' => $inventory,
+                    ]);
+                }
+            }
 
             $em->persist($item);
             $em->flush();

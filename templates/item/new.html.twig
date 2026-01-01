@@ -31,13 +31,18 @@
             </nav>
 
             <div class="form-container mt-4">
-                <form method="POST">
+                <form method="POST" enctype="multipart/form-data">
                     <div class="row">
                         <div class="col-12">
                             <h3 class="section-title">General Info</h3>
                             <div class="mb-5">
                                 <label class="form-label">Item Name</label>
                                 <input type="text" name="name" class="form-control" placeholder="Unique identifier for this item" required>
+                            </div>
+                            <div class="mb-4">
+                                <label class="form-label">Item Image</label>
+                                <input type="file" name="image" class="form-control" accept="image/*">
+                                <div class="form-text small">Upload a photo of this item (JPG, PNG)</div>
                             </div>
                         </div>
 
