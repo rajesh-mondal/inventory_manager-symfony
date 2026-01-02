@@ -83,7 +83,7 @@ class InventoryController extends AbstractController
         ]);
     }
 
-    #[Route('/inventory/{id}', name: 'app_inventory_show')]
+    #[Route('/inventory/{id<\d+>}', name: 'app_inventory_show')]
     public function show(Inventory $inventory, Request $request, PaginatorInterface $paginator, EntityManagerInterface $em): Response
     {
         $queryBuilder = $em->getRepository(Item::class)
