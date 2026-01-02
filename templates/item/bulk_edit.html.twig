@@ -1,0 +1,73 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Bulk Edit Items{% endblock %}
+
+{% block body %}
+<style>
+    body { background-color: #f9fafb; }
+    .bulk-card { background: #fff; border-radius: 12px; border: 1px solid #e5e7eb; box-shadow: 0 1px 3px rgba(0,0,0,0.1); padding: 2rem; }
+    .item-badge { background: #f3f4f6; color: #111827; padding: 4px 10px; border-radius: 6px; font-size: 0.8rem; border: 1px solid #e5e7eb; margin-right: 5px; margin-bottom: 5px; display: inline-block; }
+    .section-label { font-size: 0.75rem; font-weight: 700; text-transform: uppercase; color: #9ca3af; letter-spacing: 0.05em; margin-bottom: 1.5rem; display: block; }
+</style>
+
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+            <h1 class="fw-bold text-dark mb-4">Bulk Edit</h1>
+
+            <div class="bulk-card mb-4">
+                <span class="section-label">Selected Items ({{ items|length }})</span>
+                <div>
+                    {% for item in items %}
+                        <div class="item-badge">
+                            <span class="fw-bold">{{ item.customId }}</span>: {{ item.name }}
+                            <input type="hidden" name="item_ids[]" value="{{ item.id }}" form="bulk-update-form">
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <div class="bulk-card">
+                <form id="bulk-update-form" method="POST" action="{{ path('app_item_bulk_update') }}">
+                    <span class="section-label">Update Fields</span>
+                    <p class="text-muted small mb-4">Leave fields empty if you do not want to change their current values.</p>
+
+                    <div class="row g-4">
+                        {% for type in ['String', 'Int', 'Bool', 'Text'] %}
+                            {% for i in 1..3 %}
+                                {% set stateMethod = 'custom' ~ type ~ i ~ 'State' %}
+                                {% set nameMethod = 'custom' ~ type ~ i ~ 'Name' %}
+
+                                {% if attribute(inventory, stateMethod) %}
+                                    <div class="col-md-6">
+                                        <label class="form-label fw-bold small">{{ attribute(inventory, nameMethod) }}</label>
+
+                                        {% if type == 'String' %}
+                                            <input type="text" name="custom_string{{ i }}" class="form-control" placeholder="New value...">
+                                        {% elseif type == 'Int' %}
+                                            <input type="number" name="custom_int{{ i }}" class="form-control" placeholder="New number...">
+                                        {% elseif type == 'Text' %}
+                                            <textarea name="custom_text{{ i }}" class="form-control" rows="2"></textarea>
+                                        {% elseif type == 'Bool' %}
+                                            <select name="custom_bool{{ i }}" class="form-select">
+                                                <option value="">Keep Original</option>
+                                                <option value="1">Yes (True)</option>
+                                                <option value="0">No (False)</option>
+                                            </select>
+                                        {% endif %}
+                                    </div>
+                                {% endif %}
+                            {% endfor %}
+                        {% endfor %}
+                    </div>
+
+                    <div class="mt-5 pt-4 border-top d-flex justify-content-between">
+                        <a href="{{ path('app_inventory_show', {id: inventory.id}) }}" class="btn btn-outline-secondary px-4">Cancel</a>
+                        <button type="submit" class="btn btn-dark px-5 fw-bold">Update All Selected Items</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

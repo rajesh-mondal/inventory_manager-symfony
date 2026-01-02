@@ -93,4 +93,80 @@ class ItemController extends AbstractController
             'inventory' => $inventory,
         ]);
     }
+
+    #[Route('/item/bulk-delete', name: 'app_item_bulk_delete', methods: ['POST'])]
+    public function bulkDelete(Request $request, EntityManagerInterface $em): Response
+    {
+        $itemIds = $request->request->all('item_ids');
+
+        if ($itemIds) {
+            $items = $em->getRepository(Item::class)->findBy(['id' => $itemIds]);
+            foreach ($items as $item) {
+                // Delete the image file from disk if it exists
+                if ($item->getImage()) {
+                    $imagePath = $this->getParameter('items_directory') . '/' . $item->getImage();
+                    if (file_exists($imagePath)) {
+                        unlink($imagePath);
+                    }
+                }
+                $em->remove($item);
+            }
+            $em->flush();
+            $this->addFlash('success', count($items) . ' items deleted.');
+        }
+
+        return $this->redirect($request->headers->get('referer'));
+    }
+
+    #[Route('/item/bulk-edit', name: 'app_item_bulk_edit', methods: ['POST'])]
+    public function bulkEdit(Request $request, EntityManagerInterface $em): Response
+    {
+        $itemIds = $request->request->all('item_ids');
+
+        if (!$itemIds) {
+            $this->addFlash('warning', 'No items selected to edit.');
+            return $this->redirect($request->headers->get('referer'));
+        }
+
+        $items = $em->getRepository(Item::class)->findBy(['id' => $itemIds]);
+
+        $inventory = $items[0]->getInventory();
+
+        return $this->render('item/bulk_edit.html.twig', [
+            'items' => $items,
+            'inventory' => $inventory,
+        ]);
+    }
+
+    #[Route('/item/bulk-update', name: 'app_item_bulk_update', methods: ['POST'])]
+    public function bulkUpdate(Request $request, EntityManagerInterface $em): Response
+    {
+        $itemIds = $request->request->all('item_ids');
+        $items = $em->getRepository(Item::class)->findBy(['id' => $itemIds]);
+
+        foreach ($items as $item) {
+            $types = ['String', 'Int', 'Bool', 'Text'];
+            foreach ($types as $type) {
+                for ($i = 1; $i <= 3; $i++) {
+                    $fieldName = "custom_" . strtolower($type) . $i;
+                    $value = $request->request->get($fieldName);
+
+                    if ($value !== null && $value !== '') {
+                        $setter = "set" . $type . "Val" . $i;
+
+                        if ($type === 'Bool') {
+                            $item->$setter($value === '1');
+                        } else {
+                            $item->$setter($value);
+                        }
+                    }
+                }
+            }
+        }
+
+        $em->flush();
+        $this->addFlash('success', count($items) . ' items updated.');
+
+        return $this->redirectToRoute('app_inventory_show', ['id' => $items[0]->getInventory()->getId()]);
+    }
 }

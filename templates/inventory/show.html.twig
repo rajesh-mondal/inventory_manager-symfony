@@ -52,6 +52,18 @@
         font-weight: 600;
         color: #111827;
     }
+
+    #item-toolbar {
+        transition: all 0.3s ease;
+        border-bottom: 2px solid #111827;
+        position: sticky;
+        top: 0;
+        z-index: 100;
+    }
+
+    .item-row.selected {
+        background-color: #f0f7ff !important;
+    }
 </style>
 
 <div class="container py-4">
@@ -84,83 +96,150 @@
     </div>
 
     <div class="table-container">
-        <table class="table mb-0">
-            <thead>
-                <tr>
-                    <th style="min-width: 105px;">Image</th>
-                    <th style="min-width: 140px;">Custom ID</th>
-                    <th style="min-width: 200px;">Item Name</th>
+        <div id="item-toolbar" class="bg-dark text-white p-3 d-none d-flex justify-content-between align-items-center mb-0" style="border-top-left-radius: 12px; border-top-right-radius: 12px;">
+            <span id="selected-count" class="small fw-bold">0 items selected</span>
+            <div class="d-flex gap-2">
+                <button type="button" onclick="bulkAction('edit')" class="btn btn-sm btn-light fw-bold">Edit</button>
+                <button type="button" onclick="bulkAction('delete')" class="btn btn-sm btn-danger fw-bold">Delete</button>
+            </div>
+        </div>
+        <form id="bulk-form" method="POST">
+            <table class="table mb-0">
+                <thead>
+                    <tr>
+                        <th style="width: 40px;">
+                            <input type="checkbox" id="select-all" class="form-check-input">
+                        </th>
+                        <th style="min-width: 105px;">Image</th>
+                        <th style="min-width: 140px;">Custom ID</th>
+                        <th style="min-width: 200px;">Item Name</th>
 
-                    {% for type in ['String', 'Int', 'Bool', 'Text'] %}
-                        {% for i in 1..3 %}
-                            {% set state = attribute(inventory, 'custom' ~ type ~ i ~ 'State') %}
-                            {% if state %}
-                                <th>{{ attribute(inventory, 'custom' ~ type ~ i ~ 'Name') }}</th>
-                            {% endif %}
+                        {% for type in ['String', 'Int', 'Bool', 'Text'] %}
+                            {% for i in 1..3 %}
+                                {% set state = attribute(inventory, 'custom' ~ type ~ i ~ 'State') %}
+                                {% if state %}
+                                    <th>{{ attribute(inventory, 'custom' ~ type ~ i ~ 'Name') }}</th>
+                                {% endif %}
+                            {% endfor %}
                         {% endfor %}
-                    {% endfor %}
 
-                    <th class="text-end">Created</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for item in inventory.items %}
-                <tr class="align-middle">
-                    <td>
-                        {% if item.image %}
-                            <img src="{{ asset('uploads/items/' ~ item.image) }}"
-                                 alt="{{ item.name }}"
-                                 style="width: 50px; height: 50px; object-fit: cover; border-radius: 8px;"
-                                 class="me-2">
-                        {% else %}
-                            <div class="bg-light d-inline-block text-center me-2" style="width: 50px; height: 50px; border-radius: 8px; line-height: 50px;">
-                                <i class="bi bi-image text-muted"></i>
+                        <th class="text-end">Created</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in inventory.items %}
+                    <tr class="align-middle item-row">
+                        <td>
+                            <input type="checkbox" name="item_ids[]" value="{{ item.id }}" class="form-check-input item-checkbox">
+                        </td>
+                        <td>
+                            {% if item.image %}
+                                <img src="{{ asset('uploads/items/' ~ item.image) }}"
+                                     alt="{{ item.name }}"
+                                     style="width: 50px; height: 50px; object-fit: cover; border-radius: 8px;"
+                                     class="me-2">
+                            {% else %}
+                                <div class="bg-light d-inline-block text-center me-2" style="width: 50px; height: 50px; border-radius: 8px; line-height: 50px;">
+                                    <i class="bi bi-image text-muted"></i>
+                                </div>
+                            {% endif %}
+                            {# <code class="custom-id-badge">{{ item.customId }}</code> #}
+                        </td>
+                        <td>
+                            <code class="custom-id-badge">{{ item.customId }}</code>
+                        </td>
+                        <td>
+                            <span class="item-name">{{ item.name }}</span>
+                        </td>
+
+                        {% for type in ['String', 'Int', 'Bool', 'Text'] %}
+                            {% for i in 1..3 %}
+                                {% if attribute(inventory, 'custom' ~ type ~ i ~ 'State') %}
+                                    <td>
+                                        {% set val = attribute(item, type|lower ~ 'Val' ~ i) %}
+                                        {% if type == 'Bool' %}
+                                            <span class="badge {{ val ? 'bg-success' : 'bg-light text-muted' }} rounded-circle p-1">
+                                                <i class="bi {{ val ? 'bi-check' : 'bi-x' }}"></i>
+                                            </span>
+                                        {% else %}
+                                            {{ val|default('-') }}
+                                        {% endif %}
+                                    </td>
+                                {% endif %}
+                            {% endfor %}
+                        {% endfor %}
+
+                        <td class="text-end text-muted small">
+                            {{ item.createdAt|date('M d, Y') }}
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="20" class="text-center py-5">
+                            <div class="py-4">
+                                <p class="text-muted mb-3">This inventory is currently empty.</p>
+                                <a href="{{ path('app_item_new', {id: inventory.id}) }}" class="btn btn-sm btn-outline-dark" style="border-radius: 6px;">
+                                    Add your first item
+                                </a>
                             </div>
-                        {% endif %}
-                        {# <code class="custom-id-badge">{{ item.customId }}</code> #}
-                    </td>
-                    <td>
-                        <code class="custom-id-badge">{{ item.customId }}</code>
-                    </td>
-                    <td>
-                        <span class="item-name">{{ item.name }}</span>
-                    </td>
-
-                    {% for type in ['String', 'Int', 'Bool', 'Text'] %}
-                        {% for i in 1..3 %}
-                            {% if attribute(inventory, 'custom' ~ type ~ i ~ 'State') %}
-                                <td>
-                                    {% set val = attribute(item, type|lower ~ 'Val' ~ i) %}
-                                    {% if type == 'Bool' %}
-                                        <span class="badge {{ val ? 'bg-success' : 'bg-light text-muted' }} rounded-circle p-1">
-                                            <i class="bi {{ val ? 'bi-check' : 'bi-x' }}"></i>
-                                        </span>
-                                    {% else %}
-                                        {{ val|default('-') }}
-                                    {% endif %}
-                                </td>
-                            {% endif %}
-                        {% endfor %}
+                        </td>
+                    </tr>
                     {% endfor %}
-
-                    <td class="text-end text-muted small">
-                        {{ item.createdAt|date('M d, Y') }}
-                    </td>
-                </tr>
-                {% else %}
-                <tr>
-                    <td colspan="20" class="text-center py-5">
-                        <div class="py-4">
-                            <p class="text-muted mb-3">This inventory is currently empty.</p>
-                            <a href="{{ path('app_item_new', {id: inventory.id}) }}" class="btn btn-sm btn-outline-dark" style="border-radius: 6px;">
-                                Add your first item
-                            </a>
-                        </div>
-                    </td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+                </tbody>
+            </table>
+        </form>
     </div>
 </div>
+{% endblock %}
+
+{% block javascripts %}
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const selectAll = document.getElementById('select-all');
+        const checkboxes = document.querySelectorAll('.item-checkbox');
+        const toolbar = document.getElementById('item-toolbar');
+        const countDisplay = document.getElementById('selected-count');
+        const form = document.getElementById('bulk-form');
+
+        function updateToolbar() {
+            const checkedCount = document.querySelectorAll('.item-checkbox:checked').length;
+            if (checkedCount > 0) {
+                toolbar.classList.remove('d-none');
+                countDisplay.innerText = `${checkedCount} item(s) selected`;
+            } else {
+                toolbar.classList.add('d-none');
+            }
+        }
+
+        selectAll.addEventListener('change', function() {
+            checkboxes.forEach(cb => cb.checked = selectAll.checked);
+            updateToolbar();
+        });
+
+        checkboxes.forEach(cb => {
+            cb.addEventListener('change', function() {
+                const row = this.closest('tr');
+                if (this.checked) {
+                    row.classList.add('selected');
+                } else {
+                    row.classList.remove('selected');
+                }
+                updateToolbar();
+            });
+        });
+    });
+
+    function bulkAction(type) {
+        const form = document.getElementById('bulk-form');
+        if (type === 'delete') {
+            if (confirm('Are you sure you want to delete selected items?')) {
+                form.action = "{{ path('app_item_bulk_delete') }}";
+                form.submit();
+            }
+        } else if (type === 'edit') {
+            form.action = "{{ path('app_item_bulk_edit') }}";
+            form.submit();
+        }
+    }
+    </script>
 {% endblock %}
