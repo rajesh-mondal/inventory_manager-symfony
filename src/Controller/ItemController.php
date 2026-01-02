@@ -122,19 +122,20 @@ class ItemController extends AbstractController
     public function bulkEdit(Request $request, EntityManagerInterface $em): Response
     {
         $itemIds = $request->request->all('item_ids');
-
-        if (!$itemIds) {
-            $this->addFlash('warning', 'No items selected to edit.');
-            return $this->redirect($request->headers->get('referer'));
-        }
+        if (!$itemIds) return $this->redirect($request->headers->get('referer'));
 
         $items = $em->getRepository(Item::class)->findBy(['id' => $itemIds]);
-
         $inventory = $items[0]->getInventory();
+
+        // Check if it's a single item to pre-fill data
+        $isSingle = count($items) === 1;
+        $itemData = $isSingle ? $items[0] : null;
 
         return $this->render('item/bulk_edit.html.twig', [
             'items' => $items,
             'inventory' => $inventory,
+            'isSingle' => $isSingle,
+            'itemData' => $itemData,
         ]);
     }
 

@@ -32,27 +32,40 @@
                     <span class="section-label">Update Fields</span>
                     <p class="text-muted small mb-4">Leave fields empty if you do not want to change their current values.</p>
 
+                    {% if not isSingle %}
+                        <div class="alert alert-warning border-0 shadow-sm d-flex align-items-center mb-4" style="border-radius: 10px;">
+                            <i class="bi bi-exclamation-triangle-fill me-3 fs-4"></i>
+                            <div>
+                                <strong>Bulk Edit Warning:</strong> You are editing {{ items|length }} items.
+                                Only fields you modify will be updated across all selected items.
+                            </div>
+                        </div>
+                    {% endif %}
+
                     <div class="row g-4">
                         {% for type in ['String', 'Int', 'Bool', 'Text'] %}
                             {% for i in 1..3 %}
                                 {% set stateMethod = 'custom' ~ type ~ i ~ 'State' %}
                                 {% set nameMethod = 'custom' ~ type ~ i ~ 'Name' %}
+                                {% set valProperty = type|lower ~ 'Val' ~ i %}
 
                                 {% if attribute(inventory, stateMethod) %}
                                     <div class="col-md-6">
                                         <label class="form-label fw-bold small">{{ attribute(inventory, nameMethod) }}</label>
 
+                                        {% set currentVal = isSingle ? attribute(itemData, valProperty) : '' %}
+
                                         {% if type == 'String' %}
-                                            <input type="text" name="custom_string{{ i }}" class="form-control" placeholder="New value...">
+                                            <input type="text" name="custom_string{{ i }}" class="form-control" value="{{ currentVal }}">
                                         {% elseif type == 'Int' %}
-                                            <input type="number" name="custom_int{{ i }}" class="form-control" placeholder="New number...">
+                                            <input type="number" name="custom_int{{ i }}" class="form-control" value="{{ currentVal }}">
                                         {% elseif type == 'Text' %}
-                                            <textarea name="custom_text{{ i }}" class="form-control" rows="2"></textarea>
+                                            <textarea name="custom_text{{ i }}" class="form-control" rows="2">{{ currentVal }}</textarea>
                                         {% elseif type == 'Bool' %}
                                             <select name="custom_bool{{ i }}" class="form-select">
-                                                <option value="">Keep Original</option>
-                                                <option value="1">Yes (True)</option>
-                                                <option value="0">No (False)</option>
+                                                <option value="" {% if not isSingle %}selected{% endif %}>Keep Original</option>
+                                                <option value="1" {% if isSingle and currentVal == true %}selected{% endif %}>Yes (True)</option>
+                                                <option value="0" {% if isSingle and currentVal == false %}selected{% endif %}>No (False)</option>
                                             </select>
                                         {% endif %}
                                     </div>
