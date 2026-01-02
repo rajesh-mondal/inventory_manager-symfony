@@ -2,12 +2,15 @@
 
 namespace App\Controller;
 
+use App\Entity\Item;
 use App\Entity\Inventory;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
+use Knp\Component\Pager\PaginatorInterface;
+use App\Repository\ItemRepository;
 
 class InventoryController extends AbstractController
 {
@@ -81,10 +84,23 @@ class InventoryController extends AbstractController
     }
 
     #[Route('/inventory/{id}', name: 'app_inventory_show')]
-    public function show(Inventory $inventory): Response
+    public function show(Inventory $inventory, Request $request, PaginatorInterface $paginator, EntityManagerInterface $em): Response
     {
+        $queryBuilder = $em->getRepository(Item::class)
+        ->createQueryBuilder('i')
+        ->where('i.inventory = :inv')
+        ->setParameter('inv', $inventory)
+        ->orderBy('i.createdAt', 'DESC');
+
+        $pagination = $paginator->paginate(
+            $queryBuilder,
+            $request->query->getInt('page', 1),
+            10
+        );
+
         return $this->render('inventory/show.html.twig', [
             'inventory' => $inventory,
+            'pagination' => $pagination,
         ]);
     }
 }
