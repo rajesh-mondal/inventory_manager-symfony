@@ -55,13 +55,31 @@
     .inventory-row.selected {
         background-color: #f0f7ff !important;
     }
+
+    .minimal-pagination a,
+    .minimal-pagination span {
+        padding: 4px 10px;
+        text-decoration: none;
+        color: #666;
+        border-radius: 4px;
+    }
+
+    .minimal-pagination a:hover {
+        background-color: #f0f0f0;
+        color: #000;
+    }
+
+    .minimal-pagination .current {
+        background: #000;
+        color: #fff !important;
+    }
 </style>
 
 <div class="container py-4">
     <div class="d-flex justify-content-between align-items-center mb-5">
         <div>
             <h1 class="fw-bold tracking-tight text-dark mb-1">Inventories</h1>
-            <p class="text-muted">Total collections: {{ inventories|length }}</p>
+            <p class="text-muted">Total collections: {{ pagination.getTotalItemCount }}</p>
         </div>
         <a href="{{ path('app_inventory_new') }}" class="btn btn-dark px-4 py-2 fw-bold" style="border-radius: 8px;">
             <i class="bi bi-plus"></i> New Inventory
@@ -88,7 +106,7 @@
                     </tr>
                 </thead>
                 <tbody>
-                    {% for inv in inventories %}
+                    {% for inv in pagination %}
                     <tr class="align-middle inventory-row">
                         <td><input type="checkbox" name="ids[]" value="{{ inv.id }}" class="form-check-input inventory-checkbox"></td>
                         <td>
@@ -103,6 +121,12 @@
                     {% endfor %}
                 </tbody>
             </table>
+        </div>
+
+        <div class="d-flex justify-content-center mt-5 mb-4 small">
+            <div class="minimal-pagination d-flex gap-1 align-items-center">
+                {{ knp_pagination_render(pagination) }}
+            </div>
         </div>
     </form>
 </div>

@@ -69,17 +69,24 @@ class InventoryController extends AbstractController
     }
 
     #[Route('/my-inventories', name: 'app_my_inventories')]
-    public function index(\App\Repository\InventoryRepository $repo): Response
+    public function index(\App\Repository\InventoryRepository $repo, PaginatorInterface $paginator, Request $request): Response
     {
         $this->denyAccessUnlessGranted('IS_AUTHENTICATED_FULLY');
 
-        $myInventories = $repo->findBy(
-            ['creator' => $this->getUser()],
-            ['id' => 'DESC']
+        $query = $repo->createQueryBuilder('i')
+            ->where('i.creator = :user')
+            ->setParameter('user', $this->getUser())
+            ->orderBy('i.id', 'DESC')
+            ->getQuery();
+
+        $pagination = $paginator->paginate(
+            $query,
+            $request->query->getInt('page', 1),
+            10
         );
 
         return $this->render('inventory/index.html.twig', [
-            'inventories' => $myInventories,
+            'pagination' => $pagination,
         ]);
     }
 
