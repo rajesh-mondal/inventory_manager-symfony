@@ -11,7 +11,21 @@
         border: 1px solid #e5e7eb;
         box-shadow: 0 1px 3px rgba(0,0,0,0.1);
         overflow: hidden;
+        position: relative;
     }
+
+    .selection-bar {
+        display: none;
+        position: absolute;
+        top: 0; left: 0; right: 0;
+        background: #1f2937;
+        color: white;
+        padding: 0.85rem 1.5rem;
+        z-index: 10;
+        align-items: center;
+        justify-content: space-between;
+    }
+
     .table thead th {
         background-color: #fdfdfd;
         text-transform: uppercase;
@@ -22,35 +36,11 @@
         border-bottom: 1px solid #e5e7eb;
         padding: 1.25rem 1.5rem;
     }
-    .table tbody td {
-        padding: 1.25rem 1.5rem;
-        vertical-align: middle;
-        border-bottom: 1px solid #f3f4f6;
-    }
-    .inventory-link {
-        font-weight: 600;
-        color: #111827;
-        text-decoration: none;
-        font-size: 1rem;
-    }
+    .table tbody td { padding: 1.25rem 1.5rem; vertical-align: middle; border-bottom: 1px solid #f3f4f6; }
+    .inventory-link { font-weight: 600; color: #111827; text-decoration: none; font-size: 1rem; }
     .inventory-link:hover { color: #2563eb; }
-    .description-text { color: #6b7280; font-size: 0.875rem; }
-    .badge-category {
-        background-color: #f3f4f6;
-        color: #374151;
-        padding: 0.35rem 0.75rem;
-        border-radius: 6px;
-        font-size: 0.8rem;
-        font-weight: 500;
-    }
-    .item-count {
-        background: #eff6ff;
-        color: #1d4ed8;
-        padding: 0.25rem 0.6rem;
-        border-radius: 4px;
-        font-weight: 700;
-        font-size: 0.85rem;
-    }
+    .badge-category { background-color: #f3f4f6; color: #374151; padding: 0.35rem 0.75rem; border-radius: 6px; font-size: 0.8rem; font-weight: 500; }
+    .item-count { background: #eff6ff; color: #1d4ed8; padding: 0.25rem 0.6rem; border-radius: 4px; font-weight: 700; font-size: 0.85rem; }
 </style>
 
 <div class="container py-4">
@@ -64,42 +54,66 @@
         </a>
     </div>
 
-    <div class="table-container">
-        <table class="table mb-0">
-            <thead>
-                <tr>
-                    <th style="width: 50%;">Name</th>
-                    <th style="width: 30%;">Category</th>
-                    <th class="text-end" style="width: 20%;">Stored Items</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for inv in inventories %}
-                <tr class="align-middle">
-                    <td>
-                        <div class="d-flex flex-column">
-                            <a href="{{ path('app_inventory_show', {id: inv.id}) }}" class="inventory-link">
-                                {{ inv.title }}
-                            </a>
-                            <span class="description-text mt-1">{{ inv.description|default('No description provided.') }}</span>
-                        </div>
-                    </td>
-                    <td>
-                        <span class="badge-category">{{ inv.category }}</span>
-                    </td>
-                    <td class="text-end">
-                        <span class="item-count">{{ inv.items|length }}</span>
-                    </td>
-                </tr>
-                {% else %}
-                <tr>
-                    <td colspan="3" class="text-center py-5">
-                        <p class="text-muted mb-0">No inventories found. Start by creating one.</p>
-                    </td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-    </div>
+    <form id="bulk-form" method="POST">
+        <div class="table-container">
+            <div id="selection-bar" class="selection-bar">
+                <span class="fw-bold"><span id="selected-count">0</span> item(s) selected</span>
+                <div class="d-flex gap-2">
+                    <button type="submit" formaction="{{ path('app_inventory_bulk_edit') }}" class="btn btn-light btn-sm fw-bold px-3">Edit</button>
+                    <button type="submit" formaction="{{ path('app_inventory_bulk_delete') }}" class="btn btn-danger btn-sm fw-bold px-3" onclick="return confirm('Delete selected inventories?')">Delete</button>
+                </div>
+            </div>
+
+            <table class="table mb-0">
+                <thead>
+                    <tr>
+                        <th style="width: 50px;"><input type="checkbox" id="select-all" class="form-check-input"></th>
+                        <th style="width: 45%;">Name</th>
+                        <th style="width: 25%;">Category</th>
+                        <th class="text-end" style="width: 20%;">Stored Items</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for inv in inventories %}
+                    <tr class="align-middle">
+                        <td><input type="checkbox" name="ids[]" value="{{ inv.id }}" class="form-check-input inventory-checkbox"></td>
+                        <td>
+                            <div class="d-flex flex-column">
+                                <a href="{{ path('app_inventory_show', {id: inv.id}) }}" class="inventory-link">{{ inv.title }}</a>
+                                <span class="text-muted small mt-1">{{ inv.description|default('No description.') }}</span>
+                            </div>
+                        </td>
+                        <td><span class="badge-category">{{ inv.category }}</span></td>
+                        <td class="text-end"><span class="item-count">{{ inv.items|length }}</span></td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </form>
 </div>
+{% endblock %}
+
+{% block javascripts %}
+<script>
+    const selectAll = document.getElementById('select-all');
+    const checkboxes = document.querySelectorAll('.inventory-checkbox');
+    const selectionBar = document.getElementById('selection-bar');
+    const countDisplay = document.getElementById('selected-count');
+
+    function updateUI() {
+        const checked = document.querySelectorAll('.inventory-checkbox:checked');
+        countDisplay.textContent = checked.length;
+        selectionBar.style.display = checked.length > 0 ? 'flex' : 'none';
+    }
+
+    selectAll.addEventListener('change', () => {
+        checkboxes.forEach(cb => cb.checked = selectAll.checked);
+        updateUI();
+    });
+
+    checkboxes.forEach(cb => {
+        cb.addEventListener('change', updateUI);
+    });
+</script>
 {% endblock %}
