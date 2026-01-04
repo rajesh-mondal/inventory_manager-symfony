@@ -1,0 +1,96 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Settings: {{ inv.title }}{% endblock %}
+
+{% block body %}
+<style>
+    body { background-color: #f9fafb; }
+    .bulk-card {
+        background: #fff;
+        border-radius: 12px;
+        border: 1px solid #e5e7eb;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        padding: 2rem;
+    }
+    .inventory-badge {
+        background: #f3f4f6;
+        color: #111827;
+        padding: 4px 10px;
+        border-radius: 6px;
+        font-size: 0.8rem;
+        border: 1px solid #e5e7eb;
+        margin-right: 5px;
+        margin-bottom: 5px;
+        display: inline-block;
+    }
+    .section-label {
+        font-size: 0.75rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        color: #9ca3af;
+        letter-spacing: 0.05em;
+        margin-bottom: 1.5rem;
+        display: block;
+    }
+</style>
+
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+            <h1 class="fw-bold text-dark mb-4">Inventory Settings</h1>
+
+            <div class="bulk-card mb-4">
+                <span class="section-label">Selected Inventory</span>
+                <div>
+                    <div class="inventory-badge">
+                        <span class="fw-bold">{{ inv.category }}</span>: {{ inv.title }}
+                        <small class="text-muted">[{{ inv.tags|join(', ') }}]</small>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bulk-card">
+                <form method="POST">
+                    <span class="section-label">Update Fields</span>
+                    <p class="text-muted small mb-4">Modify the fields below to update your inventory settings.</p>
+
+                    <div class="row g-4">
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold small">Title (View Only)</label>
+                            <input type="text" class="form-control bg-light" value="{{ inv.title }}" readonly>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold small">Category</label>
+                            <input type="text" name="category" class="form-control" value="{{ inv.category }}" placeholder="Category Name">
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold small">Tags (Comma separated)</label>
+                            <input type="text" name="tags" class="form-control" value="{{ inv.tags|join(', ') }}" placeholder="e.g. electronics, home, storage">
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold small">Visibility</label>
+                            <select name="is_public" class="form-select">
+                                <option value="1" {% if inv.isPublic %}selected{% endif %}>Public</option>
+                                <option value="0" {% if not inv.isPublic %}selected{% endif %}>Private</option>
+                            </select>
+                        </div>
+
+                        <div class="col-md-12">
+                            <label class="form-label fw-bold small">Description</label>
+                            <textarea name="description" class="form-control" rows="3" placeholder="Description">{{ inv.description }}</textarea>
+                        </div>
+                    </div>
+
+                    <div class="mt-5 pt-4 border-top d-flex justify-content-between">
+                        <a href="{{ path('app_inventory_show', {id: inv.id}) }}" class="btn btn-outline-secondary px-4">Cancel</a>
+                        <button type="submit" class="btn btn-dark px-5 fw-bold">Save Changes</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

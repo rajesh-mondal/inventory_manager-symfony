@@ -11,6 +11,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Knp\Component\Pager\PaginatorInterface;
 use App\Repository\ItemRepository;
+use App\Repository\InventoryRepository;
 
 class InventoryController extends AbstractController
 {
@@ -110,6 +111,35 @@ class InventoryController extends AbstractController
         return $this->render('inventory/show.html.twig', [
             'inventory' => $inventory,
             'pagination' => $pagination,
+        ]);
+    }
+
+    #[Route('/inventory/{id}/settings', name: 'app_inventory_settings', methods: ['GET', 'POST'])]
+    public function editSettings(int $id, Request $request, InventoryRepository $repo, EntityManagerInterface $em): Response
+    {
+        $inventory = $repo->find($id);
+
+        if (!$inventory) {
+            throw $this->createNotFoundException('Inventory not found');
+        }
+
+        if ($request->isMethod('POST')) {
+            $inventory->setCategory($request->request->get('category'));
+            $inventory->setDescription($request->request->get('description'));
+            $inventory->setIsPublic($request->request->get('is_public') === '1');
+
+            $tagsString = $request->request->get('tags', '');
+            $tagsArray = array_map('trim', explode(',', $tagsString));
+            $inventory->setTags($tagsArray);
+
+            $em->flush();
+
+            $this->addFlash('success', 'Settings updated successfully.');
+            return $this->redirectToRoute('app_inventory_show', ['id' => $id]);
+        }
+
+        return $this->render('inventory/settings.html.twig', [
+            'inv' => $inventory,
         ]);
     }
 
