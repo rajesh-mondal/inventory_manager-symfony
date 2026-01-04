@@ -26,8 +26,13 @@ class SearchController extends AbstractController
         }
 
         if ($query) {
-            $qb->andWhere('i.title LIKE :q OR i.description LIKE :q')
-               ->setParameter('q', '%' . $query . '%');
+            $qb->leftJoin('i.items', 'item')
+               ->andWhere('i.title LIKE :q
+                   OR i.description LIKE :q
+                   OR i.category LIKE :q
+                   OR item.name LIKE :q')
+               ->setParameter('q', '%' . $query . '%')
+               ->distinct();
         }
 
         $pagination = $paginator->paginate(

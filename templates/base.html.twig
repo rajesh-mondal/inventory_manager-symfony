@@ -20,32 +20,30 @@
         {% block stylesheets %}{% endblock %}
     </head>
     <body>
-        <nav class="navbar navbar-expand-lg navbar-dark bg-dark sticky-top mb-4">
+        <nav class="navbar navbar-expand-lg navbar-light bg-white border-bottom py-3">
             <div class="container">
-                <a class="navbar-brand fw-bold" href="">InventoryManager</a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-                <div class="collapse navbar-collapse" id="navbarNav">
-                    <ul class="navbar-nav ms-auto align-items-center">
-                        {% if app.user %}
-                            <li class="nav-item"><a class="nav-link text-white me-3" href="#">My Inventories</a></li>
-                            <li class="nav-item">
-                                <span class="badge bg-secondary me-3">{{ app.user.email }}</span>
-                            </li>
-                            {% if is_granted('ROLE_ADMIN') %}
-                                <span class="badge bg-danger">Logged in as ADMIN</span>
-                            {% elseif is_granted('ROLE_USER') %}
-                                <span class="badge bg-primary">Logged in as USER</span>
-                            {% endif %}
-                            <li class="nav-item">
-                                <a class="btn btn-outline-light btn-sm" href="{{ path('app_logout') }}">Logout</a>
-                            </li>
-                        {% else %}
-                            <li class="nav-item"><a class="nav-link" href="{{ path('app_login') }}">Login</a></li>
-                            <li class="nav-item"><a class="btn btn-primary ms-lg-3" href="{{ path('app_register') }}">Register</a></li>
-                        {% endif %}
-                    </ul>
+                <a class="navbar-brand fw-bold" href="{{ path('app_home') }}">InvManager</a>
+
+                <form action="{{ path('app_inventory_search') }}" method="GET" class="ms-auto d-none d-md-flex search-wrapper" style="width: 300px;">
+                    <div class="position-relative w-100">
+                        <i class="bi bi-search position-absolute top-50 start-0 translate-middle-y ms-3 text-muted"></i>
+                        <input type="text"
+                               name="q"
+                               class="form-control ps-5 border-0 bg-light"
+                               placeholder="Global search..."
+                               style="border-radius: 10px; font-size: 0.9rem;"
+                               value="{{ app.request.query.get('q') }}">
+                    </div>
+                </form>
+
+                <div class="ms-3 d-flex align-items-center">
+                    {% if app.user %}
+                        <a href="{{ path('app_my_inventories') }}" class="btn btn-sm btn-dark px-3 rounded-pill me-2">Dashboard</a>
+                        <a href="{{ path('app_logout') }}" class="text-muted small text-decoration-none">Logout</a>
+                    {% else %}
+                        <a href="{{ path('app_login') }}" class="text-muted small text-decoration-none me-3">Login</a>
+                        <a href="{{ path('app_register') }}" class="btn btn-sm btn-dark px-3 rounded-pill">Join Free</a>
+                    {% endif %}
                 </div>
             </div>
         </nav>

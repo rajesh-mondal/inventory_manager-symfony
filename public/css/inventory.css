@@ -27,9 +27,21 @@
 .search-input:focus {
     border-color: #111827;
     box-shadow: 0 0 0 3px rgba(17, 24, 39, 0.05);
-    width: 280px; /* Subtle expansion */
+    width: 280px;
 }
 
 .search-input::placeholder {
     color: #9ca3af;
+}
+
+.search-wrapper .form-control:focus {
+    background-color: #fff !important;
+    box-shadow: 0 0 0 4px rgba(0, 0, 0, 0.05);
+    border: 1px solid #dee2e6 !important;
+    width: 350px;
+    transition: all 0.3s ease;
+}
+
+.search-wrapper .form-control {
+    transition: all 0.3s ease;
 }
