@@ -1,0 +1,126 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Search Results{% endblock %}
+
+{% block body %}
+<style>
+    body { background-color: #f9fafb; }
+
+    .table-container {
+        background: #fff;
+        border-radius: 12px;
+        border: 1px solid #e5e7eb;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        overflow: hidden;
+    }
+
+    .table thead th {
+        background-color: #fdfdfd;
+        text-transform: uppercase;
+        font-size: 0.7rem;
+        font-weight: 700;
+        letter-spacing: 0.05em;
+        color: #9ca3af;
+        border-bottom: 1px solid #e5e7eb;
+        padding: 1.25rem 1.5rem;
+    }
+
+    .table tbody td {
+        padding: 1.25rem 1.5rem;
+        vertical-align: middle;
+        border-bottom: 1px solid #f3f4f6;
+    }
+
+    .inventory-link { font-weight: 600; color: #111827; text-decoration: none; font-size: 1rem; }
+    .inventory-link:hover { color: #2563eb; }
+
+    .badge-category { background-color: #f3f4f6; color: #374151; padding: 0.35rem 0.75rem; border-radius: 6px; font-size: 0.8rem; font-weight: 500; }
+    .item-count { background: #eff6ff; color: #1d4ed8; padding: 0.25rem 0.6rem; border-radius: 4px; font-weight: 700; font-size: 0.85rem; }
+
+    .extra-small {
+        font-size: 0.65rem;
+        padding: 0.25rem 0.5rem;
+        font-weight: 600;
+    }
+
+    .minimal-pagination a,
+    .minimal-pagination span {
+        padding: 4px 10px;
+        text-decoration: none;
+        color: #666;
+        border-radius: 4px;
+    }
+
+    .minimal-pagination .current {
+        background: #000;
+        color: #fff !important;
+    }
+</style>
+
+<div class="container py-4">
+    {# Matching Header Section #}
+    <div class="d-flex justify-content-between align-items-center mb-5">
+        <div>
+            <h3 class="fw-bold tracking-tight text-dark mb-1">
+                {% if currentTag %} Inventories tagged with #{{ currentTag }} {% else %} All Inventories {% endif %}
+            </h3>
+            <p class="text-muted">Total results: {{ pagination.getTotalItemCount }}</p>
+        </div>
+        <a href="{{ path('app_home') }}" class="btn btn-outline-dark px-4 py-2 fw-bold" style="border-radius: 8px;">
+            <i class="bi bi-house-door"></i> Back Home
+        </a>
+    </div>
+
+    <div class="table-container">
+        <table class="table mb-0">
+            <thead>
+                <tr>
+                    <th style="width: 35%;">Name</th>
+                    <th style="width: 25%;">Tags</th>
+                    <th style="width: 15%;">Category</th>
+                    <th class="text-end" style="width: 15%;">Stored Items</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for inv in pagination %}
+                <tr class="align-middle inventory-row">
+                    <td>
+                        <div class="d-flex flex-column">
+                            <a href="{{ path('app_inventory_show', {id: inv.id}) }}" class="inventory-link">{{ inv.title }}</a>
+                            <span class="text-muted small mt-1">{{ inv.description|default('No description.')|slice(0, 50) }}...</span>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="d-flex flex-wrap gap-1">
+                            {% for tag in inv.tags %}
+                                <a href="{{ path('app_inventory_search', {tag: tag}) }}"
+                                   class="badge rounded-pill bg-white text-muted border extra-small text-decoration-none">
+                                   #{{ tag }}
+                                </a>
+                            {% endfor %}
+                        </div>
+                    </td>
+                    <td><span class="badge-category">{{ inv.category }}</span></td>
+                    <td class="text-end">
+                        <span class="item-count">{{ inv.items|length }}</span>
+                    </td>
+                </tr>
+                {% endfor %}
+
+                {% if pagination.getTotalItemCount == 0 %}
+                    <tr>
+                        <td colspan="4" class="text-center py-5 text-muted">No inventories found with this tag.</td>
+                    </tr>
+                {% endif %}
+            </tbody>
+        </table>
+    </div>
+
+    {# Pagination matching your exact UI #}
+    <div class="d-flex justify-content-center mt-5 mb-4 small">
+        <div class="minimal-pagination d-flex gap-1 align-items-center">
+            {{ knp_pagination_render(pagination) }}
+        </div>
+    </div>
+</div>
+{% endblock %}
