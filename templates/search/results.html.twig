@@ -58,7 +58,6 @@
 </style>
 
 <div class="container py-4">
-    {# Matching Header Section #}
     <div class="d-flex justify-content-between align-items-center mb-5">
         <div>
             <h3 class="fw-bold tracking-tight text-dark mb-1">
@@ -69,6 +68,15 @@
         <a href="{{ path('app_home') }}" class="btn btn-outline-dark px-4 py-2 fw-bold" style="border-radius: 8px;">
             <i class="bi bi-house-door"></i> Back Home
         </a>
+    </div>
+
+    <div class="mb-4 d-flex justify-content-between">
+        <div></div>
+        <form action="{{ path('app_inventory_search') }}" method="GET" class="search-wrapper" style="max-width: 400px;">
+            <i class="bi bi-search search-icon"></i>
+            <input type="text" name="q" class="search-input" value="{{ searchQuery }}" placeholder="Search again...">
+            {% if currentTag %}<input type="hidden" name="tag" value="{{ currentTag }}">{% endif %}
+        </form>
     </div>
 
     <div class="table-container">
@@ -116,7 +124,6 @@
         </table>
     </div>
 
-    {# Pagination matching your exact UI #}
     <div class="d-flex justify-content-center mt-5 mb-4 small">
         <div class="minimal-pagination d-flex gap-1 align-items-center">
             {{ knp_pagination_render(pagination) }}

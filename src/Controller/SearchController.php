@@ -15,6 +15,7 @@ class SearchController extends AbstractController
     public function search(InventoryRepository $repo, PaginatorInterface $paginator, Request $request): Response
     {
         $tag = $request->query->get('tag');
+        $query = $request->query->get('q');
 
         $qb = $repo->createQueryBuilder('i')
             ->orderBy('i.id', 'DESC');
@@ -22,6 +23,11 @@ class SearchController extends AbstractController
         if ($tag) {
             $qb->andWhere('i.tags LIKE :tag')
                ->setParameter('tag', '%"' . $tag . '"%');
+        }
+
+        if ($query) {
+            $qb->andWhere('i.title LIKE :q OR i.description LIKE :q')
+               ->setParameter('q', '%' . $query . '%');
         }
 
         $pagination = $paginator->paginate(
@@ -32,7 +38,8 @@ class SearchController extends AbstractController
 
         return $this->render('search/results.html.twig', [
             'pagination' => $pagination,
-            'currentTag' => $tag
+            'currentTag' => $tag,
+            'searchQuery' => $query
         ]);
     }
 }
