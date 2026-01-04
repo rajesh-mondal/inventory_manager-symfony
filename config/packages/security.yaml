@@ -39,10 +39,22 @@ security:
             # https://symfony.com/doc/current/security/impersonating_user.html
             # switch_user: true
 
-    # Note: Only the *first* matching rule is applied
+    role_hierarchy:
+        # This ensures Admins automatically have all User permissions
+        ROLE_ADMIN: ROLE_USER
+
     access_control:
-        # - { path: ^/admin, roles: ROLE_ADMIN }
-        # - { path: ^/profile, roles: ROLE_USER }
+        # Blocks creation for anyone not logged in
+        - { path: ^/inventory/new, roles: ROLE_USER }
+        - { path: ^/item/new, roles: ROLE_USER }
+
+        # Protects editing and deleting routes
+        # This ensures guests (non-auth) can't even reach the "Edit" page
+        - { path: ^/inventory/.+/edit, roles: ROLE_USER }
+        - { path: ^/inventory/.+/delete, roles: ROLE_USER }
+
+        # Admin Panel
+        - { path: ^/admin, roles: ROLE_ADMIN }
 
 when@test:
     security:

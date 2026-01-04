@@ -32,6 +32,11 @@
                             <li class="nav-item">
                                 <span class="badge bg-secondary me-3">{{ app.user.email }}</span>
                             </li>
+                            {% if is_granted('ROLE_ADMIN') %}
+                                <span class="badge bg-danger">Logged in as ADMIN</span>
+                            {% elseif is_granted('ROLE_USER') %}
+                                <span class="badge bg-primary">Logged in as USER</span>
+                            {% endif %}
                             <li class="nav-item">
                                 <a class="btn btn-outline-light btn-sm" href="{{ path('app_logout') }}">Logout</a>
                             </li>
