@@ -38,7 +38,10 @@
 
                 <div class="ms-3 d-flex align-items-center">
                     {% if app.user %}
-                        <a href="{{ path('app_my_inventories') }}" class="btn btn-sm btn-dark px-3 rounded-pill me-2">Dashboard</a>
+                        <a href="{{ path('app_my_inventories') }}" class="btn btn-sm btn-dark px-3 rounded-pill me-2">My Inventories</a>
+                        {% if is_granted('ROLE_ADMIN') %}
+                            <a href="{{ path('app_admin_users') }}" class="btn btn-sm btn-outline-dark px-3 rounded-pill me-2">Dashboard</a>
+                        {% endif %}
                         <a href="{{ path('app_logout') }}" class="text-muted small text-decoration-none">Logout</a>
                     {% else %}
                         <a href="{{ path('app_login') }}" class="text-muted small text-decoration-none me-3">Login</a>
