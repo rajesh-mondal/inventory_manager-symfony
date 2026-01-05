@@ -1,0 +1,181 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}User Management{% endblock %}
+
+{% block body %}
+<style>
+    body { background-color: #f9fafb; }
+
+    .table-container {
+        background: #fff;
+        border-radius: 12px;
+        border: 1px solid #e5e7eb;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        overflow: hidden;
+    }
+
+    #selection-bar {
+        transition: all 0.3s ease;
+        position: sticky;
+        top: 0;
+        z-index: 100;
+        background: #111827;
+        color: white;
+        padding: 1rem 1.5rem;
+        display: none;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .table thead th {
+        background-color: #fdfdfd;
+        text-transform: uppercase;
+        font-size: 0.7rem;
+        font-weight: 700;
+        letter-spacing: 0.05em;
+        color: #9ca3af;
+        border-bottom: 1px solid #e5e7eb;
+        padding: 1.25rem 1.5rem;
+    }
+
+    .table tbody td {
+        padding: 1.25rem 1.5rem;
+        vertical-align: middle;
+        border-bottom: 1px solid #f3f4f6;
+        font-size: 0.9rem;
+    }
+
+    .badge-role {
+        background-color: #f3f4f6;
+        color: #374151;
+        padding: 0.35rem 0.75rem;
+        border-radius: 6px;
+        font-size: 0.8rem;
+        font-weight: 500;
+    }
+
+    .badge-admin { background: #eff6ff; color: #1d4ed8; border: 1px solid #dbeafe; }
+    .badge-blocked { background: #fef2f2; color: #dc2626; border: 1px solid #fee2e2; }
+
+    .user-row.selected { background-color: #f0f7ff !important; }
+
+    .extra-small {
+        font-size: 0.65rem;
+        padding: 0.25rem 0.5rem;
+        font-weight: 600;
+        text-transform: uppercase;
+    }
+
+    .user-name {
+        font-weight: 600;
+        color: #111827;
+        text-decoration: none;
+        font-size: 0.9rem;
+    }
+</style>
+
+<div class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-5">
+        <div>
+            <h1 class="fw-bold tracking-tight text-dark mb-1">User Management</h1>
+            <p class="text-muted small">Manage accounts, roles, and access permissions.</p>
+        </div>
+    </div>
+
+    <form id="bulk-form" method="POST" action="{{ path('app_admin_users_bulk') }}">
+        <div class="table-container">
+            <div id="selection-bar">
+                <span class="small fw-bold"><span id="selected-count">0</span> user(s) selected</span>
+                <div class="d-flex gap-2">
+                    <button type="submit" name="action" value="make_admin" class="btn btn-sm btn-light fw-bold px-3">Make Admin</button>
+                    <button type="submit" name="action" value="remove_admin" class="btn btn-sm btn-outline-light fw-bold px-3">Remove Admin</button>
+                    <button type="submit" name="action" value="block" class="btn btn-sm btn-warning fw-bold px-3">Block</button>
+                    <button type="submit" name="action" value="unblock" class="btn btn-sm btn-info fw-bold px-3">Unblock</button>
+                    <button type="submit" name="action" value="delete" class="btn btn-sm btn-danger fw-bold px-3" onclick="return confirm('Permanently delete selected users?')">Delete</button>
+                </div>
+            </div>
+
+            <table class="table mb-0">
+                <thead>
+                    <tr>
+                        <th style="width: 50px;"><input type="checkbox" id="select-all" class="form-check-input"></th>
+                        <th style="width: 30%;">User</th>
+                        <th style="width: 30%;">Email</th>
+                        <th style="width: 25%;">Roles</th>
+                        <th class="text-end" style="width: 15%;">Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for user in users %}
+                    <tr class="align-middle user-row">
+                        <td><input type="checkbox" name="ids[]" value="{{ user.id }}" class="form-check-input user-checkbox"></td>
+                        <td>
+                            <div class="d-flex align-items-center gap-2">
+                                <span class="user-name">{{ user.email|split('@')[0]|capitalize }}</span>
+
+                                {% if user == app.user %}
+                                    <span class="badge bg-dark extra-small">You</span>
+                                {% endif %}
+                            </div>
+                        </td>
+                        <td class="text-muted small">{{ user.email }}</td>
+                        <td>
+                            <div class="d-flex flex-wrap gap-1">
+                                {% for role in user.roles %}
+                                    {% if role != 'ROLE_USER' %}
+                                        <span class="badge-role {% if role == 'ROLE_ADMIN' %}badge-admin{% elseif role == 'ROLE_BLOCKED' %}badge-blocked{% endif %}">
+                                            {{ role|replace({'ROLE_': ''})|title }}
+                                        </span>
+                                    {% endif %}
+                                {% endfor %}
+                                <span class="badge-role">User</span>
+                            </div>
+                        </td>
+                        <td class="text-end">
+                            {% if 'ROLE_BLOCKED' in user.roles %}
+                                <span class="badge rounded-pill bg-danger d-inline-block" style="width: 8px; height: 8px;" title="Blocked"></span>
+                                <span class="small text-danger fw-bold ms-1">Blocked</span>
+                            {% else %}
+                                <span class="badge rounded-pill bg-success d-inline-block" style="width: 8px; height: 8px;" title="Active"></span>
+                                <span class="small text-success fw-bold ms-1">Active</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </form>
+</div>
+{% endblock %}
+
+{% block javascripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const selectAll = document.getElementById('select-all');
+        const checkboxes = document.querySelectorAll('.user-checkbox');
+        const selectionBar = document.getElementById('selection-bar');
+        const countDisplay = document.getElementById('selected-count');
+
+        function updateUI() {
+            const checked = document.querySelectorAll('.user-checkbox:checked');
+            const checkedCount = checked.length;
+
+            countDisplay.textContent = checkedCount;
+            selectionBar.style.display = checkedCount > 0 ? 'flex' : 'none';
+
+            checkboxes.forEach(cb => {
+                const row = cb.closest('tr');
+                cb.checked ? row.classList.add('selected') : row.classList.remove('selected');
+            });
+        }
+
+        selectAll.addEventListener('change', () => {
+            checkboxes.forEach(cb => cb.checked = selectAll.checked);
+            updateUI();
+        });
+
+        checkboxes.forEach(cb => cb.addEventListener('change', updateUI));
+    });
+</script>
+{% endblock %}
