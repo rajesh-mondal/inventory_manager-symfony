@@ -15,6 +15,36 @@
             .navbar { box-shadow: 0 2px 4px rgba(0,0,0,.08); }
             .card { border: none; box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15); border-radius: 12px; }
             .btn-primary { border-radius: 8px; padding: 10px 20px; font-weight: 600; }
+
+            .nav-link-custom {
+                font-size: 0.85rem;
+                font-weight: 500;
+                color: #6c757d;
+                text-decoration: none;
+                transition: color 0.2s ease-in-out;
+                padding: 0.5rem 0.75rem;
+                border-radius: 6px;
+            }
+
+            .nav-link-custom:hover {
+                color: #000;
+                background-color: #f8f9fa;
+            }
+
+            .nav-link-custom.active {
+                color: #000;
+                font-weight: 700;
+            }
+
+            .logout-link {
+                font-size: 0.8rem;
+                color: #adb5bd;
+            }
+
+            .logout-link:hover {
+                color: #dc3545;
+                background-color: transparent;
+            }
         </style>
 
         {% block stylesheets %}{% endblock %}
@@ -25,35 +55,31 @@
                 <div class="d-flex align-items-center">
                     <a class="navbar-brand fw-bold mb-0" href="{{ path('app_home') }}">InvManager</a>
 
-                    <div class="ms-4 d-none d-md-flex align-items-center">
-                        <a href="{{ path('app_home') }}" class="btn btn-sm btn-dark px-3 rounded-pill me-2">Home</a>
+                    <div class="ms-4 d-none d-md-flex align-items-center navbar-nav-links">
+                        <a href="{{ path('app_home') }}" class="nav-link-custom {{ app.request.attributes.get('_route') == 'app_home' ? 'active' : '' }}">Home</a>
+
                         {% if is_granted('ROLE_USER') %}
-                            <a href="{{ path('app_my_inventories') }}" class="btn btn-sm btn-dark px-3 rounded-pill">My Inventories</a>
+                            <a href="{{ path('app_my_inventories') }}" class="nav-link-custom {{ app.request.attributes.get('_route') == 'app_my_inventories' ? 'active' : '' }}">My Inventories</a>
                         {% endif %}
                     </div>
                 </div>
 
                 <div class="ms-auto d-flex align-items-center">
                     <form action="{{ path('app_inventory_search') }}" method="GET" class="ms-auto d-none d-md-flex search-wrapper" style="width: 300px;">
-                        <div class="position-relative w-95">
+                        <div class="position-relative w-100">
                             <i class="bi bi-search position-absolute top-50 start-0 translate-middle-y ms-3 text-muted"></i>
-                            <input type="text"
-                                   name="q"
-                                   class="form-control ps-5 border-0 bg-light"
-                                   placeholder="Global search..."
-                                   style="border-radius: 10px; font-size: 0.9rem;"
-                                   value="{{ app.request.query.get('q') }}">
+                            <input type="text" name="q" class="form-control ps-5 border-0 bg-light" placeholder="Global search..." style="border-radius: 10px; font-size: 0.9rem;" value="{{ app.request.query.get('q') }}">
                         </div>
                     </form>
 
-                    <div class="d-flex align-items-center">
+                    <div class="d-flex align-items-center ms-3">
                         {% if app.user %}
                             {% if is_granted('ROLE_ADMIN') %}
                                 <a href="{{ path('app_admin_users') }}" class="btn btn-sm btn-outline-dark px-3 rounded-pill me-3">Admin Dashboard</a>
                             {% endif %}
-                            <a href="{{ path('app_logout') }}" class="btn btn-sm btn-outline-dark px-3 rounded-pill">Logout</a>
+                            <a href="{{ path('app_logout') }}" class="nav-link-custom logout-link">Logout</a>
                         {% else %}
-                            <a href="{{ path('app_login') }}" class="btn btn-sm btn-outline-dark px-3 rounded-pill me-3">Login</a>
+                            <a href="{{ path('app_login') }}" class="nav-link-custom me-3">Login</a>
                             <a href="{{ path('app_register') }}" class="btn btn-sm btn-dark px-3 rounded-pill">Join Free</a>
                         {% endif %}
                     </div>

@@ -45,3 +45,36 @@
 .search-wrapper .form-control {
     transition: all 0.3s ease;
 }
+
+/* Global Navigation Styling */
+.nav-link-custom {
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: #6c757d; /* Muted gray */
+    text-decoration: none;
+    transition: color 0.2s ease-in-out;
+    padding: 0.5rem 0.75rem;
+    border-radius: 6px;
+}
+
+.nav-link-custom:hover {
+    color: #000; /* Pure black on hover */
+    background-color: #f8f9fa; /* Very subtle background hint */
+}
+
+/* State for the page the user is currently on */
+.nav-link-custom.active {
+    color: #000;
+    font-weight: 700;
+}
+
+/* Logout specific styling to keep it subtle */
+.logout-link {
+    font-size: 0.8rem;
+    color: #adb5bd;
+}
+
+.logout-link:hover {
+    color: #dc3545; /* Soft red on hover for logout */
+    background-color: transparent;
+}
