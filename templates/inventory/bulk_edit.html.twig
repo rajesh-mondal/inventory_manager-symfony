@@ -45,7 +45,7 @@
                     {% for inv in inventories %}
                         <div class="inventory-badge">
                             <div class="inventory-badge">
-                                <span class="fw-bold">{{ inv.category }}</span>: {{ inv.title }}
+                                <span class="fw-bold">{{ inv.category.name ?? 'No Category' }}</span>: {{ inv.title }}
                                 <small class="text-muted">[{{ inv.tags|join(', ') }}]</small>
                                 <input type="hidden" name="ids[]" value="{{ inv.id }}" form="bulk-update-form">
                             </div>
@@ -72,7 +72,15 @@
                     <div class="row g-4">
                         <div class="col-md-6">
                             <label class="form-label fw-bold small">Category</label>
-                            <input type="text" name="category" class="form-control" value="{{ isSingle ? inventoryData.category : '' }}" placeholder="New Category Name">
+                            <select name="category" class="form-select">
+                                <option value="" {% if not isSingle %}selected{% endif %}>Keep Original</option>
+                                {% for cat in categories %}
+                                    <option value="{{ cat.id }}"
+                                        {% if isSingle and inventoryData.category and inventoryData.category.id == cat.id %}selected{% endif %}>
+                                        {{ cat.name }}
+                                    </option>
+                                {% endfor %}
+                            </select>
                         </div>
 
                         <div class="col-md-6">

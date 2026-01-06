@@ -89,11 +89,12 @@
                                 <input type="text" name="title" class="form-control" placeholder="e.g. Photography Gear" required>
                             </div>
                             <div class="mb-4">
-                                <label class="form-label">Category</label>
-                                <select name="category" class="form-select">
-                                    <option value="Electronics">Electronics</option>
-                                    <option value="Books">Books/Library</option>
-                                    <option value="Tools">Tools/Parts</option>
+                                <label for="category">Category</label>
+                                <select name="category" id="category" class="form-select">
+                                    <option value="">Select a category</option>
+                                    {% for cat in categories %}
+                                        <option value="{{ cat.id }}">{{ cat.name }}</option>
+                                    {% endfor %}
                                 </select>
                             </div>
                             <div class="mb-4">

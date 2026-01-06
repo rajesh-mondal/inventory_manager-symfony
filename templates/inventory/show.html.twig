@@ -97,7 +97,7 @@
         <div>
             <h1 class="fw-bold tracking-tight text-dark mb-1">{{ inventory.title }}</h1>
             <div class="d-flex align-items-center gap-2 mb-2">
-                <span class="badge bg-light text-dark border">{{ inventory.category }}</span>
+                <span class="badge bg-light text-dark border">{{ inventory.category.name ?? 'No Category' }}</span>
                 {% for tag in inventory.tags %}
                     <span class="badge rounded-pill bg-white text-muted border small">#{{ tag }}</span>
                 {% endfor %}

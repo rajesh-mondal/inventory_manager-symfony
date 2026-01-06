@@ -43,7 +43,7 @@
                 <span class="section-label">Selected Inventory</span>
                 <div>
                     <div class="inventory-badge">
-                        <span class="fw-bold">{{ inv.category }}</span>: {{ inv.title }}
+                        <span class="fw-bold">{{ inv.category.name ?? 'No Category' }}</span>: {{ inv.title }}
                         <small class="text-muted">[{{ inv.tags|join(', ') }}]</small>
                     </div>
                 </div>
@@ -62,7 +62,15 @@
 
                         <div class="col-md-6">
                             <label class="form-label fw-bold small">Category</label>
-                            <input type="text" name="category" class="form-control" value="{{ inv.category }}" placeholder="Category Name">
+                            <select name="category" class="form-select">
+                                <option value="">-- Select Category --</option>
+                                {% for cat in categories %}
+                                    <option value="{{ cat.id }}"
+                                        {% if inv.category and inv.category.id == cat.id %}selected{% endif %}>
+                                        {{ cat.name }}
+                                    </option>
+                                {% endfor %}
+                            </select>
                         </div>
 
                         <div class="col-md-6">

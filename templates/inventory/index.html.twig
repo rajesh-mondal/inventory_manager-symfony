@@ -142,7 +142,7 @@
                                 {% endfor %}
                             </div>
                         </td>
-                        <td><span class="badge-category">{{ inv.category }}</span></td>
+                        <td><span class="badge-category">{{ inv.category ? inv.category.name : 'No Category' }}</span></td>
                         <td class="text-center">
                             {% if inv.isPublic %}
                                 <div class="bg-success text-white d-inline-flex align-items-center justify-content-center rounded-circle" style="width: 22px; height: 22px;">

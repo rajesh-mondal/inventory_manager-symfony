@@ -130,7 +130,8 @@
                             {% endfor %}
                         </div>
                     </td>
-                    <td><span class="badge-category">{{ inv.category }}</span></td>
+                    {# <td><span class="badge-category">{{ inv.category }}</span></td> #}
+                    <td><span class="badge-category">{{ inv.category ? inv.category.name : 'No Category' }}</span></td>
                     <td class="text-end">
                         <span class="item-count">{{ inv.items|length }}</span>
                     </td>

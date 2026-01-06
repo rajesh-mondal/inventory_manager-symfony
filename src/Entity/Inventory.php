@@ -22,8 +22,8 @@ class Inventory
     #[ORM\Column(type: Types::TEXT, nullable: true)]
     private ?string $description = null;
 
-    #[ORM\Column(length: 255)]
-    private ?string $category = null;
+    // #[ORM\Column(length: 255)]
+    // private ?string $category = null;
 
     #[ORM\ManyToOne(inversedBy: 'inventories')]
     #[ORM\JoinColumn(nullable: false)]
@@ -104,6 +104,10 @@ class Inventory
     #[ORM\Column]
     private bool $customText3State = false;
 
+    #[ORM\ManyToOne(inversedBy: 'inventories')]
+    #[ORM\JoinColumn(nullable: true)]
+    private ?Category $category = null;
+
     public function __construct()
     {
         $this->items = new ArrayCollection();
@@ -138,17 +142,17 @@ class Inventory
         return $this;
     }
 
-    public function getCategory(): ?string
-    {
-        return $this->category;
-    }
+    // public function getCategory(): ?string
+    // {
+    //     return $this->category;
+    // }
 
-    public function setCategory(string $category): static
-    {
-        $this->category = $category;
+    // public function setCategory(string $category): static
+    // {
+    //     $this->category = $category;
 
-        return $this;
-    }
+    //     return $this;
+    // }
 
     public function getCreator(): ?User
     {
@@ -512,6 +516,18 @@ class Inventory
     public function setCustomText3State(bool $customText3State): static
     {
         $this->customText3State = $customText3State;
+
+        return $this;
+    }
+
+    public function getCategory(): ?Category
+    {
+        return $this->category;
+    }
+
+    public function setCategory(?Category $category): static
+    {
+        $this->category = $category;
 
         return $this;
     }

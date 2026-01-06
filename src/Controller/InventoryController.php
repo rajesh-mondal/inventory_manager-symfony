@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\Item;
+use App\Entity\Category;
 use App\Entity\Inventory;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -23,8 +24,15 @@ class InventoryController extends AbstractController
 
         if ($request->isMethod('POST')) {
             $inventory = new Inventory();
+
             $inventory->setTitle($request->request->get('title'));
-            $inventory->setCategory($request->request->get('category'));
+
+            $categoryId = $request->request->get('category');
+            if ($categoryId) {
+                $category = $entityManager->getRepository(Category::class)->find($categoryId);
+                $inventory->setCategory($category);
+            }
+
             $inventory->setDescription($request->request->get('description'));
             $inventory->setCreator($this->getUser());
 
@@ -67,7 +75,9 @@ class InventoryController extends AbstractController
             return $this->redirectToRoute('app_my_inventories');
         }
 
-        return $this->render('inventory/new.html.twig');
+        return $this->render('inventory/new.html.twig', [
+            'categories' => $entityManager->getRepository(Category::class)->findAll(),
+        ]);
     }
 
     #[Route('/my-inventories', name: 'app_my_inventories')]
@@ -131,7 +141,14 @@ class InventoryController extends AbstractController
         $this->denyAccessUnlessGranted('INVENTORY_EDIT', $inventory);
 
         if ($request->isMethod('POST')) {
-            $inventory->setCategory($request->request->get('category'));
+            $categoryId = $request->request->get('category');
+            if ($categoryId) {
+                $category = $em->getRepository(Category::class)->find($categoryId);
+                $inventory->setCategory($category);
+            } else {
+                $inventory->setCategory(null);
+            }
+
             $inventory->setDescription($request->request->get('description'));
             $inventory->setIsPublic($request->request->get('is_public') === '1');
 
@@ -147,6 +164,7 @@ class InventoryController extends AbstractController
 
         return $this->render('inventory/settings.html.twig', [
             'inv' => $inventory,
+            'categories' => $em->getRepository(Category::class)->findAll(),
         ]);
     }
 
@@ -169,6 +187,7 @@ class InventoryController extends AbstractController
             'inventories' => $inventories,
             'isSingle' => $isSingle,
             'inventoryData' => $isSingle ? $inventories[0] : null,
+            'categories' => $em->getRepository(Category::class)->findAll(),
         ]);
     }
 
@@ -176,7 +195,7 @@ class InventoryController extends AbstractController
     public function bulkUpdateSave(Request $request, EntityManagerInterface $em): Response
     {
         $ids = $request->request->all('ids');
-        $category = $request->request->get('category');
+        $categoryId = $request->request->get('category');
         $tagsString = $request->request->get('tags');
         $isPublic = $request->request->get('is_public');
         $description = $request->request->get('description');
@@ -184,11 +203,20 @@ class InventoryController extends AbstractController
         if ($ids) {
             $inventories = $em->getRepository(Inventory::class)->findBy(['id' => $ids]);
 
+            $categoryObject = null;
+            if (!empty($categoryId)) {
+                $categoryObject = $em->getRepository(Category::class)->find($categoryId);
+            }
+
             foreach ($inventories as $inv) {
                 // Security check before saving data
                 $this->denyAccessUnlessGranted('INVENTORY_EDIT', $inv);
 
-                if (!empty($category)) $inv->setCategory($category);
+                if ($categoryObject) {
+                    $inv->setCategory($categoryObject);
+                }
+
+                // if (!empty($category)) $inv->setCategory($category);
                 if (!empty($description)) $inv->setDescription($description);
 
                 if (!empty($tagsString)) {
