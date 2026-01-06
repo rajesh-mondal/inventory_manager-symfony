@@ -12,21 +12,45 @@ final class HomeController extends AbstractController
     #[Route('/', name: 'app_home')]
     public function index(InventoryRepository $repo): Response
     {
-        // Latest 10 Inventories
-        $latest = $repo->findBy([], ['id' => 'DESC'], 10);
+        $user = $this->getUser();
+        $isAdmin = $this->isGranted('ROLE_ADMIN');
 
-        // Top 5 Popular (Based on item count)
-        $popular = $repo->createQueryBuilder('i')
+        // Latest 10 Inventories
+        $latestQuery = $repo->createQueryBuilder('i')
+            ->orderBy('i.id', 'DESC')
+            ->setMaxResults(10);
+
+        if (!$isAdmin) {
+            $latestQuery->andWhere('i.is_public = :trueValue OR i.creator = :currentUser')
+                ->setParameter('trueValue', true)
+                ->setParameter('currentUser', $user);
+        }
+        $latest = $latestQuery->getQuery()->getResult();
+
+        // Top 5 Popular Inventories
+        $popularQB = $repo->createQueryBuilder('i')
             ->leftJoin('i.items', 'item')
             ->select('i, COUNT(item) as HIDDEN itemCount')
             ->groupBy('i.id')
             ->orderBy('itemCount', 'DESC')
-            ->setMaxResults(5)
-            ->getQuery()
-            ->getResult();
+            ->setMaxResults(5);
 
-        // 3. Tag Cloud (Get all unique tags)
-        $allInventories = $repo->findAll();
+        if (!$isAdmin) {
+            $popularQB->andWhere('i.is_public = :trueValue OR i.creator = :currentUser')
+                ->setParameter('trueValue', true)
+                ->setParameter('currentUser', $user);
+        }
+        $popular = $popularQB->getQuery()->getResult();
+
+        // Tag Cloud
+        $allInventoriesQB = $repo->createQueryBuilder('i');
+        if (!$isAdmin) {
+            $allInventoriesQB->andWhere('i.is_public = :trueValue OR i.creator = :currentUser')
+                ->setParameter('trueValue', true)
+                ->setParameter('currentUser', $user);
+        }
+        $allInventories = $allInventoriesQB->getQuery()->getResult();
+
         $tags = [];
         foreach ($allInventories as $inv) {
             foreach ($inv->getTags() as $tag) {

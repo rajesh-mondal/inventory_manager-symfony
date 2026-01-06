@@ -16,9 +16,17 @@ class SearchController extends AbstractController
     {
         $tag = $request->query->get('tag');
         $query = $request->query->get('q');
+        $user = $this->getUser();
 
         $qb = $repo->createQueryBuilder('i')
             ->orderBy('i.id', 'DESC');
+
+        // If user is NOT an admin, restrict the search results
+        if (!$this->isGranted('ROLE_ADMIN')) {
+            $qb->andWhere('i.is_public = :trueValue OR i.creator = :currentUser')
+               ->setParameter('trueValue', true)
+               ->setParameter('currentUser', $user);
+        }
 
         if ($tag) {
             $qb->andWhere('i.tags LIKE :tag')

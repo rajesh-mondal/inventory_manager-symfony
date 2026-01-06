@@ -12,14 +12,15 @@ use Symfony\Bundle\SecurityBundle\Security;
 final class InventoryVoter extends Voter
 {
     public const EDIT = 'INVENTORY_EDIT';
-    // public const VIEW = 'POST_VIEW';
+    public const VIEW = 'INVENTORY_VIEW';
+    public const DELETE = 'INVENTORY_DELETE';
 
     public function __construct(private Security $security) {}
 
     protected function supports(string $attribute, mixed $subject): bool
     {
-        // This voter only cares about the INVENTORY_EDIT attribute and Inventory objects
-        return $attribute === self::EDIT && $subject instanceof Inventory;
+        return in_array($attribute, [self::EDIT, self::VIEW, self::DELETE])
+            && $subject instanceof Inventory;
     }
 
     protected function voteOnAttribute(string $attribute, mixed $subject, TokenInterface $token): bool
@@ -27,24 +28,29 @@ final class InventoryVoter extends Voter
         $user = $token->getUser();
         $inventory = $subject;
 
-        // ADMINS: Full access to everything
+        // ADMINS: Full access
         if ($this->security->isGranted('ROLE_ADMIN')) {
             return true;
         }
 
-        // NON-AUTHENTICATED: Return false (they can't edit/modify)
+        // GUESTS: Can only VIEW if public. Cannot Edit or Delete anything.
         if (!$user instanceof User) {
-            return false;
+            return $attribute === self::VIEW && $inventory->isPublic();
         }
 
-        // CREATORS: Can edit their own inventories
-        if ($inventory->getCreator() === $user) {
-            return true;
-        }
+        // AUTHENTICATED USERS (Owners and Standard Users)
+        switch ($attribute) {
+            case self::VIEW:
+                // return $inventory->isPublic() || ($inventory->getCreator() === $user);
+                return $inventory->isPublic() || ($user === $inventory->getCreator());
 
-        // PUBLIC ACCESS: If the inventory is marked public, any auth user can edit
-        if ($inventory->isPublic()) {
-            return true;
+            case self::EDIT:
+                // Owner can edit OR any logged-in user can edit IF it is public
+                return ($inventory->getCreator() === $user) || $inventory->isPublic();
+
+            case self::DELETE:
+                // Strictly the owner only
+                return $inventory->getCreator() === $user;
         }
 
         return false;

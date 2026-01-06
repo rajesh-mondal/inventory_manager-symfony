@@ -105,30 +105,42 @@
             <p class="text-muted mb-0">{{ inventory.description }}</p>
         </div>
         <div class="d-flex gap-2">
-            <a href="{{ path('app_inventory_settings', {id: inventory.id}) }}" class="btn btn-outline-dark px-3 py-2 fw-bold" style="border-radius: 8px;">
-                <i class="bi bi-gear"></i> Settings
-            </a>
-            <a href="{{ path('app_item_new', {id: inventory.id}) }}" class="btn btn-dark px-4 py-2 fw-bold" style="border-radius: 8px;">
-                + Add Item
-            </a>
+            {% if is_granted('INVENTORY_EDIT', inventory) %}
+                <a href="{{ path('app_inventory_settings', {id: inventory.id}) }}" class="btn btn-outline-dark px-3 py-2 fw-bold" style="border-radius: 8px;">
+                    <i class="bi bi-gear"></i> Settings
+                </a>
+            {% endif %}
+
+            {% if is_granted('INVENTORY_EDIT', inventory) %}
+                <a href="{{ path('app_item_new', {id: inventory.id}) }}" class="btn btn-dark px-4 py-2 fw-bold" style="border-radius: 8px;">
+                    + Add Item
+                </a>
+            {% endif %}
         </div>
     </div>
 
     <div class="table-container">
         <div id="item-toolbar" class="bg-dark text-white p-3 d-none d-flex justify-content-between align-items-center mb-0" style="border-top-left-radius: 12px; border-top-right-radius: 12px;">
             <span id="selected-count" class="small fw-bold">0 items selected</span>
-            <div class="d-flex gap-2">
-                <button type="button" onclick="bulkAction('edit')" class="btn btn-sm btn-light fw-bold">Edit</button>
-                <button type="button" onclick="bulkAction('delete')" class="btn btn-sm btn-danger fw-bold">Delete</button>
-            </div>
+                <div class="d-flex gap-2">
+                    {% if is_granted('INVENTORY_EDIT', inventory) %}
+                        <button type="button" onclick="bulkAction('edit')" class="btn btn-sm btn-light fw-bold">Edit</button>
+                    {% endif %}
+
+                    {% if is_granted('INVENTORY_DELETE', inventory) %}
+                        <button type="button" onclick="bulkAction('delete')" class="btn btn-sm btn-danger fw-bold">Delete</button>
+                    {% endif %}
+                </div>
         </div>
         <form id="bulk-form" method="POST">
             <table class="table mb-0">
                 <thead>
                     <tr>
-                        <th style="width: 40px;">
-                            <input type="checkbox" id="select-all" class="form-check-input">
-                        </th>
+                        {% if is_granted('INVENTORY_EDIT', inventory) or is_granted('INVENTORY_DELETE', inventory) %}
+                            <th style="width: 40px;">
+                                <input type="checkbox" id="select-all" class="form-check-input">
+                            </th>
+                        {% endif %}
                         <th style="min-width: 105px;">Image</th>
                         <th style="min-width: 140px;">Custom ID</th>
                         <th style="min-width: 200px;">Item Name</th>
@@ -149,9 +161,11 @@
                     {# {% for item in inventory.items %} #}
                     {% for item in pagination %}
                     <tr class="align-middle item-row">
+                        {% if is_granted('INVENTORY_EDIT', inventory) %}
                         <td>
                             <input type="checkbox" name="item_ids[]" value="{{ item.id }}" class="form-check-input item-checkbox">
                         </td>
+                        {% endif %}
                         <td>
                             {% if item.image %}
                                 <img src="{{ asset('uploads/items/' ~ item.image) }}"
@@ -195,7 +209,7 @@
                     </tr>
                     {% else %}
                     <tr>
-                        <td colspan="20" class="text-center py-5">
+                        <td colspan="25" class="text-center py-5">
                             <div class="py-4">
                                 <p class="text-muted mb-3">This inventory is currently empty.</p>
                                 <a href="{{ path('app_item_new', {id: inventory.id}) }}" class="btn btn-sm btn-outline-dark" style="border-radius: 6px;">

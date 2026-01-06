@@ -17,21 +17,21 @@ class ItemController extends AbstractController
     #[Route('/inventory/{id}/item/new', name: 'app_item_new')]
     public function new(Inventory $inventory, Request $request, EntityManagerInterface $em, SluggerInterface $slugger): Response
     {
-        $this->denyAccessUnlessGranted('IS_AUTHENTICATED_FULLY');
+        // $this->denyAccessUnlessGranted('IS_AUTHENTICATED_FULLY');
+        // Authenticated users can add items only if inventory is public.
+        $this->denyAccessUnlessGranted('INVENTORY_EDIT', $inventory);
 
         if ($request->isMethod('POST')) {
             $item = new Item();
             $item->setInventory($inventory);
             $item->setName($request->request->get('name'));
 
-            // Dynamic Custom Fields
             $types = ['String', 'Int', 'Bool', 'Text'];
             foreach ($types as $type) {
                 for ($i = 1; $i <= 3; $i++) {
                     $lowerType = strtolower($type);
                     $stateMethod = "isCustom{$type}{$i}State";
 
-                    // Only process if the template has this field enabled
                     if ($inventory->$stateMethod()) {
                         $setter = "set" . $type . "Val" . $i;
 
@@ -44,14 +44,11 @@ class ItemController extends AbstractController
                 }
             }
 
-            // Generate Custom ID based on Pattern
             $pattern = $inventory->getIdPattern() ?: 'ITEM-{SEQ}';
 
-            // Get the current number of items in this inventory from the database
             $itemCount = $em->getRepository(Item::class)->count(['inventory' => $inventory]);
             $nextSeq = $itemCount + 1;
 
-            // Replace placeholders
             $customId = str_replace(
                 ['{SEQ}', '{YEAR}'],
                 [str_pad($nextSeq, 4, '0', STR_PAD_LEFT), date('Y')],
@@ -60,7 +57,6 @@ class ItemController extends AbstractController
 
             $item->setCustomId($customId);
 
-            // Image upload logic
             $imageFile = $request->files->get('image');
 
             if ($imageFile) {
@@ -102,7 +98,9 @@ class ItemController extends AbstractController
         if ($itemIds) {
             $items = $em->getRepository(Item::class)->findBy(['id' => $itemIds]);
             foreach ($items as $item) {
-                // Delete the image file from disk if it exists
+                // Only creators/admins can delete items, even in public inventories.
+                $this->denyAccessUnlessGranted('INVENTORY_DELETE', $item->getInventory());
+
                 if ($item->getImage()) {
                     $imagePath = $this->getParameter('items_directory') . '/' . $item->getImage();
                     if (file_exists($imagePath)) {
@@ -127,7 +125,9 @@ class ItemController extends AbstractController
         $items = $em->getRepository(Item::class)->findBy(['id' => $itemIds]);
         $inventory = $items[0]->getInventory();
 
-        // Check if it's a single item to pre-fill data
+        // Authenticated users can EDIT items if inventory is public.
+        $this->denyAccessUnlessGranted('INVENTORY_EDIT', $inventory);
+
         $isSingle = count($items) === 1;
         $itemData = $isSingle ? $items[0] : null;
 
@@ -146,6 +146,8 @@ class ItemController extends AbstractController
         $items = $em->getRepository(Item::class)->findBy(['id' => $itemIds]);
 
         foreach ($items as $item) {
+            // Ensure every item updated belongs to an inventory the user is allowed to edit.
+            $this->denyAccessUnlessGranted('INVENTORY_EDIT', $item->getInventory());
             $types = ['String', 'Int', 'Bool', 'Text'];
             foreach ($types as $type) {
                 for ($i = 1; $i <= 3; $i++) {

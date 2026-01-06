@@ -18,7 +18,8 @@ class InventoryController extends AbstractController
     #[Route('/inventory/new', name: 'app_inventory_new')]
     public function new(Request $request, EntityManagerInterface $entityManager): Response
     {
-        $this->denyAccessUnlessGranted('IS_AUTHENTICATED_FULLY');
+        // $this->denyAccessUnlessGranted('IS_AUTHENTICATED_FULLY');
+        $this->denyAccessUnlessGranted('ROLE_USER');
 
         if ($request->isMethod('POST')) {
             $inventory = new Inventory();
@@ -94,7 +95,10 @@ class InventoryController extends AbstractController
     #[Route('/inventory/{id<\d+>}', name: 'app_inventory_show')]
     public function show(Inventory $inventory, Request $request, PaginatorInterface $paginator, EntityManagerInterface $em): Response
     {
-        $this->denyAccessUnlessGranted('IS_AUTHENTICATED_FULLY');
+        // $this->denyAccessUnlessGranted('IS_AUTHENTICATED_FULLY');
+
+        // Block Standard Users from viewing Private Inventories
+        $this->denyAccessUnlessGranted('INVENTORY_VIEW', $inventory);
 
         $queryBuilder = $em->getRepository(Item::class)
         ->createQueryBuilder('i')
@@ -123,6 +127,9 @@ class InventoryController extends AbstractController
             throw $this->createNotFoundException('Inventory not found');
         }
 
+        // Ensures standard users cannot edit if private
+        $this->denyAccessUnlessGranted('INVENTORY_EDIT', $inventory);
+
         if ($request->isMethod('POST')) {
             $inventory->setCategory($request->request->get('category'));
             $inventory->setDescription($request->request->get('description'));
@@ -150,6 +157,12 @@ class InventoryController extends AbstractController
         if (!$ids) return $this->redirectToRoute('app_inventory_index');
 
         $inventories = $em->getRepository(Inventory::class)->findBy(['id' => $ids]);
+
+        // Verify every selected inventory is editable by current user
+        foreach ($inventories as $inv) {
+            $this->denyAccessUnlessGranted('INVENTORY_EDIT', $inv);
+        }
+
         $isSingle = (count($inventories) === 1);
 
         return $this->render('inventory/bulk_edit.html.twig', [
@@ -172,6 +185,9 @@ class InventoryController extends AbstractController
             $inventories = $em->getRepository(Inventory::class)->findBy(['id' => $ids]);
 
             foreach ($inventories as $inv) {
+                // Security check before saving data
+                $this->denyAccessUnlessGranted('INVENTORY_EDIT', $inv);
+
                 if (!empty($category)) $inv->setCategory($category);
                 if (!empty($description)) $inv->setDescription($description);
 
@@ -200,6 +216,8 @@ class InventoryController extends AbstractController
         if ($ids) {
             $inventories = $em->getRepository(Inventory::class)->findBy(['id' => $ids]);
             foreach ($inventories as $inv) {
+                // Standard Users cannot delete (even if public)
+                $this->denyAccessUnlessGranted('INVENTORY_DELETE', $inv);
                 $em->remove($inv);
             }
             $em->flush();
