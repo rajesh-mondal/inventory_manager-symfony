@@ -35,10 +35,11 @@ class SearchController extends AbstractController
 
         if ($query) {
             $qb->leftJoin('i.items', 'item')
+               ->leftJoin('i.category', 'cat')
                ->andWhere('i.title LIKE :q
-                   OR i.description LIKE :q
-                   OR i.category LIKE :q
-                   OR item.name LIKE :q')
+                           OR i.description LIKE :q
+                           OR cat.name LIKE :q
+                           OR item.name LIKE :q')
                ->setParameter('q', '%' . $query . '%')
                ->distinct();
         }
