@@ -1,0 +1,15 @@
+nav:
+    home: "Home"
+    inventories: "My Inventories"
+
+tabs:
+    items: "Items"
+    discussion: "Discussion"
+    stats: "Statistics"
+    settings: "Settings"
+
+buttons:
+    add_item: "Add Item"
+    save: "Save Changes"
+    edit: "Edit"
+    delete: "Delete"

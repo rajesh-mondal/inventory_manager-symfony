@@ -1,0 +1,44 @@
+# Spanish Translations
+nav:
+    home: "Inicio"
+    inventories: "Mis Inventarios"
+    logout: "Cerrar sesión"
+    login: "Iniciar sesión"
+
+tabs:
+    items: "Artículos"
+    discussion: "Discusión"
+    stats: "Estadísticas"
+    settings: "Configuración"
+
+buttons:
+    add_item: "Añadir Artículo"
+    save: "Guardar Cambios"
+    edit: "Editar"
+    delete: "Eliminar"
+    bulk_edit: "Edición Masiva"
+    cancel: "Cancelar"
+    confirm: "Confirmar"
+
+inventory:
+    title: "Inventario"
+    created: "Creado"
+    likes: "Me gusta"
+    image: "Imagen"
+    item_name: "Nombre del artículo"
+    custom_id: "ID Personalizado"
+    no_items: "No se encontraron artículos en este inventario."
+    selected_items: "artículos seleccionados"
+
+stats_panel:
+    total_items: "Total de Artículos"
+    visibility: "Visibilidad Pública"
+    engagement: "Interacción Total"
+    analysis: "Análisis de Campos"
+    averages: "Promedios y Totales"
+    system_info: "Información del Sistema"
+    public: "Visible para todos"
+    private: "Privado para ti"
+    avg_price: "Precio Promedio"
+    last_updated: "Última Actualización"
+    never: "Nunca"

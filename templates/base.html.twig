@@ -35,6 +35,26 @@
                         </div>
                     </form>
 
+                    <div class="dropdown ms-3">
+                        <button class="btn btn-sm btn-outline-secondary dropdown-toggle rounded-pill px-3" type="button" data-bs-toggle="dropdown">
+                            <i class="bi bi-globe me-1"></i> {{ app.request.locale|upper }}
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-end shadow-sm border-0">
+                            <li>
+                                <a class="dropdown-item d-flex justify-content-between align-items-center {% if app.request.locale == 'en' %}active{% endif %}"
+                                   href="{{ path('change_locale', {locale: 'en'}) }}">
+                                    English {% if app.request.locale == 'en' %}<i class="bi bi-check"></i>{% endif %}
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item d-flex justify-content-between align-items-center {% if app.request.locale == 'es' %}active{% endif %}"
+                                   href="{{ path('change_locale', {locale: 'es'}) }}">
+                                    Español {% if app.request.locale == 'es' %}<i class="bi bi-check"></i>{% endif %}
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+
                     <div class="d-flex align-items-center ms-3">
                         {% if app.user %}
                             {% if is_granted('ROLE_ADMIN') %}
