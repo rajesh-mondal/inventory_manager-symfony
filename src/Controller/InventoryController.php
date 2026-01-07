@@ -13,6 +13,7 @@ use Symfony\Component\Routing\Attribute\Route;
 use Knp\Component\Pager\PaginatorInterface;
 use App\Repository\ItemRepository;
 use App\Repository\InventoryRepository;
+use App\Repository\CategoryRepository;
 
 class InventoryController extends AbstractController
 {
@@ -103,7 +104,7 @@ class InventoryController extends AbstractController
     }
 
     #[Route('/inventory/{id<\d+>}', name: 'app_inventory_show')]
-    public function show(Inventory $inventory, Request $request, PaginatorInterface $paginator, EntityManagerInterface $em): Response
+    public function show(Inventory $inventory, Request $request, CategoryRepository $categoryRepository, PaginatorInterface $paginator, EntityManagerInterface $em): Response
     {
         // $this->denyAccessUnlessGranted('IS_AUTHENTICATED_FULLY');
 
@@ -125,6 +126,7 @@ class InventoryController extends AbstractController
         return $this->render('inventory/show.html.twig', [
             'inventory' => $inventory,
             'pagination' => $pagination,
+            'categories' => $categoryRepository->findAll(),
         ]);
     }
 

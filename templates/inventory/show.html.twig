@@ -5,83 +5,27 @@
 {% block body %}
 <style>
     body { background-color: #f9fafb; }
-
-    /* Breadcrumb styling */
     .breadcrumb-item a { color: #6b7280; text-decoration: none; font-size: 0.875rem; }
     .breadcrumb-item.active { color: #111827; font-weight: 500; font-size: 0.875rem; }
-
-    /* Card/Table container */
     .table-container {
-        background: #fff;
-        border-radius: 12px;
-        border: 1px solid #e5e7eb;
-        box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-        overflow-x: auto;
+        background: #fff; border-radius: 12px; border: 1px solid #e5e7eb;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.1); overflow: hidden;
     }
-
     .table thead th {
-        background-color: #fdfdfd;
-        text-transform: uppercase;
-        font-size: 0.7rem;
-        font-weight: 700;
-        letter-spacing: 0.05em;
-        color: #9ca3af;
-        border-bottom: 1px solid #e5e7eb;
-        padding: 1.25rem 1.5rem;
-        white-space: nowrap;
+        background-color: #fdfdfd; text-transform: uppercase; font-size: 0.7rem;
+        font-weight: 700; letter-spacing: 0.05em; color: #9ca3af;
+        border-bottom: 1px solid #e5e7eb; padding: 1.25rem 1.5rem;
     }
 
-    .table tbody td {
-        padding: 1.1rem 1.5rem;
-        vertical-align: middle;
-        border-bottom: 1px solid #f3f4f6;
-        color: #374151;
-    }
+    .nav-tabs { border-bottom: 1px solid #e5e7eb; }
+    .nav-tabs .nav-link { color: #6b7280; border: none; font-weight: 600; padding: 1rem 1.5rem; }
+    .nav-tabs .nav-link.active { color: #111827; border-bottom: 2px solid #111827; background: none; }
 
     .custom-id-badge {
-        font-family: 'Monaco', 'Consolas', monospace;
-        background-color: #f3f4f6;
-        color: #111827;
-        padding: 0.3rem 0.6rem;
-        border-radius: 4px;
-        font-size: 0.85rem;
-        border: 1px solid #e5e7eb;
+        font-family: 'Monaco', 'Consolas', monospace; background-color: #f3f4f6;
+        color: #111827; padding: 0.3rem 0.6rem; border-radius: 4px; font-size: 0.85rem; border: 1px solid #e5e7eb;
     }
-
-    .item-name {
-        font-weight: 600;
-        color: #111827;
-    }
-
-    #item-toolbar {
-        transition: all 0.3s ease;
-        border-bottom: 2px solid #111827;
-        position: sticky;
-        top: 0;
-        z-index: 100;
-    }
-
-    .item-row.selected {
-        background-color: #f0f7ff !important;
-    }
-
-    .minimal-pagination a,
-    .minimal-pagination span {
-        padding: 4px 10px;
-        text-decoration: none;
-        color: #666;
-        border-radius: 4px;
-    }
-
-    .minimal-pagination a:hover {
-        background-color: #f0f0f0;
-        color: #000;
-    }
-
-    .minimal-pagination .current {
-        background: #000;
-        color: #fff !important;
-    }
+    .item-row.selected { background-color: #f0f7ff !important; }
 </style>
 
 <div class="container py-4">
@@ -92,24 +36,17 @@
         </ol>
     </nav>
 
-    <div class="d-flex justify-content-between align-items-center mb-5">
+    <div class="d-flex justify-content-between align-items-end mb-4">
         <div>
             <h1 class="fw-bold tracking-tight text-dark mb-1">{{ inventory.title }}</h1>
-            <div class="d-flex align-items-center gap-2 mb-2">
+            <div class="d-flex align-items-center gap-2">
                 <span class="badge bg-light text-dark border">{{ inventory.category.name ?? 'No Category' }}</span>
                 {% for tag in inventory.tags %}
                     <span class="badge rounded-pill bg-white text-muted border small">#{{ tag }}</span>
                 {% endfor %}
             </div>
-            <p class="text-muted mb-0">{{ inventory.description }}</p>
         </div>
         <div class="d-flex gap-2">
-            {% if is_granted('INVENTORY_EDIT', inventory) %}
-                <a href="{{ path('app_inventory_settings', {id: inventory.id}) }}" class="btn btn-outline-dark px-3 py-2 fw-bold" style="border-radius: 8px;">
-                    <i class="bi bi-gear"></i> Settings
-                </a>
-            {% endif %}
-
             {% if is_granted('INVENTORY_EDIT', inventory) %}
                 <a href="{{ path('app_item_new', {id: inventory.id}) }}" class="btn btn-dark px-4 py-2 fw-bold" style="border-radius: 8px;">
                     + Add Item
@@ -118,175 +55,218 @@
         </div>
     </div>
 
-    <div class="table-container">
-        <div id="item-toolbar" class="bg-dark text-white p-3 d-none d-flex justify-content-between align-items-center mb-0" style="border-top-left-radius: 12px; border-top-right-radius: 12px;">
-            <span id="selected-count" class="small fw-bold">0 items selected</span>
-                <div class="d-flex gap-2">
-                    {% if is_granted('INVENTORY_EDIT', inventory) %}
-                        <button type="button" onclick="bulkAction('edit')" class="btn btn-sm btn-light fw-bold">Edit</button>
-                    {% endif %}
+    <ul class="nav nav-tabs mb-4" id="inventoryTabs" role="tablist">
+        <li class="nav-item">
+            <button class="nav-link active" id="items-tab" data-bs-toggle="tab" data-bs-target="#items-pane" type="button" role="tab">
+                <i class="bi bi-table me-2"></i>Items
+            </button>
+        </li>
+        <li class="nav-item">
+            <button class="nav-link" id="discussion-tab" data-bs-toggle="tab" data-bs-target="#discussion-pane" type="button" role="tab">
+                <i class="bi bi-chat-left-text me-2"></i>Discussion
+            </button>
+        </li>
+        <li class="nav-item">
+            <button class="nav-link" id="stats-tab" data-bs-toggle="tab" data-bs-target="#stats-pane" type="button" role="tab">
+                <i class="bi bi-bar-chart me-2"></i>Statistics
+            </button>
+        </li>
+        {% if is_granted('INVENTORY_EDIT', inventory) %}
+        <li class="nav-item">
+            <button class="nav-link" id="settings-tab" data-bs-toggle="tab" data-bs-target="#settings-pane" type="button" role="tab">
+                <i class="bi bi-gear me-2"></i>Settings
+            </button>
+        </li>
+        {% endif %}
+    </ul>
 
-                    {% if is_granted('INVENTORY_DELETE', inventory) %}
-                        <button type="button" onclick="bulkAction('delete')" class="btn btn-sm btn-danger fw-bold">Delete</button>
-                    {% endif %}
-                </div>
-        </div>
-        <form id="bulk-form" method="POST">
-            <table class="table mb-0">
-                <thead>
-                    <tr>
-                        {% if is_granted('INVENTORY_EDIT', inventory) or is_granted('INVENTORY_DELETE', inventory) %}
-                            <th style="width: 40px;">
-                                <input type="checkbox" id="select-all" class="form-check-input">
-                            </th>
-                        {% endif %}
-                        <th>Image</th>
-                        <th>Custom ID</th>
-                        <th>Item Name</th>
+    <div class="tab-content" id="inventoryTabsContent">
 
-                        {% for type in ['String', 'Int', 'Bool', 'Text'] %}
-                            {% for i in 1..3 %}
-                                {% set state = attribute(inventory, 'custom' ~ type ~ i ~ 'State') %}
-                                {% if state %}
-                                    <th>{{ attribute(inventory, 'custom' ~ type ~ i ~ 'Name') }}</th>
-                                {% endif %}
-                            {% endfor %}
-                        {% endfor %}
-
-                        <th class="text-end">Created</th>
-                        <th class="text-center">Likes</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {# {% for item in inventory.items %} #}
-                    {% for item in pagination %}
-                    <tr class="align-middle item-row">
-                        {% if is_granted('INVENTORY_EDIT', inventory) %}
-                        <td>
-                            <input type="checkbox" name="item_ids[]" value="{{ item.id }}" class="form-check-input item-checkbox">
-                        </td>
-                        {% endif %}
-                        <td>
-                            {% if item.image %}
-                                <img src="{{ asset('uploads/items/' ~ item.image) }}"
-                                     alt="{{ item.name }}"
-                                     style="width: 50px; height: 50px; object-fit: cover; border-radius: 8px;"
-                                     class="me-2">
-                            {% else %}
-                                <div class="bg-light d-inline-block text-center me-2" style="width: 50px; height: 50px; border-radius: 8px; line-height: 50px;">
-                                    <i class="bi bi-image text-muted"></i>
-                                </div>
+        <div class="tab-pane fade show active" id="items-pane" role="tabpanel">
+            <div class="table-container">
+                {% if is_granted('INVENTORY_EDIT', inventory) or is_granted('INVENTORY_DELETE', inventory) %}
+                    <div id="item-toolbar" class="bg-dark text-white p-3 d-none d-flex justify-content-between align-items-center">
+                        <span id="selected-count" class="small fw-bold">0 items selected</span>
+                        <div class="d-flex gap-2">
+                            {% if is_granted('INVENTORY_EDIT', inventory) %}
+                                <button type="button" onclick="bulkAction('edit')" class="btn btn-sm btn-light fw-bold">Edit</button>
                             {% endif %}
-                            {# <code class="custom-id-badge">{{ item.customId }}</code> #}
-                        </td>
-                        <td>
-                            <code class="custom-id-badge">{{ item.customId }}</code>
-                        </td>
-                        <td>
-                            <span class="item-name">{{ item.name }}</span>
-                        </td>
-
-                        {% for type in ['String', 'Int', 'Bool', 'Text'] %}
-                            {% for i in 1..3 %}
-                                {% if attribute(inventory, 'custom' ~ type ~ i ~ 'State') %}
-                                    <td>
-                                        {% set val = attribute(item, type|lower ~ 'Val' ~ i) %}
-                                        {% if type == 'Bool' %}
-                                            <span class="badge {{ val ? 'bg-success' : 'bg-light text-muted' }} rounded-circle p-1">
-                                                <i class="bi {{ val ? 'bi-check' : 'bi-x' }}"></i>
-                                            </span>
-                                        {% else %}
-                                            {{ val|default('-') }}
-                                        {% endif %}
-                                    </td>
+                            {% if is_granted('INVENTORY_DELETE', inventory) %}
+                                <button type="button" onclick="bulkAction('delete')" class="btn btn-sm btn-danger fw-bold">Delete</button>
+                            {% endif %}
+                        </div>
+                    </div>
+                {% endif %}
+                <form id="bulk-form" method="POST">
+                    <table class="table mb-0">
+                        <thead>
+                            <tr>
+                                {% if is_granted('INVENTORY_EDIT', inventory) %}
+                                    <th><input type="checkbox" id="select-all" class="form-check-input"></th>
                                 {% endif %}
+                                <th>Image</th>
+                                <th>Custom ID</th>
+                                <th>Item Name</th>
+                                {% for type in ['String', 'Int', 'Bool', 'Text'] %}
+                                    {% for i in 1..3 %}
+                                        {% if attribute(inventory, 'custom' ~ type ~ i ~ 'State') %}
+                                            <th>{{ attribute(inventory, 'custom' ~ type ~ i ~ 'Name') }}</th>
+                                        {% endif %}
+                                    {% endfor %}
+                                {% endfor %}
+                                <th>Created</th>
+                                <th>Likes</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for item in pagination %}
+                            <tr class="align-middle item-row">
+                                {% if is_granted('INVENTORY_EDIT', inventory) %}
+                                    <td><input type="checkbox" name="item_ids[]" value="{{ item.id }}" class="form-check-input item-checkbox"></td>
+                                {% endif %}
+                                <td>
+                                    {% if item.image %}
+                                        <img src="{{ asset('uploads/items/' ~ item.image) }}" style="width: 40px; height: 40px; object-fit: cover; border-radius: 6px;">
+                                    {% else %}
+                                        <div class="bg-light text-center" style="width: 40px; height: 40px; border-radius: 6px; line-height: 40px;"><i class="bi bi-image text-muted"></i></div>
+                                    {% endif %}
+                                </td>
+                                <td><code class="custom-id-badge">{{ item.customId }}</code></td>
+                                <td><span class="item-name">{{ item.name }}</span></td>
+                                {% for type in ['String', 'Int', 'Bool', 'Text'] %}
+                                    {% for i in 1..3 %}
+                                        {% if attribute(inventory, 'custom' ~ type ~ i ~ 'State') %}
+                                            <td>
+                                                {% set val = attribute(item, type|lower ~ 'Val' ~ i) %}
+                                                {% if type == 'Bool' %}
+                                                    <i class="bi {{ val ? 'bi-check-circle-fill text-success' : 'bi-x-circle text-muted' }}"></i>
+                                                {% else %}
+                                                    {{ val|default('-') }}
+                                                {% endif %}
+                                            </td>
+                                        {% endif %}
+                                    {% endfor %}
+                                {% endfor %}
+                                <td class="text-end text-muted small">{{ item.createdAt|date('M d, Y') }}</td>
+                                <td class="text-center">
+                                    {% set isLiked = item.likes.contains(app.user) %}
+                                    <button type="button" class="btn btn-sm rounded-pill like-btn {{ isLiked ? 'btn-danger' : 'btn-outline-danger' }}" data-item-id="{{ item.id }}">
+                                        <i class="bi {{ isLiked ? 'bi-heart-fill' : 'bi-heart' }}"></i>
+                                        <span class="like-count">{{ item.likes.count }}</span>
+                                    </button>
+                                </td>
+                            </tr>
                             {% endfor %}
-                        {% endfor %}
-
-                        <td class="text-end text-muted small">
-                            {{ item.createdAt|date('M d, Y') }}
-                        </td>
-                        <td class="text-center">
-                            {% set isLiked = item.likes.contains(app.user) %}
-                            <button type="button"
-                                    class="btn btn-sm rounded-pill like-btn {{ isLiked ? 'btn-danger' : 'btn-outline-danger' }}"
-                                    data-item-id="{{ item.id }}">
-                                <i class="bi {{ isLiked ? 'bi-heart-fill' : 'bi-heart' }}"></i>
-                                <span class="like-count">{{ item.likes.count }}</span>
-                            </button>
-                        </td>
-                    </tr>
-                    {% else %}
-                    <tr>
-                        <td colspan="25" class="text-center py-5">
-                            <div class="py-4">
-                                <p class="text-muted mb-3">This inventory is currently empty.</p>
-                                <a href="{{ path('app_item_new', {id: inventory.id}) }}" class="btn btn-sm btn-outline-dark" style="border-radius: 6px;">
-                                    Add your first item
-                                </a>
-                            </div>
-                        </td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-        </form>
-    </div>
-
-    <div class="d-flex justify-content-center mt-5 mb-4 small">
-        <div class="minimal-pagination d-flex gap-1 align-items-center">
-            {{ knp_pagination_render(pagination) }}
+                        </tbody>
+                    </table>
+                </form>
+            </div>
+            <div class="d-flex justify-content-center mt-4">
+                {{ knp_pagination_render(pagination) }}
+            </div>
         </div>
-    </div>
 
-    <div class="row mt-5">
-        <div class="col-12">
-            <h3 class="fw-bold mb-4"><i class="bi bi-chat-left-text me-2"></i>Discussion</h3>
+        <div class="tab-pane fade" id="discussion-pane" role="tabpanel">
+            <div class="card border-0 shadow-sm p-4">
+                <div id="discussion-box" class="mb-3" style="height: 500px; overflow-y: auto;">
+                    {% for comment in inventory.comments %}
+                        <div class="d-flex mb-3 pb-3 border-bottom" data-id="{{ comment.id }}">
+                            <div class="flex-shrink-0">
+                                <div class="bg-secondary text-white rounded-circle d-flex align-items-center justify-content-center" style="width: 38px; height: 38px;">
+                                    {{ comment.author.userIdentifier|slice(0, 2)|upper }}
+                                </div>
+                            </div>
+                            <div class="ms-3 flex-grow-1">
+                                <div class="mb-1">
+                                    <span class="fw-bold text-dark me-2">{{ comment.author.userIdentifier }}</span>
+                                    <small class="text-muted">{{ comment.createdAt|date('d M Y, H:i') }}</small>
+                                </div>
+                                <div class="markdown-content-initial text-muted-dark invisible">
+                                    {{ comment.content }}
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+                <div class="input-group">
+                    <textarea id="comment-input" class="form-control" placeholder="Write a message..."></textarea>
+                    <button class="btn btn-dark" type="button" id="btn-post-comment"><i class="bi bi-send-fill"></i></button>
+                </div>
+            </div>
+        </div>
 
-            <div id="discussion-box" class="p-4 mb-3 border rounded shadow-sm bg-white" style="height: 400px; overflow-y: auto;">
-                {% set lastCommentId = 0 %}
+        <div class="tab-pane fade" id="stats-pane" role="tabpanel">
+            <div class="card border-0 shadow-sm p-4 text-center">
+                <i class="bi bi-graph-up display-4 text-muted mb-3"></i>
+                <h3>Inventory Statistics</h3>
+                <p class="text-muted">Calculations for numeric and string fields will appear here.</p>
+            </div>
+        </div>
 
-                {% for comment in inventory.comments %}
-                    <div class="d-flex mb-3 pb-3 border-bottom transition-fade" data-id="{{ comment.id }}">
-                        <div class="flex-shrink-0">
-                            <div class="bg-secondary text-white rounded-circle d-flex align-items-center justify-content-center shadow-sm" style="width: 38px; height: 38px; font-size: 0.85rem; font-weight: bold;">
-                                {{ comment.author.userIdentifier|slice(0, 2)|upper }}
+        <div class="tab-pane fade" id="settings-pane" role="tabpanel" aria-labelledby="settings-tab">
+            {% if is_granted('INVENTORY_EDIT', inventory) %}
+                <div class="card border-0 shadow-sm p-4">
+                    <form method="POST" action="{{ path('app_inventory_settings', {id: inventory.id}) }}">
+                        <span class="section-label d-block mb-3" style="font-size: 0.75rem; font-weight: 700; text-transform: uppercase; color: #9ca3af; letter-spacing: 0.05em;">
+                            Update Fields
+                        </span>
+                        <p class="text-muted small mb-4">Modify the fields below to update your inventory settings.</p>
+
+                        <div class="row g-4">
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold small">Title (View Only)</label>
+                                <input type="text" class="form-control bg-light" value="{{ inventory.title }}" readonly>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold small">Category</label>
+                                <select name="category" class="form-select">
+                                    <option value="">-- Select Category --</option>
+                                    {% for cat in categories %}
+                                        <option value="{{ cat.id }}"
+                                            {% if inventory.category and inventory.category.id == cat.id %}selected{% endif %}>
+                                            {{ cat.name }}
+                                        </option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold small">Tags (Comma separated)</label>
+                                <input type="text" name="tags" class="form-control" value="{{ inventory.tags|join(', ') }}" placeholder="e.g. electronics, home, storage">
+                            </div>
+
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold small">Visibility</label>
+                                <select name="is_public" class="form-select">
+                                    <option value="1" {% if inventory.isPublic %}selected{% endif %}>Public</option>
+                                    <option value="0" {% if not inventory.isPublic %}selected{% endif %}>Private</option>
+                                </select>
+                            </div>
+
+                            <div class="col-md-12">
+                                <label class="form-label fw-bold small">Description</label>
+                                <textarea name="description" class="form-control" rows="3" placeholder="Description">{{ inventory.description }}</textarea>
                             </div>
                         </div>
 
-                        <div class="ms-3 flex-grow-1">
-                            <div class="mb-1">
-                                <span class="fw-bold text-dark me-2">{{ comment.author.userIdentifier }}</span>
-                                <small class="text-muted" title="{{ comment.createdAt|date('F j, Y, g:i a') }}">
-                                    {{ comment.createdAt|date('d M Y, H:i') }}
-                                </small>
-                            </div>
-                            <div class="markdown-content-initial text-muted-dark invisible" style="line-height: 1.5;">
-                                {{ comment.content }}
-                            </div>
+                        <div class="mt-5 pt-4 border-top d-flex justify-content-end">
+                            <button type="submit" class="btn btn-dark px-5 fw-bold" style="border-radius: 8px;">
+                                Save Changes
+                            </button>
                         </div>
-                    </div>
-                    {% set lastCommentId = comment.id %}
-                {% else %}
-                    <div class="text-center py-5 no-messages">
-                        <p class="text-muted">No messages yet. Start the conversation!</p>
-                    </div>
-                {% endfor %}
-            </div>
-
-            <div class="input-group mb-5 shadow-sm">
-                <textarea id="comment-input" class="form-control" placeholder="Write a message... (Markdown supported)" rows="2" style="border-radius: 8px 0 0 8px;"></textarea>
-                <button class="btn btn-dark px-4" type="button" id="btn-post-comment" style="border-radius: 0 8px 8px 0;">
-                    <i class="bi bi-send-fill"></i>
-                </button>
-            </div>
+                    </form>
+                </div>
+            {% else %}
+                <div class="alert alert-warning">You do not have permission to edit this inventory.</div>
+            {% endif %}
         </div>
     </div>
 </div>
 {% endblock %}
 
 {% block javascripts %}
-    <script>
+     <script>
     document.addEventListener('DOMContentLoaded', function() {
         const selectAll = document.getElementById('select-all');
         const checkboxes = document.querySelectorAll('.item-checkbox');
