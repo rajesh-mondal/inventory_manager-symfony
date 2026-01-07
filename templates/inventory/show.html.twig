@@ -82,7 +82,6 @@
         background: #000;
         color: #fff !important;
     }
-
 </style>
 
 <div class="container py-4">
@@ -239,6 +238,50 @@
             {{ knp_pagination_render(pagination) }}
         </div>
     </div>
+
+    <div class="row mt-5">
+        <div class="col-12">
+            <h3 class="fw-bold mb-4"><i class="bi bi-chat-left-text me-2"></i>Discussion</h3>
+
+            <div id="discussion-box" class="p-4 mb-3 border rounded shadow-sm bg-white" style="height: 400px; overflow-y: auto;">
+                {% set lastCommentId = 0 %}
+
+                {% for comment in inventory.comments %}
+                    <div class="d-flex mb-3 pb-3 border-bottom transition-fade" data-id="{{ comment.id }}">
+                        <div class="flex-shrink-0">
+                            <div class="bg-secondary text-white rounded-circle d-flex align-items-center justify-content-center shadow-sm" style="width: 38px; height: 38px; font-size: 0.85rem; font-weight: bold;">
+                                {{ comment.author.userIdentifier|slice(0, 2)|upper }}
+                            </div>
+                        </div>
+
+                        <div class="ms-3 flex-grow-1">
+                            <div class="mb-1">
+                                <span class="fw-bold text-dark me-2">{{ comment.author.userIdentifier }}</span>
+                                <small class="text-muted" title="{{ comment.createdAt|date('F j, Y, g:i a') }}">
+                                    {{ comment.createdAt|date('d M Y, H:i') }}
+                                </small>
+                            </div>
+                            <div class="text-muted-dark" style="line-height: 1.5;">
+                                {{ comment.content|nl2br }}
+                            </div>
+                        </div>
+                    </div>
+                    {% set lastCommentId = comment.id %}
+                {% else %}
+                    <div class="text-center py-5 no-messages">
+                        <p class="text-muted">No messages yet. Start the conversation!</p>
+                    </div>
+                {% endfor %}
+            </div>
+
+            <div class="input-group mb-5 shadow-sm">
+                <textarea id="comment-input" class="form-control" placeholder="Write a message... (Markdown supported)" rows="2" style="border-radius: 8px 0 0 8px;"></textarea>
+                <button class="btn btn-dark px-4" type="button" id="btn-post-comment" style="border-radius: 0 8px 8px 0;">
+                    <i class="bi bi-send-fill"></i>
+                </button>
+            </div>
+        </div>
+    </div>
 </div>
 {% endblock %}
 
@@ -333,6 +376,75 @@
                 });
             });
         });
+    });
+
+    // For Discussion Box
+    document.addEventListener('DOMContentLoaded', function() {
+        let lastCommentId = {{ lastCommentId|default(0) }};
+        const discussionBox = document.getElementById('discussion-box');
+        const commentInput = document.getElementById('comment-input');
+        const postBtn = document.getElementById('btn-post-comment');
+        const inventoryId = {{ inventory.id }};
+
+        const scrollToBottom = () => {
+            discussionBox.scrollTop = discussionBox.scrollHeight;
+        };
+        scrollToBottom();
+
+        postBtn.addEventListener('click', function() {
+            const content = commentInput.value.trim();
+            if (!content) return;
+
+            fetch(`/inventory/${inventoryId}/comments/add`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'X-Requested-With': 'XMLHttpRequest' },
+                body: JSON.stringify({ content: content })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    commentInput.value = '';
+                } else {
+                    alert(data.error || 'Error posting message');
+                }
+            });
+        });
+
+        setInterval(function() {
+            fetch(`/inventory/${inventoryId}/comments/updates?lastId=` + lastCommentId)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.length > 0) {
+                        data.forEach(comment => {
+                            if (document.querySelector(`[data-id="${comment.id}"]`)) return;
+
+                            const initials = comment.author.substring(0, 2).toUpperCase();
+
+                            const html = `
+                                <div class="d-flex mb-3 pb-3 border-bottom" data-id="${comment.id}">
+                                    <div class="flex-shrink-0">
+                                        <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center shadow-sm" style="width: 38px; height: 38px; font-size: 0.85rem; font-weight: bold;">
+                                            ${initials}
+                                        </div>
+                                    </div>
+                                    <div class="ms-3 flex-grow-1">
+                                        <div class="mb-1">
+                                            <span class="fw-bold text-dark me-2">${comment.author}</span>
+                                            <small class="text-muted">${comment.date}</small>
+                                        </div>
+                                        <div class="text-muted-dark" style="line-height: 1.5;">
+                                            ${comment.content}
+                                        </div>
+                                    </div>
+                                </div>`;
+                            discussionBox.insertAdjacentHTML('beforeend', html);
+
+                            lastCommentId = comment.id;
+                        });
+                        scrollToBottom();
+                    }
+                });
+        }, 3000);
     });
     </script>
 {% endblock %}
