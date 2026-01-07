@@ -1,56 +1,72 @@
+/* Global Defaults */
+body {
+    font-family: 'Inter', sans-serif;
+    background-color: #f8f9fa;
+}
+
+.navbar {
+    box-shadow: 0 2px 4px rgba(0,0,0,.08);
+}
+
+.card {
+    border: none;
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+    border-radius: 12px;
+}
+
+/* Search Bar Styling */
 .search-wrapper {
     position: relative;
-    width: 250px;
+    width: 270px;
 }
 
 .search-icon {
-    position: absolute;
+    /*position: absolute;
     left: 12px;
     top: 50%;
     transform: translateY(-50%);
     color: #9ca3af;
     font-size: 0.9rem;
-    pointer-events: none;
+    pointer-events: none;*/
+    position: absolute;
+    left: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #9ca3af;
+    font-size: 0.9rem;
+    z-index: 5;
 }
 
 .search-input {
     width: 100%;
     padding: 0.5rem 1rem 0.5rem 2.2rem;
-    background-color: #ffffff;
-    border: 1px solid #e5e7eb;
-    border-radius: 8px;
-    font-size: 0.85rem;
-    transition: all 0.2s ease;
+    background-color: #f8f9fa;
+/*    border: 1px solid #e5e7eb;*/
+    border: 1px solid transparent;
+/*    border-radius: 8px;*/
+    border-radius: 10px;
+/*    font-size: 0.85rem;*/
+    font-size: 0.9rem;
+/*    transition: all 0.2s ease;*/
+    transition: all 0.3s ease;
     outline: none;
 }
 
 .search-input:focus {
-    border-color: #111827;
+    /*border-color: #111827;
     box-shadow: 0 0 0 3px rgba(17, 24, 39, 0.05);
-    width: 280px;
-}
-
-.search-input::placeholder {
-    color: #9ca3af;
-}
-
-.search-wrapper .form-control:focus {
-    background-color: #fff !important;
-    box-shadow: 0 0 0 4px rgba(0, 0, 0, 0.05);
-    border: 1px solid #dee2e6 !important;
-    width: 285px;
-    transition: all 0.3s ease;
-}
-
-.search-wrapper .form-control {
-    transition: all 0.3s ease;
+    width: 280px;*/
+    background-color: #ffffff;
+    border-color: #dee2e6;
+    box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.05);
+    width: 305px;
 }
 
 /* Global Navigation Styling */
 .nav-link-custom {
     font-size: 0.85rem;
     font-weight: 500;
-    color: #6c757d; /* Muted gray */
+    color: #6c757d;
     text-decoration: none;
     transition: color 0.2s ease-in-out;
     padding: 0.5rem 0.75rem;
@@ -58,23 +74,21 @@
 }
 
 .nav-link-custom:hover {
-    color: #000; /* Pure black on hover */
-    background-color: #f8f9fa; /* Very subtle background hint */
+    color: #000;
+    background-color: #f8f9fa;
 }
 
-/* State for the page the user is currently on */
 .nav-link-custom.active {
     color: #000;
     font-weight: 700;
 }
 
-/* Logout specific styling to keep it subtle */
 .logout-link {
     font-size: 0.8rem;
     color: #adb5bd;
 }
 
 .logout-link:hover {
-    color: #dc3545; /* Soft red on hover for logout */
+    color: #dc3545;
     background-color: transparent;
 }
