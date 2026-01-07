@@ -1,6 +1,25 @@
+# English Translations
 nav:
     home: "Home"
     inventories: "My Inventories"
+    logout: "Logout"
+    login: "Login"
+    admin_dashboard: "Admin Dashboard"
+    join_free: "Join Free"
+    profile: "My Profile"
+    settings: "Account Settings"
+
+auth:
+    register: "Register"
+    login: "Log In"
+    welcome_back: "Welcome back!"
+    create_account: "Create your account"
+    already_member: "Already a member?"
+
+search:
+    placeholder: "Global search..."
+    no_results: "No results found for"
+    button: "Search"
 
 tabs:
     items: "Items"
@@ -13,3 +32,29 @@ buttons:
     save: "Save Changes"
     edit: "Edit"
     delete: "Delete"
+    bulk_edit: "Bulk Edit"
+    cancel: "Cancel"
+    confirm: "Confirm"
+
+inventory:
+    title: "Inventory"
+    created: "Created"
+    likes: "Likes"
+    image: "Image"
+    item_name: "Item Name"
+    custom_id: "Custom ID"
+    no_items: "No items found in this inventory."
+    selected_items: "items selected"
+
+stats_panel:
+    total_items: "Total Items"
+    visibility: "Public Visibility"
+    engagement: "Total Engagement"
+    analysis: "Field Analysis"
+    averages: "Averages & Totals"
+    system_info: "System Info"
+    public: "Visible to everyone"
+    private: "Private to you"
+    avg_price: "Average Price"
+    last_updated: "Last Updated"
+    never: "Never"

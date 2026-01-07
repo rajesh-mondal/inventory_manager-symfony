@@ -1,9 +1,24 @@
-# Spanish Translations
 nav:
     home: "Inicio"
     inventories: "Mis Inventarios"
     logout: "Cerrar sesión"
     login: "Iniciar sesión"
+    admin_dashboard: "Panel de Admin"
+    join_free: "Únete Gratis"
+    profile: "Mi Perfil"
+    settings: "Ajustes de Cuenta"
+
+auth:
+    register: "Registrarse"
+    login: "Iniciar Sesión"
+    welcome_back: "¡Bienvenido de nuevo!"
+    create_account: "Crea tu cuenta"
+    already_member: "¿Ya eres miembro?"
+
+search:
+    placeholder: "Buscar en todo..."
+    no_results: "No se encontraron resultados para"
+    button: "Buscar"
 
 tabs:
     items: "Artículos"
