@@ -5,27 +5,61 @@
 {% block body %}
 <style>
     body { background-color: #f9fafb; }
+
     .breadcrumb-item a { color: #6b7280; text-decoration: none; font-size: 0.875rem; }
     .breadcrumb-item.active { color: #111827; font-weight: 500; font-size: 0.875rem; }
+
+    .nav-tabs { border-bottom: 1px solid #e5e7eb; }
+    .nav-tabs .nav-link { color: #6b7280; border: none; font-weight: 600; padding: 1rem 1.5rem; transition: all 0.2s; }
+    .nav-tabs .nav-link.active { color: #111827; border-bottom: 2px solid #111827; background: none; }
+
     .table-container {
         background: #fff; border-radius: 12px; border: 1px solid #e5e7eb;
         box-shadow: 0 1px 3px rgba(0,0,0,0.1); overflow: hidden;
     }
+
     .table thead th {
-        background-color: #fdfdfd; text-transform: uppercase; font-size: 0.7rem;
-        font-weight: 700; letter-spacing: 0.05em; color: #9ca3af;
-        border-bottom: 1px solid #e5e7eb; padding: 1.25rem 1.5rem;
+        background-color: #fdfdfd;
+        text-transform: uppercase;
+        font-size: 0.7rem;
+        font-weight: 700;
+        letter-spacing: 0.05em;
+        color: #9ca3af;
+        border-bottom: 1px solid #e5e7eb;
+        padding: 1rem 1.25rem;
+        vertical-align: middle;
+        white-space: nowrap;
     }
 
-    .nav-tabs { border-bottom: 1px solid #e5e7eb; }
-    .nav-tabs .nav-link { color: #6b7280; border: none; font-weight: 600; padding: 1rem 1.5rem; }
-    .nav-tabs .nav-link.active { color: #111827; border-bottom: 2px solid #111827; background: none; }
+    .table tbody td {
+        padding: 1rem 1.25rem;
+        vertical-align: middle;
+        border-bottom: 1px solid #f3f4f6;
+        color: #374151;
+        font-size: 0.9rem;
+    }
+
+    .col-checkbox { width: 40px; padding-left: 1.5rem !important; }
 
     .custom-id-badge {
-        font-family: 'Monaco', 'Consolas', monospace; background-color: #f3f4f6;
-        color: #111827; padding: 0.3rem 0.6rem; border-radius: 4px; font-size: 0.85rem; border: 1px solid #e5e7eb;
+        font-family: 'Monaco', 'Consolas', monospace;
+        background-color: #f8fafc;
+        color: #475569;
+        padding: 0.25rem 0.5rem;
+        border-radius: 4px;
+        font-size: 0.75rem;
+        border: 1px solid #e2e8f0;
     }
+
+    .text-center { text-align: center !important; }
+    .text-end { text-align: right !important; }
     .item-row.selected { background-color: #f0f7ff !important; }
+
+    .like-btn {
+        border: 1px solid #fee2e2;
+        padding: 0.25rem 0.75rem;
+        font-size: 0.85rem;
+    }
 </style>
 
 <div class="container py-4">
@@ -98,48 +132,70 @@
                     </div>
                 {% endif %}
                 <form id="bulk-form" method="POST">
-                    <table class="table mb-0">
+                    <table class="table mb-0" style="table-layout: auto;">
                         <thead>
                             <tr>
                                 {% if is_granted('INVENTORY_EDIT', inventory) %}
-                                    <th><input type="checkbox" id="select-all" class="form-check-input"></th>
+                                    <th class="col-checkbox">
+                                        <input type="checkbox" id="select-all" class="form-check-input">
+                                    </th>
                                 {% endif %}
                                 <th>Image</th>
                                 <th>Custom ID</th>
                                 <th>Item Name</th>
+
+                                {# Dynamic Columns Header #}
                                 {% for type in ['String', 'Int', 'Bool', 'Text'] %}
                                     {% for i in 1..3 %}
                                         {% if attribute(inventory, 'custom' ~ type ~ i ~ 'State') %}
-                                            <th>{{ attribute(inventory, 'custom' ~ type ~ i ~ 'Name') }}</th>
+                                            {# Center "Bool" headers, left-align others #}
+                                            <th class="{{ type == 'Bool' ? 'text-center' : '' }}">
+                                                {{ attribute(inventory, 'custom' ~ type ~ i ~ 'Name') }}
+                                            </th>
                                         {% endif %}
                                     {% endfor %}
                                 {% endfor %}
-                                <th>Created</th>
-                                <th>Likes</th>
+
+                                <th class="text-end">Created</th>
+                                <th class="text-center">Likes</th>
                             </tr>
                         </thead>
                         <tbody>
                             {% for item in pagination %}
-                            <tr class="align-middle item-row">
+                            <tr class="item-row">
                                 {% if is_granted('INVENTORY_EDIT', inventory) %}
-                                    <td><input type="checkbox" name="item_ids[]" value="{{ item.id }}" class="form-check-input item-checkbox"></td>
+                                    <td class="col-checkbox">
+                                        <input type="checkbox" name="item_ids[]" value="{{ item.id }}" class="item-checkbox form-check-input">
+                                    </td>
                                 {% endif %}
+
+                                {# Image Column #}
                                 <td>
                                     {% if item.image %}
                                         <img src="{{ asset('uploads/items/' ~ item.image) }}" style="width: 40px; height: 40px; object-fit: cover; border-radius: 6px;">
                                     {% else %}
-                                        <div class="bg-light text-center" style="width: 40px; height: 40px; border-radius: 6px; line-height: 40px;"><i class="bi bi-image text-muted"></i></div>
+                                        <div class="bg-light text-center" style="width: 40px; height: 40px; border-radius: 6px; line-height: 40px;">
+                                            <i class="bi bi-image text-muted"></i>
+                                        </div>
                                     {% endif %}
                                 </td>
+
+                                {# Custom ID & Name #}
                                 <td><code class="custom-id-badge">{{ item.customId }}</code></td>
-                                <td><span class="item-name">{{ item.name }}</span></td>
+                                <td class="fw-medium text-dark">{{ item.name }}</td>
+
+                                {# Dynamic Data Cells #}
                                 {% for type in ['String', 'Int', 'Bool', 'Text'] %}
                                     {% for i in 1..3 %}
                                         {% if attribute(inventory, 'custom' ~ type ~ i ~ 'State') %}
-                                            <td>
-                                                {% set val = attribute(item, type|lower ~ 'Val' ~ i) %}
+                                            {% set val = attribute(item, type|lower ~ 'Val' ~ i) %}
+                                            <td class="{{ type == 'Bool' ? 'text-center' : '' }}">
                                                 {% if type == 'Bool' %}
-                                                    <i class="bi {{ val ? 'bi-check-circle-fill text-success' : 'bi-x-circle text-muted' }}"></i>
+                                                    {% if val %}
+                                                        <i class="bi bi-check-circle-fill text-success fs-5"></i>
+                                                    {% else %}
+                                                        <i class="bi bi-x-circle text-muted opacity-50"></i>
+                                                    {% endif %}
                                                 {% else %}
                                                     {{ val|default('-') }}
                                                 {% endif %}
@@ -147,15 +203,29 @@
                                         {% endif %}
                                     {% endfor %}
                                 {% endfor %}
-                                <td class="text-end text-muted small">{{ item.createdAt|date('M d, Y') }}</td>
+
+                                {# Meta: Created Date #}
+                                <td class="text-end text-muted" style="font-size: 0.85rem;">
+                                    {{ item.createdAt|date('M d, Y') }}
+                                </td>
+
+                                {# Like Button with the required '.like-count' class for JS #}
                                 <td class="text-center">
                                     {% set isLiked = item.likes.contains(app.user) %}
-                                    <button type="button" class="btn btn-sm rounded-pill like-btn {{ isLiked ? 'btn-danger' : 'btn-outline-danger' }}" data-item-id="{{ item.id }}">
+                                    <button type="button"
+                                            class="btn btn-sm rounded-pill like-btn {{ isLiked ? 'btn-danger text-white' : 'btn-outline-danger' }}"
+                                            data-item-id="{{ item.id }}">
                                         <i class="bi {{ isLiked ? 'bi-heart-fill' : 'bi-heart' }}"></i>
-                                        <span class="like-count">{{ item.likes.count }}</span>
+                                        <span class="ms-1 like-count">{{ item.likes.count }}</span>
                                     </button>
                                 </td>
                             </tr>
+                            {% else %}
+                                <tr>
+                                    <td colspan="20" class="text-center py-5 text-muted">
+                                        No items found in this inventory.
+                                    </td>
+                                </tr>
                             {% endfor %}
                         </tbody>
                     </table>
