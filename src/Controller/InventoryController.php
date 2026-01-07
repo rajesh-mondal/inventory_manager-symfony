@@ -123,10 +123,33 @@ class InventoryController extends AbstractController
             10
         );
 
+        $items = $inventory->getItems();
+        $totalItems = count($items);
+        $totalLikes = 0;
+        $sumNumericField = 0;
+        $numericFieldCount = 0;
+
+        foreach ($items as $item) {
+            $totalLikes += count($item->getLikes());
+
+            if ($item->getIntVal1() !== null) {
+                $sumNumericField += $item->getIntVal1();
+                $numericFieldCount++;
+            }
+        }
+
+        $avgNumericField = $numericFieldCount > 0 ? ($sumNumericField / $numericFieldCount) : 0;
+
         return $this->render('inventory/show.html.twig', [
             'inventory' => $inventory,
             'pagination' => $pagination,
             'categories' => $categoryRepository->findAll(),
+            'stats' => [
+                'totalItems' => $totalItems,
+                'totalLikes' => $totalLikes,
+                'avgPrice' => $avgNumericField,
+                'lastUpdated' => $totalItems > 0 ? $items->last()->getCreatedAt() : null,
+            ],
         ]);
     }
 
