@@ -261,8 +261,8 @@
                                     {{ comment.createdAt|date('d M Y, H:i') }}
                                 </small>
                             </div>
-                            <div class="text-muted-dark" style="line-height: 1.5;">
-                                {{ comment.content|nl2br }}
+                            <div class="markdown-content-initial text-muted-dark invisible" style="line-height: 1.5;">
+                                {{ comment.content }}
                             </div>
                         </div>
                     </div>
@@ -386,6 +386,11 @@
         const postBtn = document.getElementById('btn-post-comment');
         const inventoryId = {{ inventory.id }};
 
+        document.querySelectorAll('.markdown-content-initial').forEach(el => {
+            el.innerHTML = marked.parse(el.textContent.trim());
+            el.classList.remove('invisible');
+        });
+
         const scrollToBottom = () => {
             discussionBox.scrollTop = discussionBox.scrollHeight;
         };
@@ -418,12 +423,13 @@
                         data.forEach(comment => {
                             if (document.querySelector(`[data-id="${comment.id}"]`)) return;
 
+                            const htmlContent = marked.parse(comment.content);
                             const initials = comment.author.substring(0, 2).toUpperCase();
 
                             const html = `
                                 <div class="d-flex mb-3 pb-3 border-bottom" data-id="${comment.id}">
                                     <div class="flex-shrink-0">
-                                        <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center shadow-sm" style="width: 38px; height: 38px; font-size: 0.85rem; font-weight: bold;">
+                                        <div class="bg-secondary text-white rounded-circle d-flex align-items-center justify-content-center shadow-sm" style="width: 38px; height: 38px; font-size: 0.85rem; font-weight: bold;">
                                             ${initials}
                                         </div>
                                     </div>
@@ -433,7 +439,7 @@
                                             <small class="text-muted">${comment.date}</small>
                                         </div>
                                         <div class="text-muted-dark" style="line-height: 1.5;">
-                                            ${comment.content}
+                                            ${htmlContent}
                                         </div>
                                     </div>
                                 </div>`;
