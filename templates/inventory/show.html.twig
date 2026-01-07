@@ -141,9 +141,9 @@
                                 <input type="checkbox" id="select-all" class="form-check-input">
                             </th>
                         {% endif %}
-                        <th style="min-width: 105px;">Image</th>
-                        <th style="min-width: 140px;">Custom ID</th>
-                        <th style="min-width: 200px;">Item Name</th>
+                        <th>Image</th>
+                        <th>Custom ID</th>
+                        <th>Item Name</th>
 
                         {% for type in ['String', 'Int', 'Bool', 'Text'] %}
                             {% for i in 1..3 %}
@@ -155,6 +155,7 @@
                         {% endfor %}
 
                         <th class="text-end">Created</th>
+                        <th class="text-center">Likes</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -205,6 +206,15 @@
 
                         <td class="text-end text-muted small">
                             {{ item.createdAt|date('M d, Y') }}
+                        </td>
+                        <td class="text-center">
+                            {% set isLiked = item.likes.contains(app.user) %}
+                            <button type="button"
+                                    class="btn btn-sm rounded-pill like-btn {{ isLiked ? 'btn-danger' : 'btn-outline-danger' }}"
+                                    data-item-id="{{ item.id }}">
+                                <i class="bi {{ isLiked ? 'bi-heart-fill' : 'bi-heart' }}"></i>
+                                <span class="like-count">{{ item.likes.count }}</span>
+                            </button>
                         </td>
                     </tr>
                     {% else %}
@@ -281,5 +291,48 @@
             form.submit();
         }
     }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        const likeButtons = document.querySelectorAll('.like-btn');
+
+        likeButtons.forEach(btn => {
+            btn.addEventListener('click', function(e) {
+                e.preventDefault();
+
+                const currentBtn = e.currentTarget;
+                const itemId = currentBtn.dataset.itemId;
+                const countSpan = currentBtn.querySelector('.like-count');
+                const icon = currentBtn.querySelector('i');
+
+                fetch(`/item/${itemId}/like`, {
+                    method: 'POST',
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest'
+                    }
+                })
+                .then(response => {
+                    if (!response.ok) throw new Error('Server error');
+                    return response.json();
+                })
+                .then(data => {
+                    if (data.likesCount !== undefined) {
+                        countSpan.innerText = data.likesCount;
+
+                        if (currentBtn.classList.contains('btn-outline-danger')) {
+                            currentBtn.classList.replace('btn-outline-danger', 'btn-danger');
+                            icon.classList.replace('bi-heart', 'bi-heart-fill');
+                        } else {
+                            currentBtn.classList.replace('btn-danger', 'btn-outline-danger');
+                            icon.classList.replace('bi-heart-fill', 'bi-heart');
+                        }
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Session expired or server error. Please refresh.');
+                });
+            });
+        });
+    });
     </script>
 {% endblock %}

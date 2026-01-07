@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Repository\ItemRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
@@ -66,9 +68,16 @@ class Item
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $image = null;
 
+    /**
+     * @var Collection<int, User>
+     */
+    #[ORM\ManyToMany(targetEntity: User::class)]
+    private Collection $likes;
+
     public function __construct()
     {
         $this->createdAt = new \DateTimeImmutable();
+        $this->likes = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -276,6 +285,30 @@ class Item
     public function setImage(?string $image): static
     {
         $this->image = $image;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, User>
+     */
+    public function getLikes(): Collection
+    {
+        return $this->likes;
+    }
+
+    public function addLike(User $like): static
+    {
+        if (!$this->likes->contains($like)) {
+            $this->likes->add($like);
+        }
+
+        return $this;
+    }
+
+    public function removeLike(User $like): static
+    {
+        $this->likes->removeElement($like);
 
         return $this;
     }

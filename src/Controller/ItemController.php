@@ -11,6 +11,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\HttpFoundation\File\Exception\FileException;
 use Symfony\Component\String\Slugger\SluggerInterface;
+use Symfony\Component\HttpFoundation\JsonResponse;
 
 class ItemController extends AbstractController
 {
@@ -171,5 +172,35 @@ class ItemController extends AbstractController
         $this->addFlash('success', count($items) . ' items updated.');
 
         return $this->redirectToRoute('app_inventory_show', ['id' => $items[0]->getInventory()->getId()]);
+    }
+
+    #[Route('/item/{id}/like', name: 'app_item_like', methods: ['POST'])]
+    public function toggleLike(Item $item, EntityManagerInterface $em): JsonResponse
+    {
+        $user = $this->getUser();
+
+        if (!$user) {
+            return new JsonResponse(['error' => 'User not found'], 401);
+        }
+
+        try {
+            if ($item->getLikes()->contains($user)) {
+                $item->removeLike($user);
+            } else {
+                $item->addLike($user);
+            }
+
+            $em->flush();
+
+            return new JsonResponse([
+                'likesCount' => $item->getLikes()->count()
+            ], 200);
+
+        } catch (\Exception $e) {
+            return new JsonResponse([
+                'error' => 'Server Error',
+                'message' => $e->getMessage()
+            ], 500);
+        }
     }
 }
