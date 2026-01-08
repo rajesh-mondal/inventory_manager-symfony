@@ -13,10 +13,12 @@
 <div class="container py-5">
     <div class="row justify-content-center">
         <div class="col-lg-10">
-            <h1 class="fw-bold text-dark mb-4">Bulk Edit</h1>
+            <h1 class="fw-bold text-dark mb-4">{{ 'bulk_item_edit.title'|trans }}</h1>
 
             <div class="bulk-card mb-4">
-                <span class="section-label">Selected Items ({{ items|length }})</span>
+                <span class="section-label">
+                    {{ 'bulk_item_edit.selected_count'|trans({'%count%': items|length}) }}
+                </span>
                 <div>
                     {% for item in items %}
                         <div class="item-badge">
@@ -29,15 +31,15 @@
 
             <div class="bulk-card">
                 <form id="bulk-update-form" method="POST" action="{{ path('app_item_bulk_update') }}">
-                    <span class="section-label">Update Fields</span>
-                    <p class="text-muted small mb-4">Leave fields empty if you do not want to change their current values.</p>
+                    <span class="section-label">{{ 'edit_inventory.update_fields'|trans }}</span>
+                    <p class="text-muted small mb-4">{{ 'edit_inventory.bulk_help'|trans }}</p>
 
                     {% if not isSingle %}
                         <div class="alert alert-warning border-0 shadow-sm d-flex align-items-center mb-4" style="border-radius: 10px;">
                             <i class="bi bi-exclamation-triangle-fill me-3 fs-4"></i>
                             <div>
-                                <strong>Bulk Edit Warning:</strong> You are editing {{ items|length }} items.
-                                Only fields you modify will be updated across all selected items.
+                                <strong>{{ 'edit_inventory.bulk_warning_title'|trans }}</strong>
+                                    {{ 'bulk_item_edit.warning_body'|trans({'%count%': items|length}) }}
                             </div>
                         </div>
                     {% endif %}
@@ -63,9 +65,9 @@
                                             <textarea name="custom_text{{ i }}" class="form-control" rows="2">{{ currentVal }}</textarea>
                                         {% elseif type == 'Bool' %}
                                             <select name="custom_bool{{ i }}" class="form-select">
-                                                <option value="" {% if not isSingle %}selected{% endif %}>Keep Original</option>
-                                                <option value="1" {% if isSingle and currentVal == true %}selected{% endif %}>Yes (True)</option>
-                                                <option value="0" {% if isSingle and currentVal == false %}selected{% endif %}>No (False)</option>
+                                                <option value="" {% if not isSingle %}selected{% endif %}>{{ 'edit_inventory.keep_original'|trans }}</option>
+                                                <option value="1" {% if isSingle and currentVal == true %}selected{% endif %}>{{ 'bulk_item_edit.yes_true'|trans }}</option>
+                                                <option value="0" {% if isSingle and currentVal == false %}selected{% endif %}>{{ 'bulk_item_edit.no_false'|trans }}</option>
                                             </select>
                                         {% endif %}
                                     </div>
@@ -75,8 +77,8 @@
                     </div>
 
                     <div class="mt-5 pt-4 border-top d-flex justify-content-between">
-                        <a href="{{ path('app_inventory_show', {id: inventory.id}) }}" class="btn btn-outline-secondary px-4">Cancel</a>
-                        <button type="submit" class="btn btn-dark px-5 fw-bold">Update All Selected Items</button>
+                        <a href="{{ path('app_inventory_show', {id: inventory.id}) }}" class="btn btn-outline-secondary px-4">{{ 'buttons.cancel'|trans }}</a>
+                        <button type="submit" class="btn btn-dark px-5 fw-bold">{{ 'edit_inventory.update_all'|trans }}</button>
                     </div>
                 </form>
             </div>

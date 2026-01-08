@@ -9,11 +9,18 @@ nav:
     settings: "Ajustes de Cuenta"
 
 auth:
-    register: "Registrarse"
-    login: "Iniciar Sesión"
-    welcome_back: "¡Bienvenido de nuevo!"
-    create_account: "Crea tu cuenta"
-    already_member: "¿Ya eres miembro?"
+    login_title: "¡Iniciar sesión!"
+    welcome_back: "Bienvenido de nuevo"
+    email_label: "Correo electrónico"
+    password_label: "Contraseña"
+    sign_in_btn: "Iniciar sesión"
+    no_account: "¿No tienes una cuenta?"
+    register_link: "Regístrate aquí"
+    register_title: "Registrarse"
+    create_account: "Crear cuenta"
+    agree_terms: "Acepto los términos y condiciones"
+    already_have_account: "¿Ya tienes una cuenta?"
+    login_link: "Inicia sesión aquí"
 
 search:
     placeholder: "Buscar en todo..."
@@ -105,6 +112,24 @@ edit_inventory:
     edit: "Editar"
     delete: "Eliminar"
 
+item_form:
+    new_item_title: "Nuevo Artículo"
+    general_info: "Información General"
+    item_name: "Nombre del Artículo"
+    item_name_placeholder: "Identificador único para este artículo"
+    item_image: "Imagen del Artículo"
+    image_help: "Subir una foto de este artículo (JPG, PNG)"
+    custom_specs: "Especificaciones Personalizadas"
+    enabled: "Habilitado"
+    create_button: "Crear Artículo"
+
+bulk_item_edit:
+    title: "Edición Masiva"
+    selected_count: "Artículos Seleccionados (%count%)"
+    warning_body: "Está editando %count% artículos. Solo se actualizarán los campos que modifique en todos los artículos seleccionados."
+    yes_true: "Sí (Verdadero)"
+    no_false: "No (Falso)"
+
 inventory_show:
     breadcrumb_list: "Inventarios"
     add_item: "+ Añadir Artículo"
@@ -139,6 +164,26 @@ inventory_show:
         system_info: "Información del Sistema"
         category: "Categoría del Inventario"
         no_tags: "Sin etiquetas definidas"
+
+admin:
+    user_mgmt_title: "Gestión de Usuarios"
+    user_mgmt_subtitle: "Gestionar cuentas, roles y permisos de acceso."
+    selected_users: "{0} 0 usuario(s) seleccionado(s)|{1} 1 usuario seleccionado|]1,Inf] %count% usuario(s) seleccionado(s)"
+    actions:
+        make_admin: "Hacer Admin"
+        remove_admin: "Quitar Admin"
+        block: "Bloquear"
+        unblock: "Desbloquear"
+        delete: "Eliminar"
+        confirm_delete: "¿Eliminar permanentemente los usuarios seleccionados?"
+    table:
+        user: "Usuario"
+        email: "Email"
+        roles: "Roles"
+        status: "Estado"
+        you: "Tú"
+        active: "Activo"
+        blocked: "Bloqueado"
 
 tabs:
     items: "Artículos"

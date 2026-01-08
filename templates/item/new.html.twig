@@ -24,9 +24,9 @@
         <div class="col-lg-9">
             <nav aria-label="breadcrumb" class="mb-3">
                 <ol class="breadcrumb">
-                    <li class="breadcrumb-item"><a href="{{ path('app_my_inventories') }}" class="text-decoration-none text-muted small">Inventories</a></li>
+                    <li class="breadcrumb-item"><a href="{{ path('app_my_inventories') }}" class="text-decoration-none text-muted small">{{ 'inventory_show.breadcrumb_list'|trans }}</a></li>
                     <li class="breadcrumb-item"><a href="{{ path('app_inventory_show', {id: inventory.id}) }}" class="text-decoration-none text-muted small">{{ inventory.title }}</a></li>
-                    <li class="breadcrumb-item active small">New Item</li>
+                    <li class="breadcrumb-item active small">{{ 'item_form.new_item_title'|trans }}</li>
                 </ol>
             </nav>
 
@@ -34,20 +34,20 @@
                 <form method="POST" enctype="multipart/form-data">
                     <div class="row">
                         <div class="col-12">
-                            <h3 class="section-title">General Info</h3>
+                            <h3 class="section-title">{{ 'item_form.general_info'|trans }}</h3>
                             <div class="mb-5">
-                                <label class="form-label">Item Name</label>
+                                <label class="form-label">{{ 'item_form.item_name'|trans }}</label>
                                 <input type="text" name="name" class="form-control" placeholder="Unique identifier for this item" required>
                             </div>
                             <div class="mb-4">
-                                <label class="form-label">Item Image</label>
+                                <label class="form-label">{{ 'item_form.item_image'|trans }}</label>
                                 <input type="file" name="image" class="form-control" accept="image/*">
-                                <div class="form-text small">Upload a photo of this item (JPG, PNG)</div>
+                                <div class="form-text small">{{ 'item_form.image_help'|trans }}</div>
                             </div>
                         </div>
 
                         <div class="col-12">
-                            <h3 class="section-title">Custom Specifications</h3>
+                            <h3 class="section-title">{{ 'item_form.custom_specs'|trans }}</h3>
                             <div class="row g-4">
 
                                 {% for type in ['String', 'Int', 'Bool', 'Text'] %}
@@ -68,7 +68,7 @@
                                                 {% elseif type == 'Bool' %}
                                                     <div class="form-check form-switch pt-2">
                                                         <input class="form-check-input" type="checkbox" name="custom_bool{{ i }}" id="bool_{{ i }}">
-                                                        <label class="form-check-label small text-muted" for="bool_{{ i }}">Enabled</label>
+                                                        <label class="form-check-label small text-muted" for="bool_{{ i }}">{{ 'item_form.enabled'|trans }}</label>
                                                     </div>
                                                 {% endif %}
                                             </div>
@@ -80,7 +80,9 @@
                     </div>
 
                     <div class="border-top mt-5 pt-4 d-flex justify-content-end">
-                        <button type="submit" class="btn-save">Create Item</button>
+                        <button type="submit" class="btn-save">
+                            {{ 'item_form.create_button'|trans }}
+                        </button>
                     </div>
                 </form>
             </div>
