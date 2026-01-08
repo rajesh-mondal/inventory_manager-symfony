@@ -1,4 +1,9 @@
 # English Translations
+theme:
+    light: "Light Mode"
+    dark: "Dark Mode"
+    toggle: "Toggle Theme"
+
 nav:
     home: "Home"
     inventories: "My Inventories"
