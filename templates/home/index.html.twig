@@ -79,10 +79,10 @@
     <div class="row g-4">
         <div class="col-lg-8">
             <div class="d-flex justify-content-between align-items-end mb-3">
-                <h2 class="section-title mb-0">Latest Inventories</h2>
+                <h2 class="section-title mb-0">{{ 'home.latest_title'|trans }}</h2>
                 <form action="{{ path('app_inventory_search') }}" method="GET" class="search-wrapper">
                     <i class="bi bi-search search-icon"></i>
-                    <input type="text" name="q" class="search-input" placeholder="Search by name...">
+                    <input type="text" name="q" class="search-input" placeholder="{{ 'home.search_placeholder'|trans }}">
                 </form>
             </div>
 
@@ -90,10 +90,10 @@
                 <table class="table mb-0">
                     <thead>
                         <tr>
-                            <th style="width: 50%;">Name</th>
+                            <th style="width: 50%;">{{ 'table.name'|trans }}</th>
                             {# <th style="width: 25%;">Tags</th> #}
-                            <th style="width: 25%;">Category</th>
-                            <th style="width: 25%; text-align: right;">Creator</th>
+                            <th style="width: 25%;">{{ 'table.category'|trans }}</th>
+                            <th style="width: 25%; text-align: right;">{{ 'table.creator'|trans }}</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -102,7 +102,7 @@
                             <td>
                                 <div class="d-flex flex-column">
                                     <a href="{{ path('app_inventory_show', {id: inv.id}) }}" class="inventory-link">{{ inv.title }}</a>
-                                    <span class="text-muted small mt-1">{{ inv.description|default('No description.')|slice(0, 50) }}...</span>
+                                    <span class="text-muted small mt-1">{{ inv.description|default('home.no_description'|trans)|slice(0, 50) }}...</span>
                                 </div>
                             </td>
                             {# <td>
@@ -112,7 +112,7 @@
                                     {% endfor %}
                                 </div>
                             </td> #}
-                            <td><span class="badge-category">{{ inv.category ? inv.category.name : 'No Category' }}</span></td>
+                            <td><span class="badge-category">{{ inv.category ? inv.category.name : 'home.no_category'|trans }}</span></td>
                             <td class="text-end text-muted small">{{ inv.creator.email|split('@')[0] }}</td>
                         </tr>
                         {% endfor %}
@@ -121,7 +121,7 @@
 
                 <div class="table-footer">
                     <a href="{{ path('app_inventory_search') }}" class="view-all-link">
-                        Explore All Inventories
+                        {{ 'home.explore_all'|trans }}
                         <i class="bi bi-arrow-right"></i>
                     </a>
                 </div>
@@ -130,7 +130,7 @@
 
         <div class="col-lg-4">
             <div class="sidebar-card">
-                <h2 class="section-title" style="font-size: 0.9rem;">Tag Cloud</h2>
+                <h2 class="section-title" style="font-size: 0.9rem;">{{ 'home.tag_cloud'|trans }}</h2>
                 <div class="d-flex flex-wrap gap-2">
                     {% for tag, count in tags %}
                         <a href="{{ path('app_inventory_search', {tag: tag}) }}"
@@ -143,12 +143,12 @@
             </div>
 
             <div class="sidebar-card">
-                <h2 class="section-title" style="font-size: 0.9rem;">Top 5 Popular</h2>
+                <h2 class="section-title" style="font-size: 0.9rem;">{{ 'home.popular_title'|trans }}</h2>
                 <div class="list-group list-group-flush">
                     {% for inv in popular %}
                         <a href="{{ path('app_inventory_show', {id: inv.id}) }}" class="list-group-item list-group-item-action border-0 px-0 d-flex justify-content-between align-items-center">
                             <span class="inventory-link" style="font-size: 0.9rem;">{{ inv.title }}</span>
-                            <span class="badge bg-light text-primary border" style="font-size: 0.75rem;">{{ inv.items|length }} items</span>
+                            <span class="badge bg-light text-primary border" style="font-size: 0.75rem;">{{ inv.items|length }} {{ 'home.items_count'|trans }}</span>
                         </a>
                     {% endfor %}
                 </div>

@@ -19,10 +19,14 @@
                     <a class="navbar-brand fw-bold mb-0" href="{{ path('app_home') }}">InvManager</a>
 
                     <div class="ms-4 d-none d-md-flex align-items-center navbar-nav-links">
-                        <a href="{{ path('app_home') }}" class="nav-link-custom {{ app.request.attributes.get('_route') == 'app_home' ? 'active' : '' }}">Home</a>
+                        <a href="{{ path('app_home') }}" class="nav-link-custom {{ app.request.attributes.get('_route') == 'app_home' ? 'active' : '' }}">
+                            {{ 'nav.home'|trans }}
+                        </a>
 
                         {% if is_granted('ROLE_USER') %}
-                            <a href="{{ path('app_my_inventories') }}" class="nav-link-custom {{ app.request.attributes.get('_route') == 'app_my_inventories' ? 'active' : '' }}">My Inventories</a>
+                            <a href="{{ path('app_my_inventories') }}" class="nav-link-custom {{ app.request.attributes.get('_route') == 'app_my_inventories' ? 'active' : '' }}">
+                                {{ 'nav.inventories'|trans }}
+                            </a>
                         {% endif %}
                     </div>
                 </div>
@@ -31,7 +35,10 @@
                     <form action="{{ path('app_inventory_search') }}" method="GET" class="ms-auto d-none d-md-flex search-wrapper" style="width: 300px;">
                         <div class="position-relative w-100">
                             <i class="bi bi-search position-absolute top-50 start-0 translate-middle-y ms-3"></i>
-                            <input type="text" name="q" class="search-input ps-5 border-0 bg-light" placeholder="Global search..." style="border-radius: 10px; font-size: 0.9rem;" value="{{ app.request.query.get('q') }}">
+                            <input type="text" name="q" class="search-input ps-5 border-0 bg-light"
+                                placeholder="{{ 'search.placeholder'|default('Global search...')|trans }}"
+                                style="border-radius: 10px; font-size: 0.9rem;"
+                                value="{{ app.request.query.get('q') }}">
                         </div>
                     </form>
 
@@ -58,12 +65,20 @@
                     <div class="d-flex align-items-center ms-3">
                         {% if app.user %}
                             {% if is_granted('ROLE_ADMIN') %}
-                                <a href="{{ path('app_admin_users') }}" class="btn btn-sm btn-outline-dark px-3 rounded-pill me-3">Admin Dashboard</a>
+                                <a href="{{ path('app_admin_users') }}" class="btn btn-sm btn-outline-dark px-3 rounded-pill me-3">
+                                    {{ 'nav.admin_dashboard'|trans }}
+                                </a>
                             {% endif %}
-                            <a href="{{ path('app_logout') }}" class="nav-link-custom logout-link">Logout</a>
+                            <a href="{{ path('app_logout') }}" class="nav-link-custom logout-link">
+                                {{ 'nav.logout'|trans }}
+                            </a>
                         {% else %}
-                            <a href="{{ path('app_login') }}" class="nav-link-custom me-3">Login</a>
-                            <a href="{{ path('app_register') }}" class="btn btn-sm btn-dark px-3 rounded-pill">Join Free</a>
+                            <a href="{{ path('app_login') }}" class="nav-link-custom me-3">
+                                {{ 'nav.login'|trans }}
+                            </a>
+                            <a href="{{ path('app_register') }}" class="btn btn-sm btn-dark px-3 rounded-pill">
+                                {{ 'nav.join_free'|trans }}
+                            </a>
                         {% endif %}
                     </div>
                 </div>

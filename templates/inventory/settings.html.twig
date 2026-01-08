@@ -37,13 +37,13 @@
 <div class="container py-5">
     <div class="row justify-content-center">
         <div class="col-lg-10">
-            <h1 class="fw-bold text-dark mb-4">Inventory Settings</h1>
+            <h1 class="fw-bold text-dark mb-4">{{ 'edit_inventory.settings_title'|trans }}</h1>
 
             <div class="bulk-card mb-4">
-                <span class="section-label">Selected Inventory</span>
+                <span class="section-label">{{ 'edit_inventory.selected_inventory'|trans }}</span>
                 <div>
                     <div class="inventory-badge">
-                        <span class="fw-bold">{{ inv.category.name ?? 'No Category' }}</span>: {{ inv.title }}
+                        <span class="fw-bold">{{ inv.category.name ?? 'home.no_category'|trans }}</span>: {{ inv.title }}
                         <small class="text-muted">[{{ inv.tags|join(', ') }}]</small>
                     </div>
                 </div>
@@ -51,19 +51,19 @@
 
             <div class="bulk-card">
                 <form method="POST">
-                    <span class="section-label">Update Fields</span>
-                    <p class="text-muted small mb-4">Modify the fields below to update your inventory settings.</p>
+                    <span class="section-label">{{ 'edit_inventory.update_fields'|trans }}</span>
+                    <p class="text-muted small mb-4">{{ 'edit_inventory.settings_help'|trans }}</p>
 
                     <div class="row g-4">
                         <div class="col-md-6">
-                            <label class="form-label fw-bold small">Title (View Only)</label>
+                            <label class="form-label fw-bold small">{{ 'edit_inventory.title_readonly'|trans }}</label>
                             <input type="text" class="form-control bg-light" value="{{ inv.title }}" readonly>
                         </div>
 
                         <div class="col-md-6">
-                            <label class="form-label fw-bold small">Category</label>
+                            <label class="form-label fw-bold small">{{ 'table.category'|trans }}</label>
                             <select name="category" class="form-select">
-                                <option value="">-- Select Category --</option>
+                                <option value="">{{ 'edit_inventory.select_category_default'|trans }}</option>
                                 {% for cat in categories %}
                                     <option value="{{ cat.id }}"
                                         {% if inv.category and inv.category.id == cat.id %}selected{% endif %}>
@@ -74,27 +74,27 @@
                         </div>
 
                         <div class="col-md-6">
-                            <label class="form-label fw-bold small">Tags (Comma separated)</label>
+                            <label class="form-label fw-bold small">{{ 'edit_inventory.tags_label'|trans }}</label>
                             <input type="text" name="tags" class="form-control" value="{{ inv.tags|join(', ') }}" placeholder="e.g. electronics, home, storage">
                         </div>
 
                         <div class="col-md-6">
-                            <label class="form-label fw-bold small">Visibility</label>
+                            <label class="form-label fw-bold small">{{ 'edit_inventory.visibility'|trans }}</label>
                             <select name="is_public" class="form-select">
-                                <option value="1" {% if inv.isPublic %}selected{% endif %}>Public</option>
-                                <option value="0" {% if not inv.isPublic %}selected{% endif %}>Private</option>
+                                <option value="1" {% if inv.isPublic %}selected{% endif %}>{{ 'edit_inventory.public'|trans }}c</option>
+                                <option value="0" {% if not inv.isPublic %}selected{% endif %}>{{ 'edit_inventory.private'|trans }}</option>
                             </select>
                         </div>
 
                         <div class="col-md-12">
-                            <label class="form-label fw-bold small">Description</label>
-                            <textarea name="description" class="form-control" rows="3" placeholder="Description">{{ inv.description }}</textarea>
+                            <label class="form-label fw-bold small">{{ 'inventory_form.description_label'|trans }}</label>
+                            <textarea name="description" class="form-control" rows="3" placeholder="{{ 'inventory_form.description_label'|trans }}">{{ inv.description }}</textarea>
                         </div>
                     </div>
 
                     <div class="mt-5 pt-4 border-top d-flex justify-content-between">
-                        <a href="{{ path('app_inventory_show', {id: inv.id}) }}" class="btn btn-outline-secondary px-4">Cancel</a>
-                        <button type="submit" class="btn btn-dark px-5 fw-bold">Save Changes</button>
+                        <a href="{{ path('app_inventory_show', {id: inv.id}) }}" class="btn btn-outline-secondary px-4">{{ 'edit_inventory.cancel'|trans }}</a>
+                        <button type="submit" class="btn btn-dark px-5 fw-bold">{{ 'edit_inventory.save_changes'|trans }}</button>
                     </div>
                 </form>
             </div>

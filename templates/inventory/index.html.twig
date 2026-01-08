@@ -84,24 +84,28 @@
 <div class="container py-4">
     <div class="d-flex justify-content-between align-items-center mb-5">
         <div>
-            <h1 class="fw-bold tracking-tight text-dark mb-1">Inventories</h1>
-            <p class="text-muted">Total collections: {{ pagination.getTotalItemCount }}</p>
+            <h1 class="fw-bold tracking-tight text-dark mb-1">{{ 'dashboard.title'|trans }}</h1>
+            <p class="text-muted">{{ 'dashboard.total_collections'|trans }}: {{ pagination.getTotalItemCount }}</p>
         </div>
         <a href="{{ path('app_inventory_new') }}" class="btn btn-dark px-4 py-2 fw-bold" style="border-radius: 8px;">
-            <i class="bi bi-plus"></i> New Inventory
+            <i class="bi bi-plus"></i> {{ 'dashboard.new_inventory'|trans }}
         </a>
     </div>
 
     <form id="bulk-form" method="POST">
         <div class="table-container">
             <div id="selection-bar">
-                <span class="small fw-bold"><span id="selected-count">0</span> item(s) selected</span>
+                <span class="small fw-bold"><span id="selected-count">0</span> {{ 'dashboard.selected_count'|trans }}</span>
                 <div class="d-flex gap-2">
                     {% if is_granted('ROLE_USER') %}
-                        <button type="submit" formaction="{{ path('app_inventory_bulk_edit') }}" class="btn btn-sm btn-light fw-bold px-3">Edit</button>
+                        <button type="submit" formaction="{{ path('app_inventory_bulk_edit') }}" class="btn btn-sm btn-light fw-bold px-3">
+                            {{ 'dashboard.bulk_edit'|trans }}
+                        </button>
                     {% endif %}
                     {% if is_granted('ROLE_ADMIN') or (pagination|first and is_granted('INVENTORY_DELETE', pagination|first)) %}
-                        <button type="submit" formaction="{{ path('app_inventory_bulk_delete') }}" class="btn btn-sm btn-danger fw-bold px-3" onclick="return confirm('Delete selected inventories?')">Delete</button>
+                        <button type="submit" formaction="{{ path('app_inventory_bulk_delete') }}" class="btn btn-sm btn-danger fw-bold px-3" onclick="return confirm('{{ 'dashboard.delete_confirm'|trans }}')">
+                            {{ 'dashboard.bulk_delete'|trans }}
+                        </button>
                     {% endif %}
                 </div>
             </div>
@@ -110,11 +114,11 @@
                 <thead>
                     <tr>
                         <th style="width: 50px;"><input type="checkbox" id="select-all" class="form-check-input"></th>
-                        <th style="width: 25%;">Name</th>
-                        <th style="width: 25%;">Tags</th>
-                        <th style="width: 15%;">Category</th>
-                        <th style="width: 10%;" class="text-center">Visibility</th>
-                        <th class="text-end" style="width: 15%;">Stored Items</th>
+                        <th style="width: 25%;">{{ 'table.name'|trans }}</th>
+                        <th style="width: 25%;">{{ 'table.tags'|trans }}</th>
+                        <th style="width: 15%;">{{ 'table.category'|trans }}</th>
+                        <th style="width: 10%;" class="text-center">{{ 'dashboard.visibility'|trans }}</th>
+                        <th class="text-end" style="width: 15%;">{{ 'table.stored_items'|trans }}</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -124,7 +128,7 @@
                             {% if is_granted('INVENTORY_EDIT', inv) %}
                                 <input type="checkbox" name="ids[]" value="{{ inv.id }}" class="form-check-input inventory-checkbox">
                             {% else %}
-                                <div class="d-inline-flex align-items-center justify-content-center text-muted" style="width: 22px; height: 22px;" title="Read Only">
+                                <div class="d-inline-flex align-items-center justify-content-center text-muted" style="width: 22px; height: 22px;" title="{{ 'dashboard.read_only'|trans }}">
                                     <i class="bi bi-lock-fill" style="font-size: 0.85rem; opacity: 0.5;"></i>
                                 </div>
                             {% endif %}
@@ -132,7 +136,7 @@
                         <td>
                             <div class="d-flex flex-column">
                                 <a href="{{ path('app_inventory_show', {id: inv.id}) }}" class="inventory-link">{{ inv.title }}</a>
-                                <span class="text-muted small mt-1">{{ inv.description|default('No description.') }}</span>
+                                <span class="text-muted small mt-1">{{ inv.description|default('home.no_description'|trans) }}</span>
                             </div>
                         </td>
                         <td>
@@ -142,7 +146,7 @@
                                 {% endfor %}
                             </div>
                         </td>
-                        <td><span class="badge-category">{{ inv.category ? inv.category.name : 'No Category' }}</span></td>
+                        <td><span class="badge-category">{{ inv.category ? inv.category.name : 'home.no_category'|trans }}</span></td>
                         <td class="text-center">
                             {% if inv.isPublic %}
                                 <div class="bg-success text-white d-inline-flex align-items-center justify-content-center rounded-circle" style="width: 22px; height: 22px;">

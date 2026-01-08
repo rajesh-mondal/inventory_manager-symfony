@@ -193,7 +193,7 @@ class InventoryController extends AbstractController
         ]);
     }
 
-    #[Route('/inventory/bulk-edit', name: 'app_inventory_bulk_edit', methods: ['POST'])]
+    #[Route('/inventory/bulk-edit', name: 'app_inventory_bulk_edit', methods: ['GET', 'POST'])]
     public function bulkEdit(Request $request, EntityManagerInterface $em): Response
     {
         $ids = $request->request->all('ids');

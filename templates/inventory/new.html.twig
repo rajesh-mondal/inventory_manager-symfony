@@ -68,14 +68,16 @@
                 <div>
                     <nav aria-label="breadcrumb">
                         <ol class="breadcrumb mb-2">
-                            <li class="breadcrumb-item"><a href="{{ path('app_my_inventories') }}" class="text-decoration-none text-muted small">Inventories</a></li>
-                            <li class="breadcrumb-item active small">Create New</li>
+                            <li class="breadcrumb-item"><a href="{{ path('app_my_inventories') }}" class="text-decoration-none text-muted small">
+                                {{ 'inventory_form.create_new'|trans }}
+                            </a></li>
+                            <li class="breadcrumb-item active small"></li>
                         </ol>
                     </nav>
-                    <h1 class="fw-bold text-dark mb-0">New Inventory</h1>
+                    <h1 class="fw-bold text-dark mb-0">{{ 'dashboard.new_inventory'|trans }}</h1>
                 </div>
                 <a href="{{ path('app_my_inventories') }}" class="btn btn-link text-muted text-decoration-none small">
-                    <i class="bi bi-x-lg"></i> Discard
+                    <i class="bi bi-x-lg"></i> {{ 'inventory_form.discard'|trans }}
                 </a>
             </div>
 
@@ -83,38 +85,38 @@
                 <form method="POST">
                     <div class="row g-5">
                         <div class="col-md-6">
-                            <h3 class="section-title">General Info</h3>
+                            <h3 class="section-title">{{ 'inventory_form.general_info'|trans }}</h3>
                             <div class="mb-4">
-                                <label class="form-label">Inventory Name</label>
-                                <input type="text" name="title" class="form-control" placeholder="e.g. Photography Gear" required>
+                                <label class="form-label">{{ 'inventory_form.title_label'|trans }}</label>
+                                <input type="text" name="title" class="form-control" placeholder="{{ 'inventory_form.title_placeholder'|trans }}" required>
                             </div>
                             <div class="mb-4">
-                                <label for="category">Category</label>
+                                <label for="category">{{ 'table.category'|trans }}</label>
                                 <select name="category" id="category" class="form-select">
-                                    <option value="">Select a category</option>
+                                    <option value="">{{ 'inventory_form.select_category'|trans }}</option>
                                     {% for cat in categories %}
                                         <option value="{{ cat.id }}">{{ cat.name }}</option>
                                     {% endfor %}
                                 </select>
                             </div>
                             <div class="mb-4">
-                                <label class="form-label">ID Pattern (e.g. PART-{YEAR}-{SEQ})</label>
+                                <label class="form-label">{{ 'inventory_form.id_pattern'|trans }}</label>
                                 <input type="text" name="id_pattern" class="form-control" placeholder="ITEM-{SEQ}">
                             </div>
                             <div class="mb-4">
-                                <label class="form-label">Tags (separated by commas)</label>
+                                <label class="form-label">{{ 'inventory_form.tags_label'|trans }}</label>
                                 <input type="text" name="tags" class="form-control" placeholder="e.g. vintage, collection, 2025">
-                                <div class="form-text small text-muted">Example: electronics, office, tools</div>
+                                <div class="form-text small text-muted">{{ 'inventory_form.tags_help'|trans }}</div>
                             </div>
                             <div class="form-check form-switch mb-4">
                                 <input class="form-check-input" type="checkbox" name="is_public" id="isPublic">
-                                <label class="form-check-label fw-bold" for="isPublic">Make Publicly Viewable</label>
+                                <label class="form-check-label fw-bold" for="isPublic">{{ 'inventory_form.is_public'|trans }}</label>
                             </div>
                         </div>
 
                         <div class="col-md-6">
-                            <h3 class="section-title">Custom Fields (Template)</h3>
-                            <p class="small text-muted mb-4">Enable fields you want to track for items in this inventory.</p>
+                            <h3 class="section-title">{{ 'inventory_form.custom_fields_title'|trans }}</h3>
+                            <p class="small text-muted mb-4">{{ 'inventory_form.custom_fields_help'|trans }}</p>
 
                             {% for type in ['String', 'Int', 'Bool', 'Text'] %}
                                 <div class="mb-4 p-3 border rounded bg-light">
@@ -139,12 +141,12 @@
                     </div>
 
                     <div class="mb-4 mt-4">
-                        <label class="form-label">Description</label>
-                        <textarea name="description" class="form-control" rows="3" placeholder="What kind of items will you store here? Mention location or purpose..."></textarea>
+                        <label class="form-label">{{ 'inventory_form.description_label'|trans }}</label>
+                        <textarea name="description" class="form-control" rows="3" placeholder="{{ 'inventory_form.description_placeholder'|trans }}"></textarea>
                     </div>
 
                     <div class="border-top mt-5 pt-4 d-flex justify-content-end">
-                        <button type="submit" class="btn-save">Create Inventory Template</button>
+                        <button type="submit" class="btn-save">{{ 'inventory_form.submit_create'|trans }}</button>
                     </div>
                 </form>
             </div>

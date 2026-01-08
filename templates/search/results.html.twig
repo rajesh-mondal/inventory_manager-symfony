@@ -62,32 +62,32 @@
         <div>
             <h3 class="fw-bold tracking-tight text-dark mb-1">
                 {% if searchQuery and currentTag %}
-                    Results for "{{ searchQuery }}" in #{{ currentTag }}
+                    {{ 'search_page.results_for'|trans }} "{{ searchQuery }}" {{ 'search_page.in'|trans }} #{{ currentTag }}
                 {% elseif searchQuery %}
-                    Results for "{{ searchQuery }}"
+                    {{ 'search_page.results_for'|trans }} "{{ searchQuery }}"
                 {% elseif currentTag %}
-                    Items tagged #{{ currentTag }}
+                    {{ 'search_page.tagged_with'|trans }} #{{ currentTag }}
                 {% else %}
-                    All Inventories
+                    {{ 'search_page.all_title'|trans }}
                 {% endif %}
             </h3>
             <p class="text-muted">
                 {% if pagination.getTotalItemCount > 0 %}
-                    We found {{ pagination.getTotalItemCount }} collection(s) matching your request.
+                    {{ 'search_page.found_count'|trans({'%count%': pagination.getTotalItemCount}) }}
                 {% else %}
-                    No results found. Try adjusting your search.
+                    {{ 'search_page.no_results_title'|trans }}
                 {% endif %}
             </p>
         </div>
         <div class="d-flex gap-2">
             {% if searchQuery or currentTag %}
                 <a href="{{ path('app_inventory_search') }}" class="btn btn-light border px-3 py-2 fw-bold" style="border-radius: 8px;">
-                    <i class="bi bi-x-circle"></i> Clear Filters
+                    <i class="bi bi-x-circle"></i> {{ 'search_page.clear_filters'|trans }}
                 </a>
             {% endif %}
 
             <a href="{{ path('app_home') }}" class="btn btn-outline-dark px-4 py-2 fw-bold" style="border-radius: 8px;">
-                <i class="bi bi-house-door"></i> Back Home
+                <i class="bi bi-house-door"></i> {{ 'search_page.back_home'|trans }}
             </a>
         </div>
     </div>
@@ -96,7 +96,7 @@
         <div></div>
         <form action="{{ path('app_inventory_search') }}" method="GET" class="search-wrapper" style="max-width: 400px;">
             <i class="bi bi-search search-icon"></i>
-            <input type="text" name="q" class="search-input" value="{{ searchQuery }}" placeholder="Search again...">
+            <input type="text" name="q" class="search-input" value="{{ searchQuery }}" placeholder="{{ 'search_page.search_again'|trans }}">
             {% if currentTag %}<input type="hidden" name="tag" value="{{ currentTag }}">{% endif %}
         </form>
     </div>
@@ -105,10 +105,10 @@
         <table class="table mb-0">
             <thead>
                 <tr>
-                    <th style="width: 35%;">Name</th>
-                    <th style="width: 25%;">Tags</th>
-                    <th style="width: 15%;">Category</th>
-                    <th class="text-end" style="width: 15%;">Stored Items</th>
+                    <th style="width: 35%;">{{ 'table.name'|trans }}</th>
+                    <th style="width: 25%;">{{ 'table.tags'|trans }}</th>
+                    <th style="width: 15%;">{{ 'table.category'|trans }}</th>
+                    <th class="text-end" style="width: 15%;">{{ 'table.stored_items'|trans }}</th>
                 </tr>
             </thead>
             <tbody>
@@ -117,7 +117,7 @@
                     <td>
                         <div class="d-flex flex-column">
                             <a href="{{ path('app_inventory_show', {id: inv.id}) }}" class="inventory-link">{{ inv.title }}</a>
-                            <span class="text-muted small mt-1">{{ inv.description|default('No description.')|slice(0, 50) }}...</span>
+                            <span class="text-muted small mt-1">{{ inv.description|default('home.no_description'|trans)|slice(0, 50) }}...</span>
                         </div>
                     </td>
                     <td>
@@ -141,8 +141,8 @@
                         <td colspan="4" class="text-center py-5">
                             <div class="text-muted">
                                 <i class="bi bi-search mb-3 d-block" style="font-size: 2rem; opacity: 0.3;"></i>
-                                <p class="mb-0">No inventories found matching your criteria.</p>
-                                <a href="{{ path('app_inventory_search') }}" class="btn btn-link text-dark fw-bold mt-2">View all collections</a>
+                                <p class="mb-0">{{ 'search_page.no_results_body'|trans }}</p>
+                                <a href="{{ path('app_inventory_search') }}" class="btn btn-link text-dark fw-bold mt-2">{{ 'search_page.view_all'|trans }}</a>
                             </div>
                         </td>
                     </tr>
