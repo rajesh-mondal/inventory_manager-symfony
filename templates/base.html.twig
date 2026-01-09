@@ -15,71 +15,53 @@
     <body>
         <nav class="navbar navbar-expand-lg navbar-light bg-white border-bottom py-3">
             <div class="container">
-                <div class="d-flex align-items-center">
-                    <a class="navbar-brand fw-bold mb-0" href="{{ path('app_home') }}">InvManager</a>
+                <a class="navbar-brand fw-bold" href="{{ path('app_home') }}">InvManager</a>
 
-                    <div class="ms-4 d-none d-md-flex align-items-center navbar-nav-links">
+                <button class="navbar-toggler border-0 shadow-none" type="button" data-bs-toggle="collapse" data-bs-target="#navContent">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+
+                <div class="collapse navbar-collapse" id="navContent">
+                    <div class="navbar-nav ms-lg-3 gap-lg-2">
                         <a href="{{ path('app_home') }}" class="nav-link-custom {{ app.request.attributes.get('_route') == 'app_home' ? 'active' : '' }}">
                             {{ 'nav.home'|trans }}
                         </a>
-
                         {% if is_granted('ROLE_USER') %}
                             <a href="{{ path('app_my_inventories') }}" class="nav-link-custom {{ app.request.attributes.get('_route') == 'app_my_inventories' ? 'active' : '' }}">
                                 {{ 'nav.inventories'|trans }}
                             </a>
                         {% endif %}
                     </div>
-                </div>
 
-                <div class="ms-auto d-flex align-items-center">
-                    <form action="{{ path('app_inventory_search') }}" method="GET" class="ms-auto d-none d-md-flex search-wrapper" style="width: 300px;">
-                        <div class="position-relative w-100">
-                            <i class="bi bi-search position-absolute top-50 start-0 translate-middle-y ms-3"></i>
-                            <input type="text" name="q" class="search-input ps-5 border-0 bg-light"
-                                placeholder="{{ 'search.placeholder'|default('Global search...')|trans }}"
-                                style="border-radius: 10px; font-size: 0.9rem;"
-                                value="{{ app.request.query.get('q') }}">
-                        </div>
-                    </form>
+                    <div class="ms-auto d-flex flex-column flex-lg-row align-items-lg-center gap-3 mt-3 mt-lg-0">
 
-                    <div class="dropdown ms-3">
-                        <button class="btn btn-sm btn-outline-secondary dropdown-toggle rounded-pill px-3" type="button" data-bs-toggle="dropdown">
-                            <i class="bi bi-globe me-1"></i> {{ app.request.locale|upper }}
-                        </button>
-                        <ul class="dropdown-menu dropdown-menu-end shadow-sm border-0">
-                            <li>
-                                <a class="dropdown-item d-flex justify-content-between align-items-center {% if app.request.locale == 'en' %}active{% endif %}"
-                                   href="{{ path('change_locale', {locale: 'en'}) }}">
-                                    English {% if app.request.locale == 'en' %}<i class="bi bi-check"></i>{% endif %}
-                                </a>
-                            </li>
-                            <li>
-                                <a class="dropdown-item d-flex justify-content-between align-items-center {% if app.request.locale == 'es' %}active{% endif %}"
-                                   href="{{ path('change_locale', {locale: 'es'}) }}">
-                                    Español {% if app.request.locale == 'es' %}<i class="bi bi-check"></i>{% endif %}
-                                </a>
-                            </li>
-                        </ul>
-                    </div>
+                        <form action="{{ path('app_inventory_search') }}" method="GET" class="ms-lg-auto mb-3 mb-lg-0">
+                            <div class="search-wrapper bg-light rounded-pill">
+                                <i class="bi bi-search search-icon"></i>
+                                <input type="text" name="q" class="search-input bg-transparent"
+                                       placeholder="{{ 'search.placeholder'|trans }}"
+                                       value="{{ app.request.query.get('q') }}">
+                            </div>
+                        </form>
 
-                    <div class="d-flex align-items-center ms-3">
-                        {% if app.user %}
-                            {% if is_granted('ROLE_ADMIN') %}
-                                <a href="{{ path('app_admin_users') }}" class="btn btn-sm btn-outline-dark px-3 rounded-pill me-3">
-                                    {{ 'nav.admin_dashboard'|trans }}
-                                </a>
+                        <div class="d-flex align-items-center gap-2">
+                            <div class="dropdown">
+                                <button class="btn btn-sm btn-outline-secondary dropdown-toggle rounded-pill px-3" type="button" data-bs-toggle="dropdown">
+                                    <i class="bi bi-globe me-1"></i> {{ app.request.locale|upper }}
+                                </button>
+                                <ul class="dropdown-menu dropdown-menu-end shadow-sm border-0">
+                                    <li><a class="dropdown-item" href="{{ path('change_locale', {locale: 'en'}) }}">English</a></li>
+                                    <li><a class="dropdown-item" href="{{ path('change_locale', {locale: 'es'}) }}">Español</a></li>
+                                </ul>
+                            </div>
+
+                            {% if app.user %}
+                                <a href="{{ path('app_logout') }}" class="nav-link-custom logout-link">{{ 'nav.logout'|trans }}</a>
+                            {% else %}
+                                <a href="{{ path('app_login') }}" class="nav-link-custom">{{ 'nav.login'|trans }}</a>
+                                <a href="{{ path('app_register') }}" class="btn btn-sm btn-dark px-3 rounded-pill">{{ 'nav.join_free'|trans }}</a>
                             {% endif %}
-                            <a href="{{ path('app_logout') }}" class="nav-link-custom logout-link">
-                                {{ 'nav.logout'|trans }}
-                            </a>
-                        {% else %}
-                            <a href="{{ path('app_login') }}" class="nav-link-custom me-3">
-                                {{ 'nav.login'|trans }}
-                            </a>
-                            <a href="{{ path('app_register') }}" class="btn btn-sm btn-dark px-3 rounded-pill">
-                                {{ 'nav.join_free'|trans }}
-                            </a>
-                        {% endif %}
+                        </div>
                     </div>
                 </div>
             </div>

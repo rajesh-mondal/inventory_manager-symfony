@@ -191,6 +191,9 @@ admin:
         active: "Active"
         blocked: "Blocked"
 
+footer:
+    all_rights_reserved: "All rights reserved."
+
 tabs:
     items: "Items"
     discussion: "Discussion"

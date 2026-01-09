@@ -190,6 +190,9 @@ admin:
         active: "Activo"
         blocked: "Bloqueado"
 
+footer:
+    all_rights_reserved: "Todos los derechos reservados."
+
 tabs:
     items: "Artículos"
     discussion: "Discusión"
