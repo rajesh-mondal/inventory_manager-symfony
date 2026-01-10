@@ -134,7 +134,7 @@ body {
 .table thead th {
     background-color: #fafafa;
     text-transform: uppercase;
-    font-size: 0.65rem;
+    font-size: 0.7rem;
     font-weight: 700;
     letter-spacing: 0.05em;
     color: #6b7280;
@@ -219,4 +219,46 @@ body {
     align-items: center;
     justify-content: center;
     gap: 0.5rem;
+}
+
+/* Pagination Styling (Global) */
+.minimal-pagination {
+    display: flex;
+    gap: 0.25rem;
+    align-items: center;
+}
+
+.minimal-pagination a,
+.minimal-pagination span {
+    padding: 6px 12px;
+    text-decoration: none;
+    color: #6b7280;
+    border-radius: 6px;
+    font-weight: 500;
+    transition: all 0.2s ease;
+}
+
+.minimal-pagination a:hover {
+    background-color: #f3f4f6;
+    color: #111827;
+}
+
+.minimal-pagination .current {
+    background: #111827;
+    color: #fff !important;
+}
+
+/* Item Count Badge */
+.item-count {
+    background: #eff6ff;
+    color: #1d4ed8;
+    padding: 0.25rem 0.6rem;
+    border-radius: 6px;
+    font-weight: 700;
+    font-size: 0.8rem;
+}
+
+/* Row Hover Effect */
+.inventory-row:hover {
+    background-color: #fbfbfc;
 }
