@@ -49,6 +49,9 @@ table:
     creator: "Creator"
     tags: "Tags"
     stored_items: "Stored Items"
+    owner: "Owner"
+    actions: "Actions"
+    view_edit: "View & Edit"
 
 search_page:
     all_title: "All Inventories"
@@ -135,6 +138,9 @@ dashboard:
     delete_confirm: "Delete selected inventories?"
     visibility: "Visibility"
     read_only: "Read Only"
+    my_inventories: "My Inventories"
+    shared_with_me: "Shared with me"
+    no_shared: "No inventories have been shared with you for editing."
 
 inventory_show:
     breadcrumb_list: "Inventories"

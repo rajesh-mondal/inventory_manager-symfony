@@ -48,6 +48,7 @@ table:
     creator: "Creador"
     tags: "Etiquetas"
     stored_items: "Artículos Guardados"
+    view_edit: "Voir et modifier"
 
 search_page:
     all_title: "Todos los Inventarios"
@@ -72,6 +73,9 @@ dashboard:
     delete_confirm: "¿Eliminar los inventarios seleccionados?"
     visibility: "Visibilidad"
     read_only: "Solo lectura"
+    my_inventories: "Mes inventaires"
+    shared_with_me: "Partagés avec moi"
+    no_shared: "Aucun inventaire n'a été partagé avec vous pour modification."
 
 inventory_form:
     create_new: "Crear Nuevo"

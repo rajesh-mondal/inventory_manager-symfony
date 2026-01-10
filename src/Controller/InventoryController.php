@@ -85,21 +85,34 @@ class InventoryController extends AbstractController
     public function index(\App\Repository\InventoryRepository $repo, PaginatorInterface $paginator, Request $request): Response
     {
         $this->denyAccessUnlessGranted('IS_AUTHENTICATED_FULLY');
+        $user = $this->getUser();
 
-        $query = $repo->createQueryBuilder('i')
+        // Owned Inventories
+        $queryOwned = $repo->createQueryBuilder('i')
             ->where('i.creator = :user')
-            ->setParameter('user', $this->getUser())
+            ->setParameter('user', $user)
             ->orderBy('i.id', 'DESC')
             ->getQuery();
 
         $pagination = $paginator->paginate(
-            $query,
+            $queryOwned,
             $request->query->getInt('page', 1),
             10
         );
 
+        // Shared Inventories
+        $sharedInventories = $repo->createQueryBuilder('i')
+            ->innerJoin('i.writeAccessUsers', 'u')
+            ->where('u.id = :userId')
+            ->andWhere('i.creator != :userId')
+            ->setParameter('userId', $user->getId())
+            ->orderBy('i.id', 'DESC')
+            ->getQuery()
+            ->getResult();
+
         return $this->render('inventory/index.html.twig', [
             'pagination' => $pagination,
+            'sharedInventories' => $sharedInventories,
         ]);
     }
 
