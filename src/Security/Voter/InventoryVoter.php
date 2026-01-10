@@ -42,11 +42,15 @@ final class InventoryVoter extends Voter
         switch ($attribute) {
             case self::VIEW:
                 // return $inventory->isPublic() || ($inventory->getCreator() === $user);
-                return $inventory->isPublic() || ($user === $inventory->getCreator());
+                return $inventory->isPublic()
+                    || ($user === $inventory->getCreator())
+                    || $inventory->getWriteAccessUsers()->contains($user);
 
             case self::EDIT:
                 // Owner can edit OR any logged-in user can edit IF it is public
-                return ($inventory->getCreator() === $user) || $inventory->isPublic();
+                return ($inventory->getCreator() === $user)
+                    || $inventory->isPublic()
+                    || $inventory->getWriteAccessUsers()->contains($user);
 
             case self::DELETE:
                 // Strictly the owner only

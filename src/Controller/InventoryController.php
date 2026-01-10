@@ -153,44 +153,76 @@ class InventoryController extends AbstractController
         ]);
     }
 
-    #[Route('/inventory/{id}/settings', name: 'app_inventory_settings', methods: ['GET', 'POST'])]
-    public function editSettings(int $id, Request $request, InventoryRepository $repo, EntityManagerInterface $em): Response
+    #[Route('/inventory/{id}/settings', name: 'app_inventory_settings', methods: ['POST'])]
+    public function editSettings(Inventory $inventory, Request $request, EntityManagerInterface $em): Response
     {
-        $inventory = $repo->find($id);
-
-        if (!$inventory) {
-            throw $this->createNotFoundException('Inventory not found');
-        }
-
-        // Ensures standard users cannot edit if private
+        // Base security: Must have write access
         $this->denyAccessUnlessGranted('INVENTORY_EDIT', $inventory);
 
-        if ($request->isMethod('POST')) {
-            $categoryId = $request->request->get('category');
-            if ($categoryId) {
-                $category = $em->getRepository(Category::class)->find($categoryId);
-                $inventory->setCategory($category);
+        $currentUser = $this->getUser();
+        $isCreatorOrAdmin = ($inventory->getCreator() === $currentUser || $this->isGranted('ROLE_ADMIN'));
+        $activeTab = 'settings-pane';
+
+        if ($request->request->has('grant_access_email') || $request->request->has('revoke_access_id')) {
+            if (!$isCreatorOrAdmin) {
+                $this->addFlash('danger', 'Only the owner or admin can manage permissions.');
             } else {
-                $inventory->setCategory(null);
+                $this->handleAccessManagement($inventory, $request, $em);
+                $activeTab = 'access-pane';
             }
-
-            $inventory->setDescription($request->request->get('description'));
-            $inventory->setIsPublic($request->request->get('is_public') === '1');
-
-            $tagsString = $request->request->get('tags', '');
-            $tagsArray = array_map('trim', explode(',', $tagsString));
-            $inventory->setTags($tagsArray);
-
-            $em->flush();
-
-            $this->addFlash('success', 'Settings updated successfully.');
-            return $this->redirectToRoute('app_inventory_show', ['id' => $id]);
         }
 
-        return $this->render('inventory/settings.html.twig', [
-            'inv' => $inventory,
-            'categories' => $em->getRepository(Category::class)->findAll(),
+        else {
+            $categoryId = $request->request->get('category');
+            $category = $categoryId ? $em->getRepository(Category::class)->find($categoryId) : null;
+            $inventory->setCategory($category);
+
+            $inventory->setDescription($request->request->get('description'));
+
+            if ($isCreatorOrAdmin) {
+                $inventory->setIsPublic($request->request->get('is_public') === '1');
+            }
+
+            $tagsString = $request->request->get('tags', '');
+            $tagsArray = array_filter(array_map('trim', explode(',', $tagsString)));
+            $inventory->setTags($tagsArray);
+
+            $this->addFlash('success', 'General settings updated.');
+        }
+
+        $em->flush();
+
+        return $this->redirectToRoute('app_inventory_show', [
+            'id' => $inventory->getId(),
+            '_fragment' => $activeTab
         ]);
+    }
+
+    private function handleAccessManagement(Inventory $inventory, Request $request, EntityManagerInterface $em): void
+    {
+        // Grant access logic
+        if ($email = $request->request->get('grant_access_email')) {
+            $user = $em->getRepository(\App\Entity\User::class)->findOneBy(['email' => $email]);
+            if ($user) {
+                if ($user === $inventory->getCreator()) {
+                    $this->addFlash('warning', 'This user is already the owner.');
+                } else {
+                    $inventory->addWriteAccessUser($user);
+                    $this->addFlash('success', "Access granted to $email");
+                }
+            } else {
+                $this->addFlash('danger', 'User with that email not found.');
+            }
+        }
+
+        // Revoke access logic
+        if ($revokeId = $request->request->get('revoke_access_id')) {
+            $user = $em->getRepository(\App\Entity\User::class)->find($revokeId);
+            if ($user) {
+                $inventory->removeWriteAccessUser($user);
+                $this->addFlash('success', 'Access revoked successfully.');
+            }
+        }
     }
 
     #[Route('/inventory/bulk-edit', name: 'app_inventory_bulk_edit', methods: ['GET', 'POST'])]

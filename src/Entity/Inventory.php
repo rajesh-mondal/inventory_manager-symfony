@@ -114,10 +114,18 @@ class Inventory
     #[ORM\OneToMany(targetEntity: Comment::class, mappedBy: 'inventory', orphanRemoval: true)]
     private Collection $comments;
 
+    /**
+     * @var Collection<int, User>
+     */
+    #[ORM\ManyToMany(targetEntity: User::class)]
+    #[ORM\JoinTable(name: 'inventory_write_access')]
+    private Collection $writeAccessUsers;
+
     public function __construct()
     {
         $this->items = new ArrayCollection();
         $this->comments = new ArrayCollection();
+        $this->writeAccessUsers = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -566,6 +574,28 @@ class Inventory
             }
         }
 
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, User>
+     */
+    public function getWriteAccessUsers(): Collection
+    {
+        return $this->writeAccessUsers;
+    }
+
+    public function addWriteAccessUser(User $user): static
+    {
+        if (!$this->writeAccessUsers->contains($user)) {
+            $this->writeAccessUsers->add($user);
+        }
+        return $this;
+    }
+
+    public function removeWriteAccessUser(User $user): static
+    {
+        $this->writeAccessUsers->removeElement($user);
         return $this;
     }
 }

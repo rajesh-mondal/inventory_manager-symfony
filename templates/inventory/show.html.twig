@@ -125,6 +125,13 @@
             </button>
         </li>
         {% endif %}
+        {% if inventory.creator == app.user or is_granted('ROLE_ADMIN') %}
+        <li class="nav-item">
+            <button class="nav-link" id="access-tab" data-bs-toggle="tab" data-bs-target="#access-pane" type="button" role="tab">
+                <i class="bi bi-person-lock me-2"></i>{{ 'settings.manage_access'|trans }}
+            </button>
+        </li>
+        {% endif %}
         <li class="nav-item">
             <button class="nav-link" id="stats-tab" data-bs-toggle="tab" data-bs-target="#stats-pane" type="button" role="tab">
                 <i class="bi bi-bar-chart me-2"></i>{{ 'inventory_show.tab_stats'|trans }}
@@ -427,6 +434,70 @@
             {% else %}
                 <div class="alert alert-warning">
                     {{ 'inventory_show.no_permission'|trans|default('You do not have permission to edit this inventory.') }}
+                </div>
+            {% endif %}
+        </div>
+
+        <div class="tab-pane fade" id="access-pane" role="tabpanel">
+            {% if inventory.creator == app.user or is_granted('ROLE_ADMIN') %}
+                <div class="card border-0 shadow-sm p-4">
+                    <span class="section-label d-block mb-3">
+                        {{ 'settings.manage_access'|trans }}
+                    </span>
+                    <p class="text-muted small mb-4">{{ 'settings.access_help'|trans }}</p>
+
+                    <form action="{{ path('app_inventory_settings', {id: inventory.id}) }}" method="POST" class="mb-4">
+                        <div class="input-group" style="max-width: 500px;">
+                            <input type="email"
+                                   name="grant_access_email"
+                                   class="form-control shadow-none"
+                                   placeholder="user@example.com"
+                                   required
+                                   style="border-radius: 8px 0 0 8px;">
+                            <button type="submit" class="btn btn-dark px-4" style="border-radius: 0 8px 8px 0;">
+                                {{ 'settings.grant_access'|trans }}
+                            </button>
+                        </div>
+                    </form>
+
+                    <div class="access-list mt-2">
+                        <h6 class="small fw-bold text-uppercase text-muted mb-3">{{ 'settings.users_with_access'|trans }}</h6>
+                        <ul class="list-group list-group-flush" style="max-width: 600px;">
+
+                            <li class="list-group-item d-flex justify-content-between align-items-center px-0 bg-transparent">
+                                <div>
+                                    <span class="fw-medium text-dark">{{ inventory.creator.email }}</span>
+                                    <span class="badge bg-light text-dark border ms-2 rounded-pill small px-3">
+                                        {{ 'settings.role_owner'|trans }}
+                                    </span>
+                                </div>
+                            </li>
+
+                            {% for userWithAccess in inventory.writeAccessUsers %}
+                                <li class="list-group-item d-flex justify-content-between align-items-center px-0 bg-transparent">
+                                    <span class="text-muted small">{{ userWithAccess.email }}</span>
+
+                                    <form action="{{ path('app_inventory_settings', {id: inventory.id}) }}"
+                                          method="POST"
+                                          onsubmit="return confirm('{{ 'settings.revoke_confirm'|trans|escape('js') }}');">
+                                        <input type="hidden" name="revoke_access_id" value="{{ userWithAccess.id }}">
+                                        <button type="submit" class="btn btn-link text-danger p-0 border-0 shadow-none">
+                                            <i class="bi bi-x-circle fs-5"></i>
+                                        </button>
+                                    </form>
+                                </li>
+                            {% else %}
+                                <li class="list-group-item px-0 text-muted small py-3 border-0 italic">
+                                    {{ 'settings.no_extra_users'|trans }}
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                </div>
+            {% else %}
+                <div class="alert alert-light border m-4 text-center">
+                    <i class="bi bi-shield-lock me-2"></i>
+                    {{ 'inventory_show.no_permission_admin'|trans|default('Only the owner or an admin can manage access permissions.') }}
                 </div>
             {% endif %}
         </div>

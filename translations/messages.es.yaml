@@ -143,6 +143,8 @@ inventory_show:
     tab_settings: "Ajustes"
     tab_stats: "Estadísticas"
     selected_count: "%count% artículos seleccionados"
+    tab_access: "Acceso"
+    no_permission: "No tienes permiso para modificar este inventario."
     table:
         image: "Imagen"
         custom_id: "ID Personalizado"
@@ -169,6 +171,15 @@ inventory_show:
         system_info: "Información del Sistema"
         category: "Categoría del Inventario"
         no_tags: "Sin etiquetas definidas"
+
+settings:
+    manage_access: "Acceso"
+    access_help: "Permite que otros usuarios registrados editen artículos en este inventario. Podrán añadir, editar y eliminar artículos."
+    grant_access: "Otorgar Acceso"
+    users_with_access: "Usuarios con acceso de escritura"
+    role_owner: "Propietario"
+    no_extra_users: "Aún no se ha otorgado acceso a usuarios adicionales."
+    revoke_confirm: "¿Estás seguro de que deseas revocar el acceso a este usuario?"
 
 admin:
     user_mgmt_title: "Gestión de Usuarios"

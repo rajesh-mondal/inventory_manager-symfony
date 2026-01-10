@@ -144,6 +144,8 @@ inventory_show:
     tab_settings: "Settings"
     tab_stats: "Statistics"
     selected_count: "%count% items selected"
+    tab_access: "Access"
+    no_permission: "You do not have permission to modify this inventory."
     table:
         image: "Image"
         custom_id: "Custom ID"
@@ -170,6 +172,15 @@ inventory_show:
         system_info: "System Info"
         category: "Inventory Category"
         no_tags: "No tags defined"
+
+settings:
+    manage_access: "Access"
+    access_help: "Allow other registered users to edit items in this inventory. They will be able to add, edit, and delete items."
+    grant_access: "Grant Access"
+    users_with_access: "Users with Write Access"
+    role_owner: "Owner"
+    no_extra_users: "No additional users have been granted access yet."
+    revoke_confirm: "Are you sure you want to revoke access for this user?"
 
 admin:
     user_mgmt_title: "User Management"
