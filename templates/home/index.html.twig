@@ -3,75 +3,6 @@
 {% block title %}Home - Inventory Manager{% endblock %}
 
 {% block body %}
-<style>
-    .table-container {
-        background: #fff;
-        border-radius: 12px;
-        border: 1px solid #e5e7eb;
-        box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-        overflow: hidden;
-    }
-
-    .table thead th {
-        background-color: #fdfdfd;
-        text-transform: uppercase;
-        font-size: 0.7rem;
-        font-weight: 700;
-        letter-spacing: 0.05em;
-        color: #9ca3af;
-        border-bottom: 1px solid #e5e7eb;
-        padding: 1.25rem 1.5rem;
-    }
-
-    .table tbody td {
-        padding: 1.25rem 1.5rem;
-        vertical-align: middle;
-        border-bottom: 1px solid #f3f4f6;
-    }
-
-    .inventory-link { font-weight: 600; color: #111827; text-decoration: none; font-size: 1rem; }
-    .inventory-link:hover { color: #2563eb; }
-
-    .badge-category { background-color: #f3f4f6; color: #374151; padding: 0.35rem 0.75rem; border-radius: 6px; font-size: 0.8rem; font-weight: 500; }
-    .extra-small { font-size: 0.65rem; padding: 0.25rem 0.5rem; font-weight: 600; }
-
-    .section-title { font-size: 1.1rem; font-weight: 700; color: #111827; letter-spacing: -0.01em; text-transform: uppercase; margin-bottom: 1.5rem; }
-
-    .sidebar-card { background: white; border-radius: 12px; border: 1px solid #e5e7eb; padding: 1.5rem; margin-bottom: 1.5rem; }
-
-    .table-footer {
-        background-color: #ffffff;
-        padding: 1rem;
-        text-align: center;
-        border-top: 1px solid #f3f4f6;
-        transition: background-color 0.2s ease;
-    }
-
-    .table-footer:hover {
-        background-color: #f9fafb;
-    }
-
-    .view-all-link {
-        color: #111827;
-        font-weight: 700;
-        font-size: 0.85rem;
-        text-transform: uppercase;
-        letter-spacing: 0.025em;
-        text-decoration: none;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 0.5rem;
-    }
-
-    .view-all-link i {
-        transition: transform 0.2s ease;
-    }
-
-    .view-all-link:hover i {
-        transform: translateX(4px);
-    }
-</style>
 
 <div class="container py-5">
     <div class="row g-4">
@@ -89,37 +20,45 @@
             </div>
 
             <div class="table-container">
-                <table class="table mb-0">
-                    <thead>
-                        <tr>
-                            <th style="width: 50%;">{{ 'table.name'|trans }}</th>
-                            {# <th style="width: 25%;">Tags</th> #}
-                            <th style="width: 25%;">{{ 'table.category'|trans }}</th>
-                            <th style="width: 25%; text-align: right;">{{ 'table.creator'|trans }}</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for inv in latest %}
-                        <tr class="inventory-row">
-                            <td>
-                                <div class="d-flex flex-column">
-                                    <a href="{{ path('app_inventory_show', {id: inv.id}) }}" class="inventory-link">{{ inv.title }}</a>
-                                    <span class="text-muted small mt-1">{{ inv.description|default('home.no_description'|trans)|slice(0, 50) }}...</span>
-                                </div>
-                            </td>
-                            {# <td>
-                                <div class="d-flex flex-wrap gap-1">
-                                    {% for tag in inv.tags %}
-                                        <span class="badge rounded-pill bg-white text-muted border extra-small">#{{ tag }}</span>
-                                    {% endfor %}
-                                </div>
-                            </td> #}
-                            <td><span class="badge-category">{{ inv.category ? inv.category.name : 'home.no_category'|trans }}</span></td>
-                            <td class="text-end text-muted small">{{ inv.creator.email|split('@')[0] }}</td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
+                <div class="table-responsive">
+                    <table class="table mb-0">
+                        <thead>
+                            <tr>
+                                <th>{{ 'table.name'|trans }}</th>
+                                {# <th>Tags</th> #}
+                                <th class="d-none d-md-table-cell">{{ 'table.category'|trans }}</th>
+                                <th class="text-end pe-4">{{ 'table.creator'|trans }}</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for inv in latest %}
+                            <tr class="inventory-row">
+                                <td>
+                                    <div class="d-flex flex-column">
+                                        <a href="{{ path('app_inventory_show', {id: inv.id}) }}" class="inventory-link">{{ inv.title }}</a>
+                                        <span class="text-muted small mt-1 d-inline-block text-truncate">
+                                            {{ inv.description|default('home.no_description'|trans)|slice(0, 50) }}...
+                                        </span>
+                                    </div>
+                                </td>
+                                {# <td>
+                                    <div class="d-flex flex-wrap gap-1">
+                                        {% for tag in inv.tags %}
+                                            <span class="badge rounded-pill bg-white text-muted border extra-small">#{{ tag }}</span>
+                                        {% endfor %}
+                                    </div>
+                                </td> #}
+                                <td class="d-none d-md-table-cell">
+                                    <span class="badge-category">{{ inv.category ? inv.category.name : 'home.no_category'|trans }}</span>
+                                </td>
+                                <td class="text-end text-muted small pe-4">
+                                    {{ inv.creator.email|split('@')[0] }}
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
 
                 <div class="table-footer">
                     <a href="{{ path('app_inventory_search') }}" class="view-all-link">
@@ -131,8 +70,8 @@
         </div>
 
         <div class="col-lg-4">
-            <div class="sidebar-card">
-                <h2 class="section-title" style="font-size: 0.9rem;">{{ 'home.tag_cloud'|trans }}</h2>
+            <div class="sidebar-card shadow-sm">
+                <h2 class="section-title">{{ 'home.tag_cloud'|trans }}</h2>
                 <div class="d-flex flex-wrap gap-2">
                     {% for tag, count in tags %}
                         <a href="{{ path('app_inventory_search', {tag: tag}) }}"

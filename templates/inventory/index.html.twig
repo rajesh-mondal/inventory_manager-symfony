@@ -3,119 +3,40 @@
 {% block title %}My Inventories{% endblock %}
 
 {% block body %}
-<style>
-    .table-container {
-        background: #fff;
-        border-radius: 12px;
-        border: 1px solid #e5e7eb;
-        box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-        overflow: hidden;
-    }
-
-    #selection-bar {
-        transition: all 0.3s ease;
-        position: sticky;
-        top: 0;
-        z-index: 100;
-        background: #111827;
-        color: white;
-        padding: 1rem 1.5rem;
-        display: none;
-        justify-content: space-between;
-        align-items: center;
-        border-top-left-radius: 12px;
-        border-top-right-radius: 12px;
-    }
-
-    .table thead th {
-        background-color: #fdfdfd;
-        text-transform: uppercase;
-        font-size: 0.7rem;
-        font-weight: 700;
-        letter-spacing: 0.05em;
-        color: #9ca3af;
-        border-bottom: 1px solid #e5e7eb;
-        padding: 1.25rem 1.5rem;
-    }
-
-    .table tbody td {
-        padding: 1.25rem 1.5rem;
-        vertical-align: middle;
-        border-bottom: 1px solid #f3f4f6;
-    }
-
-    .inventory-link { font-weight: 600; color: #111827; text-decoration: none; font-size: 1rem; }
-    .inventory-link:hover { color: #2563eb; }
-
-    .badge-category { background-color: #f3f4f6; color: #374151; padding: 0.35rem 0.75rem; border-radius: 6px; font-size: 0.8rem; font-weight: 500; }
-    .item-count { background: #eff6ff; color: #1d4ed8; padding: 0.25rem 0.6rem; border-radius: 4px; font-weight: 700; font-size: 0.85rem; }
-
-    .inventory-row.selected {
-        background-color: #f0f7ff !important;
-    }
-
-    .minimal-pagination a,
-    .minimal-pagination span {
-        padding: 4px 10px;
-        text-decoration: none;
-        color: #666;
-        border-radius: 4px;
-    }
-
-    .minimal-pagination a:hover {
-        background-color: #f0f0f0;
-        color: #000;
-    }
-
-    .minimal-pagination .current {
-        background: #000;
-        color: #fff !important;
-    }
-
-    .extra-small {
-        font-size: 0.65rem;
-        padding: 0.25rem 0.5rem;
-        font-weight: 600;
-    }
-
-    .nav-tabs { border-bottom: 1px solid #e5e7eb; }
-    .nav-tabs .nav-link { color: #6b7280; border: none; font-weight: 600; padding: 1rem 1.5rem; transition: all 0.2s; }
-    .nav-tabs .nav-link.active { color: #111827; border-bottom: 2px solid #111827; background: none; }
-    .tab-pane { transition: none !important; }
-</style>
-
-<div class="container py-4">
-    <div class="d-flex justify-content-between align-items-center mb-5">
+<div class="container py-5">
+    {# Header Section #}
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-5 gap-3">
         <div>
             <h1 class="fw-bold tracking-tight text-dark mb-1">{{ 'dashboard.title'|trans }}</h1>
-            <p class="text-muted mb-0">{{ 'dashboard.total_collections'|trans }}: {{ pagination.getTotalItemCount }}</p>
+            <p class="text-muted mb-0 small">{{ 'dashboard.total_collections'|trans }}: {{ pagination.getTotalItemCount }}</p>
         </div>
-        <a href="{{ path('app_inventory_new') }}" class="btn btn-dark px-4 py-2 fw-bold" style="border-radius: 8px;">
+        <a href="{{ path('app_inventory_new') }}" class="btn btn-outline-dark px-4 py-2 fw-bold shadow-sm" style="border-radius: 10px;">
             <i class="bi bi-plus-lg me-1"></i> {{ 'dashboard.new_inventory'|trans }}
         </a>
     </div>
 
-    <ul class="nav nav-tabs mb-4" id="inventoryTabs" role="tablist">
-        <li class="nav-item" role="presentation">
+    {# Tabs Section #}
+    <ul class="nav nav-tabs mb-4 gap-2" id="inventoryTabs" role="tablist">
+        <li class="nav-item">
             <button class="nav-link active" id="owned-tab" data-bs-toggle="tab" data-bs-target="#owned-pane" type="button" role="tab">
                 <i class="bi bi-person me-2"></i>{{ 'dashboard.my_inventories'|trans }}
             </button>
         </li>
-        <li class="nav-item" role="presentation">
+        <li class="nav-item">
             <button class="nav-link" id="shared-tab" data-bs-toggle="tab" data-bs-target="#shared-pane" type="button" role="tab">
                 <i class="bi bi-people me-2"></i>{{ 'dashboard.shared_with_me'|trans }}
-                <span class="badge bg-secondary ms-1">{{ sharedInventories|length }}</span>
+                <span class="badge bg-light text-dark border ms-1 rounded-pill">{{ sharedInventories|length }}</span>
             </button>
         </li>
     </ul>
 
-    <div class="tab-content" id="inventoryTabsContent">
-
-        {# --- Owned Inventories --- #}
-        <div class="tab-pane fade show active" id="owned-pane" role="tabpanel" aria-labelledby="owned-tab">
+    <div class="tab-content">
+        {# Owned Inventories #}
+        <div class="tab-pane fade show active" id="owned-pane" role="tabpanel">
             <form id="bulk-form" method="POST">
-                <div class="table-container">
-                    <div id="selection-bar">
+                <div class="table-container shadow-sm">
+                    {# Sticky Selection Bar #}
+                    <div id="selection-bar" class="justify-content-between align-items-center">
                         <span class="small fw-bold"><span id="selected-count">0</span> {{ 'dashboard.selected_count'|trans }}</span>
                         <div class="d-flex gap-2">
                             {% if is_granted('ROLE_USER') %}
@@ -129,114 +50,100 @@
                         </div>
                     </div>
 
-                    <table class="table mb-0">
+                    <div class="table-responsive">
+                        <table class="table mb-0 align-middle">
+                            <thead>
+                                <tr>
+                                    <th class="ps-4" style="width: 40px;"><input type="checkbox" id="select-all" class="form-check-input"></th>
+                                    <th>{{ 'table.name'|trans }}</th>
+                                    <th class="d-none d-md-table-cell">{{ 'table.tags'|trans }}</th>
+                                    <th class="d-none d-md-table-cell">{{ 'table.category'|trans }}</th>
+                                    <th class="text-center">{{ 'dashboard.visibility'|trans }}</th>
+                                    <th class="text-end pe-4">{{ 'table.stored_items'|trans }}</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for inv in pagination %}
+                                <tr class="inventory-row">
+                                    <td class="ps-4">
+                                        <input type="checkbox" name="ids[]" value="{{ inv.id }}" class="form-check-input inventory-checkbox">
+                                    </td>
+                                    <td>
+                                        <div class="d-flex flex-column">
+                                            <a href="{{ path('app_inventory_show', {id: inv.id}) }}" class="inventory-link">{{ inv.title }}</a>
+                                            <span class="text-muted small text-truncate" style="max-width: 200px;">
+                                                {% set desc = inv.description|default('home.no_description'|trans) %}
+                                                {{ desc|slice(0, 45) }}{{ desc|length > 45 ? '...' : '' }}
+                                            </span>
+                                        </div>
+                                    </td>
+                                    <td class="d-none d-md-table-cell">
+                                        <div class="d-flex flex-wrap gap-1">
+                                            {% for tag in inv.tags %}
+                                                <span class="badge rounded-pill bg-white text-muted border extra-small">#{{ tag }}</span>
+                                            {% endfor %}
+                                        </div>
+                                    </td>
+                                    <td class="d-none d-md-table-cell">
+                                        <span class="badge-category">{{ inv.category ? inv.category.name : 'N/A' }}</span>
+                                    </td>
+                                    <td class="text-center">
+                                        <i class="bi {{ inv.isPublic ? 'bi-globe-americas text-success' : 'bi-lock-fill text-muted' }}" style="font-size: 0.9rem;"></i>
+                                    </td>
+                                    <td class="text-end pe-4">
+                                        <span class="item-count-badge">{{ inv.items|length }}</span>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </form>
+
+            <div class="d-flex justify-content-center mt-5">
+                {{ knp_pagination_render(pagination) }}
+            </div>
+        </div>
+
+        {# Shared Inventories #}
+        <div class="tab-pane fade" id="shared-pane" role="tabpanel">
+            <div class="table-container shadow-sm">
+                <div class="table-responsive">
+                    <table class="table mb-0 align-middle">
                         <thead>
                             <tr>
-                                <th style="width: 50px;"><input type="checkbox" id="select-all" class="form-check-input"></th>
-                                <th style="width: 25%;">{{ 'table.name'|trans }}</th>
-                                <th style="width: 25%;">{{ 'table.tags'|trans }}</th>
-                                <th style="width: 15%;">{{ 'table.category'|trans }}</th>
-                                <th style="width: 10%;" class="text-center">{{ 'dashboard.visibility'|trans }}</th>
-                                <th class="text-end" style="width: 15%;">{{ 'table.stored_items'|trans }}</th>
+                                <th class="ps-4">{{ 'table.name'|trans }}</th>
+                                <th class="d-none d-md-table-cell">{{ 'table.owner'|trans }}</th>
+                                <th class="text-center">{{ 'table.stored_items'|trans }}</th>
+                                <th class="text-end pe-4">{{ 'table.actions'|trans }}</th>
                             </tr>
                         </thead>
                         <tbody>
-                            {% for inv in pagination %}
-                            <tr class="align-middle inventory-row">
-                                <td>
-                                    <input type="checkbox" name="ids[]" value="{{ inv.id }}" class="form-check-input inventory-checkbox">
-                                </td>
-                                <td>
+                            {% for inv in sharedInventories %}
+                            <tr>
+                                <td class="ps-4">
                                     <div class="d-flex flex-column">
                                         <a href="{{ path('app_inventory_show', {id: inv.id}) }}" class="inventory-link">{{ inv.title }}</a>
-                                        <span class="text-muted small mt-1 text-truncate" style="max-width: 250px;">
-                                            {{ inv.description|default('home.no_description'|trans) }}
-                                        </span>
+                                        <span class="text-muted small d-md-none">{{ inv.creator.email }}</span>
                                     </div>
                                 </td>
-                                <td>
-                                    <div class="d-flex flex-wrap gap-1">
-                                        {% for tag in inv.tags %}
-                                            <span class="badge rounded-pill bg-white text-muted border extra-small">#{{ tag }}</span>
-                                        {% endfor %}
-                                    </div>
+                                <td class="d-none d-md-table-cell small text-muted">{{ inv.creator.email }}</td>
+                                <td class="text-center"><span class="item-count-badge">{{ inv.items|length }}</span></td>
+                                <td class="text-end pe-4">
+                                    <a href="{{ path('app_inventory_show', {id: inv.id}) }}" class="btn btn-sm btn-outline-dark fw-bold px-3" style="border-radius: 8px;">
+                                        {{ 'table.view_edit'|trans }}
+                                    </a>
                                 </td>
-                                <td><span class="badge-category">{{ inv.category ? inv.category.name : 'home.no_category'|trans }}</span></td>
-                                <td class="text-center">
-                                    {% if inv.isPublic %}
-                                        <div class="bg-success text-white d-inline-flex align-items-center justify-content-center rounded-circle" style="width: 22px; height: 22px;">
-                                            <i class="bi bi-check-lg" style="font-size: 0.80rem;"></i>
-                                        </div>
-                                    {% else %}
-                                        <div class="bg-light text-muted d-inline-flex align-items-center justify-content-center rounded-circle border" style="width: 22px; height: 22px;">
-                                            <i class="bi bi-lock-fill" style="font-size: 0.75rem;"></i>
-                                        </div>
-                                    {% endif %}
-                                </td>
-                                <td class="text-end"><span class="item-count">{{ inv.items|length }}</span></td>
                             </tr>
                             {% else %}
                             <tr>
-                                <td colspan="6" class="text-center py-5 text-muted">You haven't created any inventories yet.</td>
+                                <td colspan="4" class="text-center py-5 text-muted">{{ 'dashboard.no_shared'|trans }}</td>
                             </tr>
                             {% endfor %}
                         </tbody>
                     </table>
                 </div>
-
-                <div class="d-flex justify-content-center mt-5 mb-4 small">
-                    <div class="minimal-pagination d-flex gap-1 align-items-center">
-                        {{ knp_pagination_render(pagination) }}
-                    </div>
-                </div>
-            </form>
-        </div>
-
-        {# --- Shared Inventories --- #}
-        <div class="tab-pane fade" id="shared-pane" role="tabpanel" aria-labelledby="shared-tab">
-            <div class="table-container">
-                <table class="table mb-0">
-                    <thead>
-                        <tr>
-                            <th style="width: 30%;">{{ 'table.name'|trans }}</th>
-                            <th style="width: 20%;">{{ 'table.owner'|trans }}</th>
-                            <th style="width: 20%;">{{ 'table.category'|trans }}</th>
-                            <th class="text-center" style="width: 15%;">{{ 'table.stored_items'|trans }}</th>
-                            <th class="text-end" style="width: 15%;">{{ 'table.actions'|trans }}</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for inv in sharedInventories %}
-                        <tr class="align-middle">
-                            <td>
-                                <div class="d-flex flex-column">
-                                    <a href="{{ path('app_inventory_show', {id: inv.id}) }}" class="inventory-link">{{ inv.title }}</a>
-                                    <span class="text-muted small mt-1">
-                                        {% set desc = inv.description|default('home.no_description'|trans) %}
-                                        {{ desc|slice(0, 50) }}{{ desc|length > 50 ? '...' : '' }}
-                                    </span>
-                                </div>
-                            </td>
-                            <td>
-                                <div class="d-flex align-items-center gap-2">
-                                    <span class="small text-muted">{{ inv.creator.email }}</span>
-                                </div>
-                            </td>
-                            <td><span class="badge-category">{{ inv.category ? inv.category.name : 'home.no_category'|trans }}</span></td>
-                            <td class="text-center"><span class="item-count">{{ inv.items|length }}</span></td>
-                            <td class="text-end">
-                                <a href="{{ path('app_inventory_show', {id: inv.id}) }}" class="btn btn-sm btn-outline-dark fw-bold px-3">
-                                    {{ 'table.view_edit'|trans }}
-                                </a>
-                            </td>
-                        </tr>
-                        {% else %}
-                        <tr>
-                            <td colspan="5" class="text-center py-5 text-muted">{{ 'dashboard.no_shared'|trans }}</td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
             </div>
         </div>
     </div>
