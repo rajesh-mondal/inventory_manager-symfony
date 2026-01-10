@@ -78,6 +78,10 @@
         background: #000;
         color: #fff !important;
     }
+
+    .tab-pane {
+        transition: none !important;
+    }
 </style>
 
 <div class="container py-4">
@@ -508,6 +512,23 @@
 {% block javascripts %}
      <script>
     document.addEventListener('DOMContentLoaded', function() {
+        const hash = window.location.hash;
+        if (hash) {
+            const targetTab = document.querySelector(`button[data-bs-target="${hash}"]`);
+            if (targetTab) {
+                const tab = new bootstrap.Tab(targetTab);
+                tab.show();
+            }
+        }
+
+        const tabButtons = document.querySelectorAll('button[data-bs-toggle="tab"]');
+        tabButtons.forEach(btn => {
+            btn.addEventListener('shown.bs.tab', (e) => {
+                const targetId = e.target.getAttribute('data-bs-target');
+                history.replaceState(null, null, targetId);
+            });
+        });
+
         const selectAll = document.getElementById('select-all');
         const checkboxes = document.querySelectorAll('.item-checkbox');
         const toolbar = document.getElementById('item-toolbar');
