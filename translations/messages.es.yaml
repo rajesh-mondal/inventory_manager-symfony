@@ -83,7 +83,7 @@ inventory_form:
     title_placeholder: "ej. Equipo de Fotografía"
     select_category: "Seleccione una categoría"
     id_pattern: "Patrón de ID (ej. PARTE-{YEAR}-{SEQ})"
-    tags_label: "Etiquetas (separadas por comas)"
+    tags_label: "Etiquetas"
     tags_help: "Ejemplo: electrónica, oficina, herramientas"
     is_public: "Hacer visible al público"
     custom_fields_title: "Campos Personalizados (Plantilla)"

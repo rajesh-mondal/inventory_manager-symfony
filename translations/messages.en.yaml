@@ -72,7 +72,7 @@ inventory_form:
     title_placeholder: "e.g. Photography Gear"
     select_category: "Select a category"
     id_pattern: "ID Pattern (e.g. PART-{YEAR}-{SEQ})"
-    tags_label: "Tags (separated by commas)"
+    tags_label: "Tags"
     tags_help: "Example: electronics, office, tools"
     is_public: "Make Publicly Viewable"
     custom_fields_title: "Custom Fields (Template)"

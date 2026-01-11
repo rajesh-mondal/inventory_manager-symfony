@@ -3,12 +3,6 @@
 {% block title %}Bulk Edit Items{% endblock %}
 
 {% block body %}
-<style>
-{#     body { background-color: #f9fafb; } #}
-    .bulk-card { background: #fff; border-radius: 12px; border: 1px solid #e5e7eb; box-shadow: 0 1px 3px rgba(0,0,0,0.1); padding: 2rem; }
-    .item-badge { background: #f3f4f6; color: #111827; padding: 4px 10px; border-radius: 6px; font-size: 0.8rem; border: 1px solid #e5e7eb; margin-right: 5px; margin-bottom: 5px; display: inline-block; }
-    .section-label { font-size: 0.75rem; font-weight: 700; text-transform: uppercase; color: #9ca3af; letter-spacing: 0.05em; margin-bottom: 1.5rem; display: block; }
-</style>
 
 <div class="container py-5">
     <div class="row justify-content-center">
@@ -77,8 +71,14 @@
                     </div>
 
                     <div class="mt-5 pt-4 border-top d-flex justify-content-between">
-                        <a href="{{ path('app_inventory_show', {id: inventory.id}) }}" class="btn btn-outline-secondary px-4">{{ 'buttons.cancel'|trans }}</a>
-                        <button type="submit" class="btn btn-dark px-5 fw-bold">{{ 'edit_inventory.update_all'|trans }}</button>
+                        <a href="{{ path('app_inventory_show', {id: inventory.id}) }}"
+                            class="btn btn-outline-secondary px-4">
+                            {{ 'buttons.cancel'|trans }}
+                        </a>
+                        <button type="submit"
+                            class="btn btn-dark px-5 fw-bold">
+                            {{ 'edit_inventory.update_all'|trans }}
+                        </button>
                     </div>
                 </form>
             </div>

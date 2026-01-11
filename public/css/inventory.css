@@ -262,3 +262,106 @@ body {
 .inventory-row:hover {
     background-color: #fbfbfc;
 }
+
+.form-container {
+    background: #fff;
+    border-radius: 12px;
+    border: 1px solid #e5e7eb;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+    padding: 2rem;
+}
+
+.form-label {
+    font-size: 0.80rem;
+    font-weight: 600;
+    color: #374151;
+    margin-bottom: 0.5rem;
+    display: block;
+}
+
+.form-control, .form-select {
+    border-radius: 8px;
+    border: 1px solid #d1d5db;
+    padding: 0.7rem 0.9rem;
+    font-size: 0.9rem;
+    transition: all 0.2s ease;
+    background-color: #fcfcfc;
+}
+
+.form-control:focus, .form-select:focus {
+    border-color: #111827;
+    box-shadow: 0 0 0 3px rgba(17, 24, 39, 0.05);
+    background-color: #fff;
+    outline: none;
+}
+
+.section-title {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #111827;
+    margin-bottom: 1.25rem;
+    border-bottom: 1px solid #f3f4f6;
+    padding-bottom: 0.75rem;
+}
+
+.btn-save {
+    background-color: #111827;
+    color: #fff;
+    border-radius: 10px;
+    padding: 0.8rem 2.5rem; /* Large padding for desktop */
+    font-weight: 600;
+    border: none;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    transition: all 0.2s ease;
+    cursor: pointer;
+    display: inline-block;
+    text-align: center;
+    white-space: nowrap; /* Prevents text from wrapping into two lines */
+}
+
+/* Responsive adjustment for Mobile */
+@media (max-width: 576px) {
+    .btn-save {
+        padding: 0.6rem 1.5rem; /* Reduce padding on mobile */
+        font-size: 0.9rem;       /* Slightly smaller text */
+        width: 100%;             /* Optional: makes the button full-width on mobile */
+        white-space: normal;    /* Allows wrapping only if the screen is extremely small */
+    }
+
+    /* Adjusting the container to handle the full-width button */
+    .d-flex.justify-content-between {
+        flex-direction: column-reverse; /* Stack Cancel and Update buttons */
+        gap: 1rem;
+    }
+}
+
+/* Bulk Edit Shared Styles */
+.bulk-card {
+    background: #fff;
+    border-radius: 12px;
+    border: 1px solid #e5e7eb;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    padding: 2rem;
+}
+
+.inventory-badge, .item-badge {
+    background: #f3f4f6;
+    color: #111827;
+    padding: 4px 10px;
+    border-radius: 6px;
+    font-size: 0.8rem;
+    border: 1px solid #e5e7eb;
+    margin-right: 5px;
+    margin-bottom: 5px;
+    display: inline-block;
+}
+
+.section-label {
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    color: #9ca3af;
+    letter-spacing: 0.05em;
+    margin-bottom: 1.5rem;
+    display: block;
+}
