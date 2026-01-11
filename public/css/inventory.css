@@ -89,24 +89,16 @@ body {
 }
 
 .nav-tabs {
-    border-bottom: 1px solid #f3f4f6;
+    border-bottom: 1px solid #e5e7eb;
 }
 
 .nav-tabs .nav-link {
     color: #9ca3af;
     border: none;
     font-weight: 600;
-    padding: 1rem 1.25rem;
+    padding: 1rem 1.5rem;
     transition: all 0.2s ease;
     border-bottom: 2px solid transparent;
-}
-
-.sidebar-card {
-    background: white;
-    border-radius: 12px;
-    border: 1px solid #e5e7eb;
-    padding: 1.5rem;
-    margin-bottom: 1.5rem;
 }
 
 .nav-tabs .nav-link:hover {
@@ -117,6 +109,14 @@ body {
     color: #111827 !important;
     border-bottom: 2px solid #111827 !important;
     background: none !important;
+}
+
+.sidebar-card {
+    background: white;
+    border-radius: 12px;
+    border: 1px solid #e5e7eb;
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
 }
 
 #selection-bar {
@@ -132,19 +132,22 @@ body {
 }
 
 .table thead th {
-    background-color: #fafafa;
+    background-color: #fdfdfd;
     text-transform: uppercase;
     font-size: 0.7rem;
     font-weight: 700;
     letter-spacing: 0.05em;
-    color: #6b7280;
+    color: #9ca3af;
     padding: 1rem 1.5rem !important;
-    border-bottom: 1px solid #f3f4f6 !important;
+    border-bottom: 1px solid #e5e7eb !important;
+    white-space: nowrap;
 }
 
 .table tbody td {
     padding: 1rem 1.5rem !important;
     border-bottom: 1px solid #f9fafb;
+    color: #374151;
+    font-size: 0.9rem;
 }
 
 .inventory-link {
@@ -308,7 +311,7 @@ body {
     background-color: #111827;
     color: #fff;
     border-radius: 10px;
-    padding: 0.8rem 2.5rem; /* Large padding for desktop */
+    padding: 0.8rem 2.5rem;
     font-weight: 600;
     border: none;
     box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
@@ -316,21 +319,19 @@ body {
     cursor: pointer;
     display: inline-block;
     text-align: center;
-    white-space: nowrap; /* Prevents text from wrapping into two lines */
+    white-space: nowrap;
 }
 
-/* Responsive adjustment for Mobile */
 @media (max-width: 576px) {
     .btn-save {
-        padding: 0.6rem 1.5rem; /* Reduce padding on mobile */
-        font-size: 0.9rem;       /* Slightly smaller text */
-        width: 100%;             /* Optional: makes the button full-width on mobile */
-        white-space: normal;    /* Allows wrapping only if the screen is extremely small */
+        padding: 0.6rem 1.5rem;
+        font-size: 0.9rem;
+        width: 100%;
+        white-space: normal;
     }
 
-    /* Adjusting the container to handle the full-width button */
     .d-flex.justify-content-between {
-        flex-direction: column-reverse; /* Stack Cancel and Update buttons */
+        flex-direction: column-reverse;
         gap: 1rem;
     }
 }
@@ -365,3 +366,51 @@ body {
     margin-bottom: 1.5rem;
     display: block;
 }
+
+/* Breadcrumbs */
+.breadcrumb-item a {
+    color: #6b7280;
+    text-decoration: none;
+    font-size: 0.875rem;
+}
+
+.breadcrumb-item.active {
+    color: #111827;
+    font-weight: 500;
+    font-size: 0.875rem;
+}
+
+/* Custom Badge for IDs */
+.custom-id-badge {
+    font-family: 'Monaco', 'Consolas', monospace;
+    background-color: #f8fafc;
+    color: #475569;
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    font-size: 0.75rem;
+    border: 1px solid #e2e8f0;
+}
+
+.tab-pane {
+    transition: none !important;
+}
+
+.item-row.selected {
+    background-color: #f0f7ff !important;
+}
+
+.like-btn {
+    border: 1px solid #fee2e2;
+    padding: 0.25rem 0.75rem;
+    font-size: 0.85rem;
+}
+
+/* Checkbox Column width */
+.col-checkbox {
+    width: 40px;
+    padding-left: 1.5rem !important;
+}
+
+/*.hide-scrollbar::-webkit-scrollbar {
+    display: none;
+}*/
