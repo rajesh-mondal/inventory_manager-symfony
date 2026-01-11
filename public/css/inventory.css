@@ -414,3 +414,20 @@ body {
 /*.hide-scrollbar::-webkit-scrollbar {
     display: none;
 }*/
+
+.inventory-description ul {
+    list-style-type: disc !important;
+    padding-left: 2rem !important;
+    display: block !important;
+}
+
+.inventory-description ol {
+    list-style-type: decimal !important;
+    padding-left: 2rem !important;
+    display: block !important;
+}
+
+.inventory-description strong,
+.inventory-description b {
+    font-weight: bold !important;
+}

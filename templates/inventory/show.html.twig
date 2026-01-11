@@ -21,6 +21,11 @@
                     <span class="badge rounded-pill bg-white text-muted border small">#{{ tag }}</span>
                 {% endfor %}
             </div>
+            {% if inventory.description %}
+                <div class="inventory-description mt-3 text-secondary border-start ps-3" style="font-size: 0.95rem; max-width: 800px;">
+                    {{ inventory.description|markdown_to_html }}
+                </div>
+            {% endif %}
         </div>
         <div class="d-flex d-md-flex gap-2">
             {% if is_granted('INVENTORY_EDIT', inventory) %}
@@ -350,8 +355,18 @@
                             </div>
 
                             <div class="col-md-12">
-                                <label class="form-label fw-bold small">{{ 'inventory_form.description_label'|trans }}</label>
-                                <textarea name="description" class="form-control" rows="3" placeholder="Description">{{ inventory.description }}</textarea>
+                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                    <label class="form-label fw-bold small mb-0">{{ 'inventory_form.description_label'|trans }}</label>
+                                    <span class="text-muted extra-small">
+                                        <i class="bi bi-markdown me-1"></i>Supports Markdown
+                                    </span>
+                                </div>
+                                <textarea name="description"
+                                          class="form-control"
+                                          rows="5"
+                                          placeholder="Use **bold**, # headers, or - lists."
+                                          style="font-size: 0.85rem;"
+                                >{{ inventory.description }}</textarea>
                             </div>
                         </div>
 
@@ -437,7 +452,7 @@
 {% endblock %}
 
 {% block javascripts %}
-     <script>
+    <script>
     document.addEventListener('DOMContentLoaded', function() {
         const hash = window.location.hash;
         if (hash) {
