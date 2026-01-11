@@ -96,6 +96,8 @@ inventory_form:
     description_label: "Descripción"
     description_placeholder: "¿Qué tipo de artículos guardará aquí? Mencione la ubicación o el propósito..."
     category_label: "Categoría"
+    markdown_support: "Supporte le Markdown"
+    markdown_help: "Utilisez **gras**, *italique*, # titres, ou - listes à puces."
 
 edit_inventory:
     settings_title: "Ajustes del Inventario"

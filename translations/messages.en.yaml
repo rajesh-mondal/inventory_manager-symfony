@@ -1,4 +1,3 @@
-# English Translations
 theme:
     light: "Light Mode"
     dark: "Dark Mode"
@@ -85,6 +84,8 @@ inventory_form:
     description_label: "Description"
     description_placeholder: "What kind of items will you store here? Mention location or purpose..."
     category_label: "Category"
+    markdown_support: "Supports Markdown"
+    markdown_help: "Use **bold**, *italic*, # headers, or - bullet points."
 
 edit_inventory:
     settings_title: "Inventory Settings"

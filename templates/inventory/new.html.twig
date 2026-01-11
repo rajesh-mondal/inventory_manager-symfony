@@ -85,8 +85,22 @@
                     </div>
 
                     <div class="mb-4 mt-4">
-                        <label class="form-label">{{ 'inventory_form.description_label'|trans }}</label>
-                        <textarea name="description" class="form-control" rows="3" placeholder="{{ 'inventory_form.description_placeholder'|trans }}"></textarea>
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <label class="form-label fw-bold small mb-0">{{ 'inventory_form.description_label'|trans }}</label>
+                            <span class="text-muted" style="font-size: 0.75rem;">
+                                <i class="bi bi-markdown me-1"></i>
+                                {{ 'inventory_form.markdown_support'|trans }}
+                            </span>
+                        </div>
+                        <textarea name="description"
+                                  class="form-control"
+                                  rows="5"
+                                  placeholder="{{ 'inventory_form.description_placeholder'|trans }}"
+                                  style="font-size: 0.9rem;">
+                        </textarea>
+                        <div class="form-text mt-2" style="font-size: 0.75rem;">
+                            {{ 'inventory_form.markdown_help'|trans }}
+                        </div>
                     </div>
 
                     <div class="border-top mt-5 pt-4 d-flex justify-content-end">
