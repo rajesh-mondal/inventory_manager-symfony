@@ -4,7 +4,6 @@
 
 {% block body %}
 <style>
-{#     body { background-color: #f9fafb; } #}
 
     .table-container {
         background: #fff;
@@ -84,11 +83,11 @@
 
     <form id="bulk-form" method="POST" action="{{ path('app_admin_users_bulk') }}">
         <div class="table-container">
-            <div id="selection-bar">
+            <div id="selection-bar" class="flex-column flex-md-row gap-3">
                 <span class="small fw-bold">
                     <span id="selected-count">0</span> {{ 'admin.table.user'|trans|lower }}(s) {{ 'edit_inventory.selected_inventory'|trans|lower }}
                 </span>
-                <div class="d-flex gap-2">
+                <div class="d-flex flex-wrap justify-content-center gap-2">
                     <button type="submit" name="action" value="make_admin" class="btn btn-sm btn-light fw-bold px-3">{{ 'admin.actions.make_admin'|trans }}</button>
                     <button type="submit" name="action" value="remove_admin" class="btn btn-sm btn-outline-light fw-bold px-3">{{ 'admin.actions.remove_admin'|trans }}</button>
                     <button type="submit" name="action" value="block" class="btn btn-sm btn-warning fw-bold px-3">{{ 'admin.actions.block'|trans }}</button>
@@ -98,58 +97,59 @@
                     </button>
                 </div>
             </div>
-
-            <table class="table mb-0">
-                <thead>
-                    <tr>
-                        <th style="width: 50px;"><input type="checkbox" id="select-all" class="form-check-input"></th>
-                        <th style="width: 30%;">{{ 'admin.table.user'|trans }}</th>
-                        <th style="width: 30%;">{{ 'admin.table.email'|trans }}</th>
-                        <th style="width: 25%;">{{ 'admin.table.roles'|trans }}</th>
-                        <th class="text-end" style="width: 15%;">{{ 'admin.table.status'|trans }}</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for user in users %}
-                    <tr class="align-middle user-row">
-                        <td><input type="checkbox" name="ids[]" value="{{ user.id }}" class="form-check-input user-checkbox"></td>
-                        <td>
-                            <div class="d-flex align-items-center gap-2">
-                                <span class="user-name">{{ user.email|split('@')[0]|capitalize }}</span>
-
-                                {% if user == app.user %}
-                                    <span class="badge bg-dark extra-small">
-                                        {{ 'admin.table.you'|trans }}
-                                    </span>
-                                {% endif %}
-                            </div>
-                        </td>
-                        <td class="text-muted small">{{ user.email }}</td>
-                        <td>
-                            <div class="d-flex flex-wrap gap-1">
-                                {% for role in user.roles %}
-                                    {% if role != 'ROLE_USER' %}
-                                        <span class="badge-role {% if role == 'ROLE_ADMIN' %}badge-admin{% elseif role == 'ROLE_BLOCKED' %}badge-blocked{% endif %}">
-                                            {{ role|replace({'ROLE_': ''})|title }}
+            <div class="table-responsive">
+                <table class="table mb-0">
+                    <thead>
+                        <tr>
+                            <th><input type="checkbox" id="select-all" class="form-check-input"></th>
+                            <th>{{ 'admin.table.user'|trans }}</th>
+                            <th class="d-none d-md-table-cell">{{ 'admin.table.email'|trans }}</th>
+                            <th>{{ 'admin.table.roles'|trans }}</th>
+                            <th class="text-end">{{ 'admin.table.status'|trans }}</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for user in users %}
+                        <tr class="align-middle user-row">
+                            <td><input type="checkbox" name="ids[]" value="{{ user.id }}" class="form-check-input user-checkbox"></td>
+                            <td>
+                                <div class="d-flex flex-column flex-md-row align-items-start align-items-md-center gap-1 gap-md-2">
+                                    <span class="user-name">{{ user.email|split('@')[0]|capitalize }}</span>
+                                    {% if user == app.user %}
+                                        <span class="badge bg-dark extra-small">
+                                            {{ 'admin.table.you'|trans }}
                                         </span>
                                     {% endif %}
-                                {% endfor %}
-                                <span class="badge-role">{{ 'admin.table.user'|trans }}</span>
-                            </div>
-                        </td>
-                        <td class="text-end">
-                            {% if 'ROLE_BLOCKED' in user.roles %}
-                                <span class="badge rounded-pill bg-danger d-inline-block" style="width: 8px; height: 8px;" title="Blocked"></span>
-                                <span class="small text-danger fw-bold ms-1">{{ 'admin.table.blocked'|trans }}</span>
-                            {% else %}
-                                <span class="badge rounded-pill bg-success d-inline-block" style="width: 8px; height: 8px;" title="Active"></span>
-                                <span class="small text-success fw-bold ms-1">{{ 'admin.table.active'|trans }}</span>
-                            {% endif %}
-                        </td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
+                                </div>
+                                <span class="text-muted d-md-none">{{ user.email }}</span>
+                            </td>
+                            <td class="text-muted small d-none d-md-table-cell">{{ user.email }}</td>
+                            <td>
+                                <div class="d-flex flex-wrap gap-1">
+                                    {% for role in user.roles %}
+                                        {% if role != 'ROLE_USER' %}
+                                            <span class="badge-role {% if role == 'ROLE_ADMIN' %}badge-admin{% elseif role == 'ROLE_BLOCKED' %}badge-blocked{% endif %}">
+                                                {{ role|replace({'ROLE_': ''})|title }}
+                                            </span>
+                                        {% endif %}
+                                    {% endfor %}
+                                    <span class="badge-role">{{ 'admin.table.user'|trans }}</span>
+                                </div>
+                            </td>
+                            <td class="text-end">
+                                {% if 'ROLE_BLOCKED' in user.roles %}
+                                    <span class="badge rounded-pill bg-danger d-inline-block" style="width: 8px; height: 8px;" title="Blocked"></span>
+                                    <span class="small text-danger fw-bold ms-1">{{ 'admin.table.blocked'|trans }}</span>
+                                {% else %}
+                                    <span class="badge rounded-pill bg-success d-inline-block" style="width: 8px; height: 8px;" title="Active"></span>
+                                    <span class="small text-success fw-bold ms-1">{{ 'admin.table.active'|trans }}</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
         </div>
     </form>
 </div>
