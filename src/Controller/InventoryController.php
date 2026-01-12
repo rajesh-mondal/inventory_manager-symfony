@@ -9,6 +9,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Routing\Attribute\Route;
 use Knp\Component\Pager\PaginatorInterface;
 use App\Repository\ItemRepository;
@@ -57,9 +58,7 @@ class InventoryController extends AbstractController
                 for ($i = 1; $i <= 3; $i++) {
                     $lowerType = strtolower($type);
 
-                    // Match Twig name: custom_string1_state
                     $isChecked = $request->request->has("custom_{$lowerType}{$i}_state");
-                    // Match Twig name: custom_string1_name
                     $labelName = $request->request->get("custom_{$lowerType}{$i}_name");
 
                     $setterState = "setCustom" . $type . $i . "State";
@@ -176,6 +175,43 @@ class InventoryController extends AbstractController
         $isCreatorOrAdmin = ($inventory->getCreator() === $currentUser || $this->isGranted('ROLE_ADMIN'));
         $activeTab = 'settings-pane';
 
+        $isAjax = $request->isXmlHttpRequest() || str_contains($request->headers->get('Content-Type', ''), 'application/json');
+
+        if ($isAjax) {
+            $data = json_decode($request->getContent(), true);
+
+            $submittedVersion = isset($data['version']) ? (int)$data['version'] : null;
+            if ($submittedVersion !== null && $submittedVersion !== $inventory->getVersion()) {
+                return new JsonResponse(['error' => 'Conflict: This inventory was updated elsewhere.'], 409);
+            }
+
+            if (isset($data['category'])) {
+                $category = $data['category'] ? $em->getRepository(Category::class)->find($data['category']) : null;
+                $inventory->setCategory($category);
+            }
+
+            if (isset($data['description'])) {
+                $inventory->setDescription($data['description']);
+            }
+
+            if ($isCreatorOrAdmin && isset($data['is_public'])) {
+                $inventory->setIsPublic($data['is_public'] === '1');
+            }
+
+            if (isset($data['tags'])) {
+                $tagsArray = array_filter(array_map('trim', explode(',', $data['tags'])));
+                $inventory->setTags($tagsArray);
+            }
+
+            $inventory->setVersion($inventory->getVersion() + 1);
+            $em->flush();
+
+            return new JsonResponse([
+                'status' => 'success',
+                'newVersion' => $inventory->getVersion()
+            ]);
+        }
+
         if ($request->request->has('grant_access_email') || $request->request->has('revoke_access_id')) {
             if (!$isCreatorOrAdmin) {
                 $this->addFlash('danger', 'Only the owner or admin can manage permissions.');
@@ -183,13 +219,19 @@ class InventoryController extends AbstractController
                 $this->handleAccessManagement($inventory, $request, $em);
                 $activeTab = 'access-pane';
             }
-        }
+        } else {
+            $submittedVersion = (int) $request->request->get('version');
+            if ($submittedVersion !== $inventory->getVersion()) {
+                $this->addFlash('danger', 'Update failed: The inventory was modified in another window. Please refresh.');
+                return $this->redirectToRoute('app_inventory_show', [
+                    'id' => $inventory->getId(),
+                    '_fragment' => 'settings-pane'
+                ]);
+            }
 
-        else {
             $categoryId = $request->request->get('category');
             $category = $categoryId ? $em->getRepository(Category::class)->find($categoryId) : null;
             $inventory->setCategory($category);
-
             $inventory->setDescription($request->request->get('description'));
 
             if ($isCreatorOrAdmin) {
@@ -200,6 +242,7 @@ class InventoryController extends AbstractController
             $tagsArray = array_filter(array_map('trim', explode(',', $tagsString)));
             $inventory->setTags($tagsArray);
 
+            $inventory->setVersion($inventory->getVersion() + 1);
             $this->addFlash('success', 'General settings updated.');
         }
 

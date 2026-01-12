@@ -121,6 +121,9 @@ class Inventory
     #[ORM\JoinTable(name: 'inventory_write_access')]
     private Collection $writeAccessUsers;
 
+    #[ORM\Column(options: ["default" => 1])]
+    private ?int $version = 1;
+
     public function __construct()
     {
         $this->items = new ArrayCollection();
@@ -596,6 +599,17 @@ class Inventory
     public function removeWriteAccessUser(User $user): static
     {
         $this->writeAccessUsers->removeElement($user);
+        return $this;
+    }
+
+    public function getVersion(): ?int
+    {
+        return $this->version;
+    }
+
+    public function setVersion(int $version): self
+    {
+        $this->version = $version;
         return $this;
     }
 }

@@ -316,7 +316,9 @@
         <div class="tab-pane fade" id="settings-pane" role="tabpanel" aria-labelledby="settings-tab">
             {% if is_granted('INVENTORY_EDIT', inventory) %}
                 <div class="card border-0 shadow-sm p-4">
-                    <form method="POST" action="{{ path('app_inventory_settings', {id: inventory.id}) }}">
+                    <div id="autosave-status" class="small mb-2" style="height: 20px; font-weight: 500;"></div>
+                    <form id="settings-form" method="POST" action="{{ path('app_inventory_settings', {id: inventory.id}) }}">
+                        <input type="hidden" name="version" id="inventory-version" value="{{ inventory.version }}">
                         <span class="section-label d-block mb-3" style="font-size: 0.75rem; font-weight: 700; text-transform: uppercase; color: #9ca3af; letter-spacing: 0.05em;">
                             {{ 'edit_inventory.update_fields'|trans }}
                         </span>
@@ -453,22 +455,72 @@
 {% endblock %}
 
 {% block javascripts %}
-    <script>
+<script>
+    let lastCommentId = {{ lastCommentId|default(0) }};
+
     document.addEventListener('DOMContentLoaded', function() {
+        const inventoryId = {{ inventory.id }};
+
+        // Settings auto-save logic
+        const settingsForm = document.getElementById('settings-form');
+        const statusEl = document.getElementById('autosave-status');
+        const versionInput = document.getElementById('inventory-version');
+        let isDirty = false;
+
+        if (settingsForm) {
+            settingsForm.addEventListener('input', () => {
+                isDirty = true;
+                if (statusEl) statusEl.innerHTML = '<span class="text-muted small">Unsaved changes...</span>';
+            });
+
+            setInterval(() => {
+                if (!isDirty) return;
+                if (statusEl) statusEl.innerHTML = '<span class="text-primary small">Saving...</span>';
+
+                const formData = new FormData(settingsForm);
+                const data = Object.fromEntries(formData.entries());
+
+                fetch(settingsForm.action, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-Requested-With': 'XMLHttpRequest'
+                    },
+                    body: JSON.stringify(data)
+                })
+                .then(response => {
+                    if (response.status === 409) throw new Error('Conflict: Modified elsewhere');
+                    if (!response.ok) throw new Error('Save failed');
+                    return response.json();
+                })
+                .then(result => {
+                    if (result.newVersion && versionInput) {
+                        versionInput.value = result.newVersion;
+                    }
+                    isDirty = false;
+                    if (statusEl) {
+                        statusEl.innerHTML = '<span class="text-success small"><i class="bi bi-check-circle"></i> Saved</span>';
+                        setTimeout(() => { if(!isDirty) statusEl.innerText = ''; }, 3000);
+                    }
+                })
+                .catch(error => {
+                    if (statusEl) {
+                        statusEl.innerHTML = `<span class="text-danger small"><i class="bi bi-exclamation-triangle"></i> ${error.message}</span>`;
+                    }
+                });
+            }, 7000);
+        }
+
+        // Tabs and selection
         const hash = window.location.hash;
         if (hash) {
             const targetTab = document.querySelector(`button[data-bs-target="${hash}"]`);
-            if (targetTab) {
-                const tab = new bootstrap.Tab(targetTab);
-                tab.show();
-            }
+            if (targetTab) new bootstrap.Tab(targetTab).show();
         }
 
-        const tabButtons = document.querySelectorAll('button[data-bs-toggle="tab"]');
-        tabButtons.forEach(btn => {
+        document.querySelectorAll('button[data-bs-toggle="tab"]').forEach(btn => {
             btn.addEventListener('shown.bs.tab', (e) => {
-                const targetId = e.target.getAttribute('data-bs-target');
-                history.replaceState(null, null, targetId);
+                history.replaceState(null, null, e.target.getAttribute('data-bs-target'));
             });
         });
 
@@ -476,128 +528,80 @@
         const checkboxes = document.querySelectorAll('.item-checkbox');
         const toolbar = document.getElementById('item-toolbar');
         const countDisplay = document.getElementById('selected-count');
-        const form = document.getElementById('bulk-form');
 
         function updateToolbar() {
             const checkedCount = document.querySelectorAll('.item-checkbox:checked').length;
-            if (checkedCount > 0) {
-                toolbar.classList.remove('d-none');
-                countDisplay.innerText = `${checkedCount} item(s) selected`;
-            } else {
-                toolbar.classList.add('d-none');
+            if (toolbar) {
+                if (checkedCount > 0) {
+                    toolbar.classList.remove('d-none');
+                    countDisplay.innerText = `${checkedCount} item(s) selected`;
+                } else {
+                    toolbar.classList.add('d-none');
+                }
             }
         }
 
-        selectAll.addEventListener('change', function() {
-            checkboxes.forEach(cb => cb.checked = selectAll.checked);
-            updateToolbar();
-        });
+        if (selectAll) {
+            selectAll.addEventListener('change', function() {
+                checkboxes.forEach(cb => cb.checked = selectAll.checked);
+                updateToolbar();
+            });
+        }
 
         checkboxes.forEach(cb => {
             cb.addEventListener('change', function() {
                 const row = this.closest('tr');
-                if (this.checked) {
-                    row.classList.add('selected');
-                } else {
-                    row.classList.remove('selected');
-                }
+                if (this.checked) row.classList.add('selected');
+                else row.classList.remove('selected');
                 updateToolbar();
             });
         });
-    });
 
-    function bulkAction(type) {
-        const form = document.getElementById('bulk-form');
-        if (type === 'delete') {
-            if (confirm('Are you sure you want to delete selected items?')) {
-                form.action = "{{ path('app_item_bulk_delete') }}";
-                form.submit();
-            }
-        } else if (type === 'edit') {
-            form.action = "{{ path('app_item_bulk_edit') }}";
-            form.submit();
-        }
-    }
-
-    document.addEventListener('DOMContentLoaded', function() {
-        const likeButtons = document.querySelectorAll('.like-btn');
-
-        likeButtons.forEach(btn => {
+        // Like buttins logic
+        document.querySelectorAll('.like-btn').forEach(btn => {
             btn.addEventListener('click', function(e) {
                 e.preventDefault();
-
-                const currentBtn = e.currentTarget;
-                const itemId = currentBtn.dataset.itemId;
-                const countSpan = currentBtn.querySelector('.like-count');
-                const icon = currentBtn.querySelector('i');
-
-                fetch(`/item/${itemId}/like`, {
-                    method: 'POST',
-                    headers: {
-                        'X-Requested-With': 'XMLHttpRequest'
-                    }
-                })
-                .then(response => {
-                    if (!response.ok) throw new Error('Server error');
-                    return response.json();
-                })
+                const itemId = this.dataset.itemId;
+                fetch(`/item/${itemId}/like`, { method: 'POST', headers: { 'X-Requested-With': 'XMLHttpRequest' } })
+                .then(res => res.json())
                 .then(data => {
                     if (data.likesCount !== undefined) {
-                        countSpan.innerText = data.likesCount;
-
-                        if (currentBtn.classList.contains('btn-outline-danger')) {
-                            currentBtn.classList.replace('btn-outline-danger', 'btn-danger');
-                            icon.classList.replace('bi-heart', 'bi-heart-fill');
-                        } else {
-                            currentBtn.classList.replace('btn-danger', 'btn-outline-danger');
-                            icon.classList.replace('bi-heart-fill', 'bi-heart');
-                        }
+                        this.querySelector('.like-count').innerText = data.likesCount;
+                        this.classList.toggle('btn-outline-danger');
+                        this.classList.toggle('btn-danger');
+                        this.querySelector('i').classList.toggle('bi-heart');
+                        this.querySelector('i').classList.toggle('bi-heart-fill');
                     }
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                    alert('Session expired or server error. Please refresh.');
                 });
             });
         });
-    });
 
-    // For Discussion Box
-    document.addEventListener('DOMContentLoaded', function() {
-        let lastCommentId = {{ lastCommentId|default(0) }};
+        // Discuss polling
         const discussionBox = document.getElementById('discussion-box');
         const commentInput = document.getElementById('comment-input');
         const postBtn = document.getElementById('btn-post-comment');
-        const inventoryId = {{ inventory.id }};
 
         document.querySelectorAll('.markdown-content-initial').forEach(el => {
             el.innerHTML = marked.parse(el.textContent.trim());
             el.classList.remove('invisible');
         });
 
-        const scrollToBottom = () => {
-            discussionBox.scrollTop = discussionBox.scrollHeight;
-        };
+        const scrollToBottom = () => { if(discussionBox) discussionBox.scrollTop = discussionBox.scrollHeight; };
         scrollToBottom();
 
-        postBtn.addEventListener('click', function() {
-            const content = commentInput.value.trim();
-            if (!content) return;
-
-            fetch(`/inventory/${inventoryId}/comments/add`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json', 'X-Requested-With': 'XMLHttpRequest' },
-                body: JSON.stringify({ content: content })
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.status === 'success') {
-                    commentInput.value = '';
-                } else {
-                    alert(data.error || 'Error posting message');
-                }
+        if (postBtn) {
+            postBtn.addEventListener('click', function() {
+                const content = commentInput.value.trim();
+                if (!content) return;
+                fetch(`/inventory/${inventoryId}/comments/add`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'X-Requested-With': 'XMLHttpRequest' },
+                    body: JSON.stringify({ content: content })
+                })
+                .then(res => res.json())
+                .then(data => { if (data.status === 'success') commentInput.value = ''; });
             });
-        });
+        }
 
         setInterval(function() {
             fetch(`/inventory/${inventoryId}/comments/updates?lastId=` + lastCommentId)
@@ -609,7 +613,6 @@
 
                             const htmlContent = marked.parse(comment.content);
                             const initials = comment.author.substring(0, 2).toUpperCase();
-
                             const html = `
                                 <div class="d-flex mb-3 pb-3 border-bottom" data-id="${comment.id}">
                                     <div class="flex-shrink-0">
@@ -622,19 +625,25 @@
                                             <span class="fw-bold text-dark me-2">${comment.author}</span>
                                             <small class="text-muted">${comment.date}</small>
                                         </div>
-                                        <div class="text-muted-dark" style="line-height: 1.5;">
-                                            ${htmlContent}
-                                        </div>
+                                        <div class="text-muted-dark">${htmlContent}</div>
                                     </div>
                                 </div>`;
                             discussionBox.insertAdjacentHTML('beforeend', html);
 
-                            lastCommentId = comment.id;
+                            if (comment.id > lastCommentId) lastCommentId = comment.id;
                         });
                         scrollToBottom();
                     }
                 });
         }, 3000);
     });
-    </script>
+
+    // Bulk action
+    function bulkAction(type) {
+        const form = document.getElementById('bulk-form');
+        if (!form) return;
+        form.action = type === 'delete' ? "{{ path('app_item_bulk_delete') }}" : "{{ path('app_item_bulk_edit') }}";
+        if (type !== 'delete' || confirm('Delete selected?')) form.submit();
+    }
+</script>
 {% endblock %}
