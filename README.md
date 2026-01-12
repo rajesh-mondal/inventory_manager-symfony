@@ -7,7 +7,7 @@ The application follows a **Monolithic Architecture** with a strong focus on **d
 
 ## 🚀 Detailed Key Features
 
-### Advanced User Administration
+### 1. Advanced User Administration
 
 The admin panel acts as the **core control center** of the system, providing high-level oversight of all users with a strong emphasis on efficiency and security.
 
@@ -17,7 +17,7 @@ The admin panel acts as the **core control center** of the system, providing hig
 
 - **Role-Based Access Control (RBAC):**  Leverages Symfony’s native security system to enforce strict access control, ensuring that sensitive routes (e.g., `/admin`) are **completely inaccessible** to non-admin users.
 
-### Dynamic Inventory Management
+### 2. Dynamic Inventory Management
 
 Built for scale, the inventory module allows users to **track items across different categories** with ease.
 
@@ -25,15 +25,13 @@ Built for scale, the inventory module allows users to **track items across diffe
 
 - **Contextual Actions:**  Users can perform **bulk edits** on inventory items, including moving items between categories or updating stock levels.
 
-- **Rich Descriptions:**  Integrated support for **formatted text descriptions** (using safe HTML/Twig filters) to provide detailed item specifications.
-
 - **Custom ID Patterns:**  Allows storing and applying **customized ID formats** for inventory items, making it easier to maintain consistent item numbering.
 
 - **Configurable Custom Fields:**  Enables defining which of the **15 optional fields** (e.g., text, number, date fields) are active for a particular inventory, offering maximum flexibility.
 
 - **Auto-Save Functionality:**  Implements a **JavaScript-based auto-save** that sends a POST request to a Symfony controller every few seconds while users are editing, preventing data loss.
 
-### Item Management (The "Data")
+### 3. Item Management (The "Data")
 
 - **Item Entity:**  Each item includes **fixed fields** such as `created_by` and `created_at`, along with **15 optional columns** in the database to store **custom fields** (e.g., `string_field_1`, `numeric_field_1`), providing flexibility for diverse inventory requirements.
 
@@ -43,7 +41,7 @@ Built for scale, the inventory module allows users to **track items across diffe
 
 - **Last Update Tracking:**  Displays the **timestamp of the most recent modification** for each item, helping users monitor changes and maintain accurate inventory records.
 
-### Real-Time Discussion System
+### 4. Real-Time Discussion System
 
 A **lightweight communication layer** designed for seamless team collaboration on specific inventory items.
 
@@ -51,9 +49,7 @@ A **lightweight communication layer** designed for seamless team collaboration o
 
 - **Recursive Cleanup:**  Prevents duplicate DOM elements by tracking state in the browser’s memory, ensuring **smooth scrolling** and uninterrupted user experience as new messages arrive.
 
----
-
-### Optimized Frontend Architecture
+### 5. Optimized Frontend Architecture
 
 The frontend is designed for **performance, usability, and maintainability**, providing a smooth experience without heavy dependencies.
 
@@ -63,7 +59,7 @@ The frontend is designed for **performance, usability, and maintainability**, pr
 
 - **Zero-Runtime JavaScript:**  Uses **vanilla JavaScript** for core interactions, avoiding the overhead of large frameworks like React or Vue for standard CRUD operations, resulting in **faster load times** and higher performance.
 
-### Social & Search Features
+### 6. Social & Search Features
 
 Enhances inventory interaction and discoverability through **real-time engagement** and **powerful search capabilities**.
 
@@ -93,25 +89,25 @@ git clone https://github.com/yourusername/inventory-system.git
 cd inventory-system
 ```
 
-### 2. Install Dependencies
+2. **Install Dependencies**
 Install the backend dependencies using Composer:
 ```bash
 composer install
 ```
 
-### 3. Environment Configuration
+3. **Environment Configuration**
 Configure Environment: Copy `.env` to `.env.local` and update your database connection string:
 ```bash
 DATABASE_URL="mysql://db_user:db_password@127.0.0.1:3306/db_name"
 ```
 
-### 4. Setup Database
+4. **Setup Database**
 ```bash
 php bin/console doctrine:database:create
 php bin/console doctrine:migrations:migrate
 ```
 
-### 5. Start the Server:
+5. **Start the Server**
 
 ```bash
 symfony serve
