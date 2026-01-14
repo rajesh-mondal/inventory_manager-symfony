@@ -25,7 +25,18 @@
 
                 <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
 
-                <button class="btn btn-primary w-100 mt-3" type="submit">{{ 'auth.sign_in_btn'|trans }}</button>
+                <button class="btn btn-primary w-100 mt-3" type="submit">
+                    {{ 'auth.sign_in_btn'|trans }}
+                </button>
+
+                <div class="text-center text-muted">
+                    <hr> <span>OR</span> <hr>
+                </div>
+
+                <a href="{{ path('connect_google_start') }}" class="btn btn-outline-dark w-100 mb-2">
+                    <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" width="18" class="me-2">
+                    Login with Google
+                </a>
 
                 <div class="text-center mt-3">
                     <small>{{ 'auth.no_account'|trans }}
