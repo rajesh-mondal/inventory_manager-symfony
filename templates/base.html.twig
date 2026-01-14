@@ -54,7 +54,10 @@
                                     <li><a class="dropdown-item" href="{{ path('change_locale', {locale: 'es'}) }}">Español</a></li>
                                 </ul>
                             </div>
-
+                            {% if is_granted('ROLE_ADMIN') %}
+                                <a href="{{ path('app_admin_users') }}" class="btn btn-sm btn-outline-secondary px-3 rounded-pill">
+                                    {{ 'nav.admin_dashboard'|trans }}
+                            {% endif %}
                             {% if app.user %}
                                 <a href="{{ path('app_logout') }}" class="nav-link-custom logout-link">{{ 'nav.logout'|trans }}</a>
                             {% else %}
