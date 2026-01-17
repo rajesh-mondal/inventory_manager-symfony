@@ -253,3 +253,14 @@ profile:
     sf_linked: "Conectado con Salesforce"
     sync_updates: "Sincronizar actualizaciones"
     connect_sf: "Conectar a Salesforce"
+
+salesforce:
+    header: "Sincronización de Salesforce"
+    sub_header: "Conecte su perfil local al CRM"
+    org_details: "Detalles de la organización"
+    first_name: "Nombre"
+    last_name: "Apellido"
+    company_name: "Nombre de la empresa"
+    info_text: "Esto creará o vinculará a una Cuenta en Salesforce."
+    sync_data: "Autorizar y sincronizar datos"
+    back_to_profile: "Volver al perfil"

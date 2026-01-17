@@ -255,3 +255,14 @@ profile:
     sf_linked: "Salesforce Linked"
     sync_updates: "Sync Updates"
     connect_sf: "Connect to Salesforce"
+
+salesforce:
+    header: "Salesforce Sync"
+    sub_header: "Connect your local profile to the CRM"
+    org_details: "Organization Details"
+    first_name: "First Name"
+    last_name: "Last Name"
+    company_name: "Company Name"
+    info_text: "This will create or link to an Account in Salesforce."
+    sync_data: "Authorize & Sync Data"
+    back_to_profile: "Back to Profile"
