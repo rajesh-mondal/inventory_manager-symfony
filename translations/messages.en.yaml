@@ -249,3 +249,9 @@ stats_panel:
     avg_price: "Average Price"
     last_updated: "Last Updated"
     never: "Never"
+
+profile:
+    welcome: "Welcome back!"
+    sf_linked: "Salesforce Linked"
+    sync_updates: "Sync Updates"
+    connect_sf: "Connect to Salesforce"

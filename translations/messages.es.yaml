@@ -247,3 +247,9 @@ stats_panel:
     avg_price: "Precio Promedio"
     last_updated: "Última Actualización"
     never: "Nunca"
+
+profile:
+    welcome: "¡Bienvenido de nuevo!"
+    sf_linked: "Conectado con Salesforce"
+    sync_updates: "Sincronizar actualizaciones"
+    connect_sf: "Conectar a Salesforce"

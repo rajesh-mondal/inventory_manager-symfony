@@ -5,19 +5,40 @@
 {% block body %}
 <div class="container py-5">
     {# Header Section #}
-    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-5 gap-3">
-        <div>
-            <h1 class="fw-bold tracking-tight text-dark mb-1">{{ 'dashboard.title'|trans }}</h1>
-            <p class="text-muted mb-0 small">{{ 'dashboard.total_collections'|trans }}: {{ pagination.getTotalItemCount }}</p>
+    <div class="card border-0 shadow-sm mb-5" style="background: linear-gradient(to right, #ffffff, #f9fafb); border-radius: 11px;">
+        <div class="card-body p-4">
+            <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-4">
+                <div class="d-flex align-items-center">
+                    <div class="rounded-circle bg-dark text-white d-flex align-items-center justify-content-center shadow-sm me-3" style="width: 60px; height: 60px;">
+                        <i class="bi bi-person-fill fs-3"></i>
+                    </div>
+                    <div>
+                        <h4 class="fw-bold mb-1">{{ 'profile.welcome'|trans|default('Welcome!') }}</h4>
+                        <p class="text-muted mb-0">
+                            <i class="bi bi-envelope me-1"></i> {{ app.user.userIdentifier }}
+                            {% if app.user.salesforceContactId %}
+                                <span class="badge bg-success-subtle text-success border border-success-subtle ms-2 extra-small">
+                                    <i class="bi bi-check-circle-fill me-1"></i>{{ 'profile.sf_linked'|trans|default('Salesforce Linked') }}
+                                </span>
+                            {% endif %}
+                        </p>
+                    </div>
+                </div>
+
+                <div class="d-flex flex-wrap gap-2">
+                    {% if is_granted('ROLE_USER') %}
+                        <a href="{{ path('app_salesforce_sync') }}" class="btn {{ app.user.salesforceContactId ? 'btn-outline-secondary' : 'btn-outline-primary' }} d-inline-flex align-items-center fw-bold" style="border-radius: 10px; padding: 0.6rem 1.2rem;">
+                            <i class="fab fa-salesforce me-2"></i>
+                            {{ (app.user.salesforceContactId ? 'profile.sync_updates' : 'profile.connect_sf')|trans }}
+                        </a>
+                    {% endif %}
+
+                    <a href="{{ path('app_inventory_new') }}" class="btn btn-dark fw-bold shadow-sm d-inline-flex align-items-center" style="border-radius: 10px; padding: 0.6rem 1.2rem;">
+                        <i class="bi bi-plus-lg me-2"></i> {{ 'dashboard.new_inventory'|trans }}
+                    </a>
+                </div>
+            </div>
         </div>
-        {% if is_granted('ROLE_USER') %}
-            <a href="{{ path('app_salesforce_sync') }}" class="btn btn-outline-primary">
-                Connect to Salesforce
-            </a>
-        {% endif %}
-        <a href="{{ path('app_inventory_new') }}" class="btn btn-outline-dark fw-medium px-4 py-2 fw-bold shadow-sm" style="border-radius: 10px;">
-            <i class="bi bi-plus-lg me-1"></i> {{ 'dashboard.new_inventory'|trans }}
-        </a>
     </div>
 
     {# Tabs Section #}
