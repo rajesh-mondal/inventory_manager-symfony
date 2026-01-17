@@ -1,0 +1,47 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Sync with Salesforce{% endblock %}
+
+{% block body %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white">
+                    <h3 class="card-title mb-0">CRM Integration: Salesforce</h3>
+                </div>
+                <div class="card-body">
+                    {% for label, messages in app.flashes %}
+                        {% for message in messages %}
+                            <div class="alert alert-{{ label }} mb-3">{{ message }}</div>
+                        {% endfor %}
+                    {% endfor %}
+
+                    <p class="text-muted">Complete your profile to sync your data with our CRM system.</p>
+
+                    {{ form_start(syncForm) }}
+                        <div class="mb-3">
+                            {{ form_label(syncForm.firstName) }}
+                            {{ form_widget(syncForm.firstName) }}
+                            {{ form_errors(syncForm.firstName) }}
+                        </div>
+                        <div class="mb-3">
+                            {{ form_label(syncForm.lastName) }}
+                            {{ form_widget(syncForm.lastName) }}
+                            {{ form_errors(syncForm.lastName) }}
+                        </div>
+                        <div class="mb-3 border-top pt-3">
+                            <label class="form-label font-weight-bold">Additional CRM Info</label>
+                            {{ form_row(syncForm.companyName) }}
+                        </div>
+
+                        <button type="submit" class="btn btn-success w-100">
+                            <i class="fas fa-sync"></i> Sync to Salesforce
+                        </button>
+                    {{ form_end(syncForm) }}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

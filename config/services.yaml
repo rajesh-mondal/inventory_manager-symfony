@@ -21,5 +21,13 @@ services:
     App\:
         resource: '../src/'
 
+    App\Service\SalesforceService:
+        arguments:
+            $clientId: '%env(SALESFORCE_CLIENT_KEY)%'
+            $clientSecret: '%env(SALESFORCE_CLIENT_SECRET)%'
+            $username: '%env(SALESFORCE_USERNAME)%'
+            $password: '%env(SALESFORCE_PASSWORD)%'
+            $loginUrl: '%env(SALESFORCE_LOGIN_URL)%'
+
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones

@@ -47,6 +47,18 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\OneToMany(targetEntity: Comment::class, mappedBy: 'author')]
     private Collection $comments;
 
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $firstName = null;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $lastName = null;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $salesforceAccountId = null;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $salesforceContactId = null;
+
     public function __construct()
     {
         $this->inventories = new ArrayCollection();
@@ -193,4 +205,48 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
         return $this;
     }
-}
+
+    public function getFirstName(): ?string
+    {
+        return $this->firstName;
+    }
+
+    public function setFirstName(?string $firstName): static
+    {
+        $this->firstName = $firstName;
+        return $this;
+    }
+
+    public function getLastName(): ?string
+    {
+        return $this->lastName;
+    }
+
+    public function setLastName(?string $lastName): static
+    {
+        $this->lastName = $lastName;
+        return $this;
+    }
+
+    public function getSalesforceAccountId(): ?string
+    {
+        return $this->salesforceAccountId;
+    }
+
+    public function setSalesforceAccountId(?string $salesforceAccountId): static
+    {
+        $this->salesforceAccountId = $salesforceAccountId;
+        return $this;
+    }
+
+    public function getSalesforceContactId(): ?string
+    {
+        return $this->salesforceContactId;
+    }
+
+    public function setSalesforceContactId(?string $salesforceContactId): static
+    {
+        $this->salesforceContactId = $salesforceContactId;
+        return $this;
+    }
+    }
