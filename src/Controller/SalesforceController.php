@@ -28,7 +28,10 @@ class SalesforceController extends AbstractController
             // Check if user is already synced to avoid duplicates
             if ($user->getSalesforceContactId()) {
                 $this->addFlash('info', 'This profile is already linked to Salesforce.');
-                return $this->redirectToRoute('app_profile');
+
+                return $this->render('salesforce/sync.html.twig', [
+                    'syncForm' => $form->createView(),
+                ]);
             }
 
             // Save names to local DB
@@ -38,13 +41,18 @@ class SalesforceController extends AbstractController
             $companyName = $form->get('companyName')->getData();
 
             try {
-                // Sync and the service will handle the Salesforce IDs
                 $sfService->syncUserToSalesforce($user, $companyName);
 
                 $this->addFlash('success', 'Successfully synchronized with Salesforce CRM!');
-                return $this->redirectToRoute('app_my_inventories');
+                // return $this->redirectToRoute('app_my_inventories');
             } catch (\Exception $e) {
-                $this->addFlash('error', $e->getMessage());
+                $message = "An error occurred during synchronization.";
+
+                if (str_contains($e->getMessage(), 'DUPLICATES_DETECTED')) {
+                    $message = "A matching contact already exists in Salesforce.";
+                }
+
+                $this->addFlash('error', $message);
             }
         }
 
