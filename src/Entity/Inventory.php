@@ -124,6 +124,9 @@ class Inventory
     #[ORM\Column(options: ["default" => 1])]
     private ?int $version = 1;
 
+    #[ORM\Column(length: 64, nullable: true)]
+    private ?string $api_token = null;
+
     public function __construct()
     {
         $this->items = new ArrayCollection();
@@ -610,6 +613,18 @@ class Inventory
     public function setVersion(int $version): self
     {
         $this->version = $version;
+        return $this;
+    }
+
+    public function getApiToken(): ?string
+    {
+        return $this->api_token;
+    }
+
+    public function setApiToken(?string $api_token): static
+    {
+        $this->api_token = $api_token;
+
         return $this;
     }
 }

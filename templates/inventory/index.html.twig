@@ -85,6 +85,7 @@
                                     <th class="d-none d-md-table-cell">{{ 'table.tags'|trans }}</th>
                                     <th class="d-none d-md-table-cell">{{ 'table.category'|trans }}</th>
                                     <th class="text-center">{{ 'dashboard.visibility'|trans }}</th>
+                                    <th class="text-center d-none d-md-table-cell">API Bridge</th>
                                     <th class="text-end pe-4">{{ 'table.stored_items'|trans }}</th>
                                 </tr>
                             </thead>
@@ -115,6 +116,20 @@
                                     </td>
                                     <td class="text-center">
                                         <i class="bi {{ inv.isPublic ? 'bi-globe-americas text-success' : 'bi-lock-fill text-muted' }}" style="font-size: 0.9rem;"></i>
+                                    </td>
+                                    <td class="text-center d-none d-md-table-cell">
+                                        {% if inv.apiToken %}
+                                            <div class="d-flex flex-column align-items-center">
+                                                <code class="small text-primary border bg-light px-2 py-1 mb-1" id="token-{{ inv.id }}" style="border-radius: 5px;">{{ inv.apiToken }}</code>
+                                                <button type="button" class="btn btn-link btn-sm p-0 extra-small text-decoration-none" onclick="copyToken('token-{{ inv.id }}')">
+                                                    <i class="bi bi-clipboard me-1"></i>Copy
+                                                </button>
+                                            </div>
+                                        {% else %}
+                                            <a href="{{ path('app_inventory_generate_token', {id: inv.id}) }}" class="btn btn-sm btn-outline-warning extra-small fw-bold">
+                                                <i class="bi bi-key-fill me-1"></i>Generate
+                                            </a>
+                                        {% endif %}
                                     </td>
                                     <td class="text-end pe-4">
                                         <span class="item-count-badge">{{ inv.items|length }}</span>
@@ -178,6 +193,19 @@
 
 {% block javascripts %}
 <script>
+function copyToken(elementId) {
+    const element = document.getElementById(elementId);
+    if (!element) return;
+
+    const text = element.innerText;
+    navigator.clipboard.writeText(text).then(() => {
+        // Optional: You could use a toast notification instead of an alert for a better UI
+        alert("Token copied to clipboard! You can now paste it into Odoo.");
+    }).catch(err => {
+        console.error('Failed to copy: ', err);
+    });
+}
+
 document.addEventListener('DOMContentLoaded', function() {
     const selectAll = document.getElementById('select-all');
     const checkboxes = document.querySelectorAll('.inventory-checkbox');
@@ -217,6 +245,13 @@ document.addEventListener('DOMContentLoaded', function() {
     checkboxes.forEach(cb => {
         cb.addEventListener('change', updateUI);
     });
+
+    function copyToken(elementId) {
+        const text = document.getElementById(elementId).innerText;
+        navigator.clipboard.writeText(text).then(() => {
+            alert("Token copied to clipboard! You can now paste it into Odoo.");
+        });
+    }
 });
 </script>
 {% endblock %}

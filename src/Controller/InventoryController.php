@@ -165,6 +165,17 @@ class InventoryController extends AbstractController
         ]);
     }
 
+    #[Route('/inventory/{id}/generate-token', name: 'app_inventory_generate_token')]
+    public function generateToken(Inventory $inventory, EntityManagerInterface $em): Response
+    {
+        $inventory->setApiToken(bin2hex(random_bytes(16)));
+        $em->flush();
+
+        $this->addFlash('success', 'API Token generated successfully!');
+
+        return $this->redirectToRoute('app_my_inventories');
+    }
+
     #[Route('/inventory/{id}/settings', name: 'app_inventory_settings', methods: ['POST'])]
     public function editSettings(Inventory $inventory, Request $request, EntityManagerInterface $em): Response
     {
