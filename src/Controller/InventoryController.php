@@ -166,12 +166,21 @@ class InventoryController extends AbstractController
     }
 
     #[Route('/inventory/{id}/generate-token', name: 'app_inventory_generate_token')]
-    public function generateToken(Inventory $inventory, EntityManagerInterface $em): Response
+    public function generateToken(Inventory $inventory, EntityManagerInterface $em, Request $request): Response
     {
         $inventory->setApiToken(bin2hex(random_bytes(16)));
         $em->flush();
 
         $this->addFlash('success', 'API Token generated successfully!');
+
+        $referer = $request->headers->get('referer');
+
+        if ($referer && str_contains($referer, '/inventory/' . $inventory->getId())) {
+            return $this->redirectToRoute('app_inventory_show', [
+                'id' => $inventory->getId(),
+                '_fragment' => 'integrations-pane'
+            ]);
+        }
 
         return $this->redirectToRoute('app_my_inventories');
     }
