@@ -199,7 +199,6 @@ function copyToken(elementId) {
 
     const text = element.innerText;
     navigator.clipboard.writeText(text).then(() => {
-        // Optional: You could use a toast notification instead of an alert for a better UI
         alert("Token copied to clipboard! You can now paste it into Odoo.");
     }).catch(err => {
         console.error('Failed to copy: ', err);
