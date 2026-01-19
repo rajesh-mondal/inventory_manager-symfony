@@ -150,6 +150,7 @@ inventory_show:
     tab_stats: "Estadísticas"
     selected_count: "%count% artículos seleccionados"
     tab_access: "Acceso"
+    tabs_integrations: "Integraciones de Odoo"
     no_permission: "No tienes permiso para modificar este inventario."
     table:
         image: "Imagen"
@@ -177,6 +178,11 @@ inventory_show:
         system_info: "Información del Sistema"
         category: "Categoría del Inventario"
         no_tags: "Sin etiquetas definidas"
+    integrations:
+        title: "Puente API de Odoo"
+        help_text: "Use este token en su instancia de Odoo para sincronizar datos de <strong>%title%</strong>."
+        copy: "Copiar"
+        generate: "Generar nuevo token"
 
 settings:
     manage_access: "Acceso"

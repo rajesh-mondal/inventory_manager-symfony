@@ -152,6 +152,7 @@ inventory_show:
     tab_stats: "Statistics"
     selected_count: "%count% items selected"
     tab_access: "Access"
+    tabs_integrations: "Odoo Integrations"
     no_permission: "You do not have permission to modify this inventory."
     table:
         image: "Image"
@@ -179,6 +180,11 @@ inventory_show:
         system_info: "System Info"
         category: "Inventory Category"
         no_tags: "No tags defined"
+    integrations:
+        title: "Odoo API Bridge"
+        help_text: "Use this token in your Odoo instance to sync data for <strong>%title%</strong>."
+        copy: "Copy"
+        generate: "Generate New Token"
 
 settings:
     manage_access: "Access"

@@ -72,7 +72,7 @@
         {% if is_granted('INVENTORY_EDIT', inventory) %}
         <li class="nav-item" role="presentation">
             <button class="nav-link" id="integrations-tab" data-bs-toggle="tab" data-bs-target="#integrations-pane" type="button" role="tab">
-                <i class="bi bi-plugin me-2"></i>Odoo Integrations
+                <i class="bi bi-plugin me-2"></i>{{ 'inventory_show.tabs_integrations'|trans }}
             </button>
         </li>
         {% endif %}
@@ -460,10 +460,15 @@
         <div class="tab-pane fade" id="integrations-pane" role="tabpanel">
             <div class="card shadow-sm mt-4">
                 <div class="card-header bg-white border-0">
-                    <h5 class="mb-0"><i class="bi bi-link-45deg me-2"></i>Odoo API Bridge</h5>
+                    <h5 class="mb-0">
+                        <i class="bi bi-link-45deg me-2"></i>
+                        {{ 'inventory_show.integrations.title'|trans }}
+                    </h5>
                 </div>
                 <div class="card-body">
-                    <p class="text-muted small">Use this token in your Odoo instance to sync data for <strong>{{ inventory.title }}</strong>.</p>
+                    <p class="text-muted small">
+                        {{ 'inventory_show.integrations.help_text'|trans({'%title%': inventory.title})|raw }}
+                    </p>
 
                     <div class="input-group mb-3">
                         <input type="text" class="form-control font-monospace bg-light" value="{{ inventory.apiToken }}" readonly>
@@ -471,13 +476,13 @@
                         <span id="tokenValueHolder" style="display:none;">{{ inventory.apiToken }}</span>
 
                         <button class="btn btn-outline-dark" onclick="copyToken('tokenValueHolder')" type="button" id="copyBtn">
-                            <i class="bi bi-clipboard"></i> Copy
+                            <i class="bi bi-clipboard"></i> {{ 'inventory_show.integrations.copy'|trans }}
                         </button>
                     </div>
 
                     <form action="{{ path('app_inventory_generate_token', {'id': inventory.id}) }}" method="POST">
                         <button type="submit" class="btn btn-sm btn-secondary">
-                            <i class="bi bi-arrow-repeat"></i> Generate New Token
+                            <i class="bi bi-arrow-repeat"></i> {{ 'inventory_show.integrations.generate'|trans }}
                         </button>
                     </form>
 
