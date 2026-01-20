@@ -139,11 +139,18 @@
                     .then(response => response.json())
                     .then(result => {
                         if (result.status === 'success') {
-                            alert('Ticket JSON uploaded to Dropbox!');
+                            alert('Support ticket submitted successfully! Our team has been notified.');
+
+                            const supportForm = document.getElementById('supportTicketForm');
+                            if (supportForm) {
+                                supportForm.reset();
+                            }
+
                             const modalElement = document.getElementById('supportModal');
                             const modal = bootstrap.Modal.getInstance(modalElement);
-                            modal.hide();
-                            document.getElementById('supportSummary').value = '';
+                            if (modal) {
+                                modal.hide();
+                            }
                         } else {
                             alert('Error sending ticket.');
                         }
