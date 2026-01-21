@@ -16,7 +16,6 @@ class SupportController extends AbstractController
         $user = $this->getUser();
         $data = json_decode($request->getContent(), true);
 
-        // Prepare JSON payload
         $ticketData = [
             'reported_by'  => $user ? $user->getUserIdentifier() : 'Anonymous',
             'inventory'    => $data['inventory_title'] ?? 'N/A',
@@ -30,29 +29,56 @@ class SupportController extends AbstractController
         $jsonContent = json_encode($ticketData, JSON_PRETTY_PRINT);
         $fileName = 'ticket_' . time() . '.json';
 
-        // Upload to Dropbox
-        $response = $client->request('POST', 'https://content.dropboxapi.com/2/files/upload', [
-            'headers' => [
-                'Authorization' => 'Bearer ' . $this->getParameter('kernel.dropbox_token'),
-                'Dropbox-API-Arg' => json_encode([
-                    'path' => "/$fileName",
-                    'mode' => 'add',
-                    'autorename' => true,
-                    'mute' => false
-                ]),
-                'Content-Type' => 'application/octet-stream',
+        try {
+            $accessToken = $this->getDropboxToken($client);
+
+            $response = $client->request('POST', 'https://content.dropboxapi.com/2/files/upload', [
+                'headers' => [
+                    'Authorization' => 'Bearer ' . $accessToken,
+                    'Dropbox-API-Arg' => json_encode([
+                        'path' => "/$fileName",
+                        'mode' => 'add',
+                        'autorename' => true,
+                        'mute' => false
+                    ]),
+                    'Content-Type' => 'application/octet-stream',
+                ],
+                'body' => $jsonContent
+            ]);
+
+            if ($response->getStatusCode() === 200) {
+                return new JsonResponse(['status' => 'success']);
+            }
+
+            return new JsonResponse([
+                'status' => 'error',
+                'details' => $response->getContent(false)
+            ], $response->getStatusCode());
+
+        } catch (\Exception $e) {
+            return new JsonResponse([
+                'status' => 'error',
+                'details' => 'Authentication failed: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    private function getDropboxToken(HttpClientInterface $client): string
+    {
+        $appKey = $this->getParameter('kernel.dropbox_app_key');
+        $appSecret = $this->getParameter('kernel.dropbox_app_secret');
+        $refreshToken = $this->getParameter('kernel.dropbox_refresh_token');
+
+        $response = $client->request('POST', 'https://api.dropbox.com/oauth2/token', [
+            'body' => [
+                'grant_type' => 'refresh_token',
+                'refresh_token' => $refreshToken,
+                'client_id' => $appKey,
+                'client_secret' => $appSecret,
             ],
-            'body' => $jsonContent
         ]);
 
-        // Handle Response
-        if ($response->getStatusCode() === 200) {
-            return new JsonResponse(['status' => 'success']);
-        }
-
-        return new JsonResponse([
-            'status' => 'error',
-            'details' => $response->getContent(false)
-        ], $response->getStatusCode());
+        $data = $response->toArray();
+        return $data['access_token'];
     }
 }

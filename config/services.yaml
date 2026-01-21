@@ -10,7 +10,9 @@ parameters:
     items_directory: '%kernel.project_dir%/public/uploads/items'
     default_locale: 'en'
     # Dropbox Token for Support Tickets
-    kernel.dropbox_token: '%env(DROPBOX_TOKEN)%'
+    kernel.dropbox_app_key: '%env(DROPBOX_APP_KEY)%'
+    kernel.dropbox_app_secret: '%env(DROPBOX_APP_SECRET)%'
+    kernel.dropbox_refresh_token: '%env(DROPBOX_REFRESH_TOKEN)%'
 
     # kernel.ms_client_id: '%env(MS_CLIENT_ID)%'
     # kernel.ms_tenant_id: '%env(MS_TENANT_ID)%'
